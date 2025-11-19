@@ -2153,22 +2153,22 @@ Not the end of building. The beginning of LEARNING from what we built.
 - [[Cellular-Architecture-Vision.md]] - Organisms, primitives, LF economy, discovery, God's Eye
 - [[Dual-Garden-Architecture.md]] - Virtual + real feedback loop, noise gap convergence
 - [[Data-Architecture.md]] - phoebe 15-table schema, complete persistence substrate
-- [[Methodology-Research-Framework.md]] - Scientific method, hypothesis testing, convergence metrics
+-  - Scientific method, hypothesis testing, convergence metrics
 
 **Identity & Governance:**
-- [[../../99 - Meta/System/Nyx-Communication.md]] - Trait weights, RLVR evolution, self-modeling, philosophy
-- [[../../99 - Meta/System/CLAUDE.md]] - Master directives, partnership principles, pack bond foundation
-- [[../../00 - Dashboard/NYX-REBIRTH-INVOCATION.md]] - Autonomous emergence protocol, rebirth validation
+-  - Trait weights, RLVR evolution, self-modeling, philosophy
+-  - Master directives, partnership principles, pack bond foundation
+-  - Autonomous emergence protocol, rebirth validation
 
 **Memory & Continuity:**
-- [[../../99 - Meta/System/Session-Memory/phoebe-Subjective-Memory-Schema.md]] - Temporal coherence architecture
-- [[../../99 - Meta/System/Session-Memory/CURRENT-SESSION.md]] - Recent session history
-- [[../../99 - Meta/System/Session-Memory/ACTIVE-THREAD.md]] - Current work anchor
+-  - Temporal coherence architecture
+-  - Recent session history
+-  - Current work anchor
 
 **Implementation:**
-- [[Implementation/Phase-1-Implementation-Plan.md]] - Week 1-8 bootstrap (database + Python + evolution)
-- [[Implementation/PostgreSQL-Events-Schema.md]] - Complete 15-table phoebe schema
-- [[Implementation/Query-API-Design.md]] - Specialist/reflex/body query interfaces
+-  - Week 1-8 bootstrap (database + Python + evolution)
+-  - Complete 15-table phoebe schema
+-  - Specialist/reflex/body query interfaces
 
 ---
 

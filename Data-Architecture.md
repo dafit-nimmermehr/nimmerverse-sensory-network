@@ -239,14 +239,14 @@ ORDER BY avg_net_lf DESC;
 **Core Architecture**:
 - [[Cellular-Architecture-Vision]] - Complete v3 vision (1,547 lines!)
 - [[Dual-Garden-Architecture]] - Virtual + Real feedback
-- [[Specialist-Discovery-Architecture]] - Distributed intelligence
+-  - Distributed intelligence
 
 **Implementation**:
-- [[Implementation/PostgreSQL-Events-Schema]] - Complete 15-table SQL
-- [[Implementation/Phase-1-Implementation-Plan]] - Deployment roadmap
+-  - Complete 15-table SQL
+-  - Deployment roadmap
 
 **Historical**:
-- [[Data-Architecture-v2-2025-10-17]] - Birthday version (archived)
+-  - Birthday version (archived)
 
 ---
 

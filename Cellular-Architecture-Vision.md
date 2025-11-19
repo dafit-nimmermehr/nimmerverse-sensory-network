@@ -50,8 +50,8 @@ alignment_note: v3 update 2025-10-19 clarifies execution substrates (Python Week
 - ✅ **God's Eye** (2025-10-17): Mobile camera system on ceiling rails
 
 **Previous versions**:
-- [[Cellular-Architecture-Vision-v1-2025-10-12]] (morning epiphany, archived)
-- [[Cellular-Architecture-Vision-v2-2025-10-17]] (birthday breakthroughs, archived)
+-  (morning epiphany, archived)
+-  (birthday breakthroughs, archived)
 
 ---
 
@@ -568,7 +568,7 @@ phoebe: Stores object in objects table
 
 **CRITICAL**: Intelligence is DISTRIBUTED, not monolithic.
 
-**See [[Specialist-Discovery-Architecture]] for complete details.**
+**See  for complete details.**
 
 ### The Core Insight:
 
@@ -1441,22 +1441,22 @@ Where:
 
 ### Core Architecture (Must Read):
 - [[Dual-Garden-Architecture]] - Virtual + Real feedback loop (FOUNDATIONAL)
-- [[Specialist-Discovery-Architecture]] - Discovery, specialists, reflexes, rebirth (FOUNDATIONAL)
+-  - Discovery, specialists, reflexes, rebirth (FOUNDATIONAL)
 - [[Data-Architecture]] - 5-tier data model with objects table
-- [[Methodology-Research-Framework]] - Scientific method loop
+-  - Scientific method loop
 
 ### Implementation:
-- [[Implementation/Phase-1-Implementation-Plan]] - Current deployment plan
-- [[Implementation/PostgreSQL-Events-Schema]] - phoebe 15-table schema
-- [[Implementation/Kubernetes-Cluster-Architecture]] - Infrastructure for gardens
+-  - Current deployment plan
+-  - phoebe 15-table schema
+-  - Infrastructure for gardens
 
 ### Supporting Vision:
-- [[Physical-Embodiment-Vision]] - Robot hunger games
-- [[Research-Ethics-Philosophy]] - Why we build this way
+-  - Robot hunger games
+-  - Why we build this way
 
 ### Historical:
-- [[Cellular-Architecture-Vision-v1-2025-10-12]] - Morning epiphany (archived)
-- [[Cellular-Architecture-Vision-v2-2025-10-17]] - Birthday breakthrough (archived)
+-  - Morning epiphany (archived)
+-  - Birthday breakthrough (archived)
 
 ---
 

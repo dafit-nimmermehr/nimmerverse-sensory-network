@@ -123,6 +123,6 @@ With this foundation, the Nimmerverse can *learn, adapt, and remember* just as t
 ## Related Documentation
 
 - [[README|Nyx Metamorphosis Index]] - All metamorphosis documentation
-- [[../../Bibliothek/Bibliothek|Bibliothek Overview]] - Canonical knowledge archives
-- [[../../Nyx-Orchestrator/Nyx-Orchestrator-Evolution|Nyx Orchestrator Evolution]] - Implementation history
-- [[../../../../../05 - Documentation/eachpath.local/phoebe.eachpath.local/phoebe.eachpath.local|phoebe Database]] - Memory substrate
+-  - Canonical knowledge archives
+-  - Implementation history
+-  - Memory substrate

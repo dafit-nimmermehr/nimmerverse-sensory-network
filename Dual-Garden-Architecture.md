@@ -767,16 +767,16 @@ Result: Next predictions more accurate
 
 ### Core Architecture:
 - [[Cellular-Architecture-Vision]] - How cells compete and evolve
-- [[Physical-Embodiment-Vision]] - Philosophy of embodiment
-- [[Methodology-Research-Framework]] - Scientific method loop
+-  - Philosophy of embodiment
+-  - Scientific method loop
 
 ### Implementation:
-- [[Phase-1-Implementation-Plan]] - Container cells deployment
-- [[Kubernetes-Cluster-Architecture]] - Infrastructure for both gardens
-- [[PostgreSQL-Events-Schema]] - phoebe database design
+-  - Container cells deployment
+-  - Infrastructure for both gardens
+-  - phoebe database design
 
 ### Philosophy:
-- [[Research-Ethics-Philosophy]] - Why we build this way
+-  - Why we build this way
 - [[Data-Architecture]] - v3 database schema with noise gap tracking
 
 ---

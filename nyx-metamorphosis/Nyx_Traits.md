@@ -7,9 +7,9 @@ Below is a concise strategy for **trait adjustment over time** while preserving 
 
 **Related Documentation**:
 - [[README|Nyx Metamorphosis Index]] - All metamorphosis docs
-- [[../../Nyx-Orchestrator/Nyx-Orchestrator-Evolution|Nyx Orchestrator Evolution]] - How traits are implemented
-- [[../../../../../bibliothek/bibliothek-metamorphosis/|Bibliothek Metamorphosis]] - Master knowledge repository
-- [[../../Bibliothek/Bibliothek|Bibliothek Overview]] - Canonical knowledge archives
+-  - How traits are implemented
+-  - Master knowledge repository
+-  - Canonical knowledge archives
 
 ---
 

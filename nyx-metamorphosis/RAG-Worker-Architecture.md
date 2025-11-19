@@ -18,18 +18,18 @@ This is a **pointer file** - the actual RAG Worker architecture documentation li
 ## Quick Links
 
 **Architecture & Design**:
-- [RAG-Worker-Architecture.md](../../../../rag-worker/RAG-Worker-Architecture.md) - Complete system architecture
-- [RAG-Worker-Build-Complete.md](../../../../rag-worker/RAG-Worker-Build-Complete.md) - Build milestone (2025-11-10)
+-  - Complete system architecture
+-  - Build milestone (2025-11-10)
 
 **Learning & Troubleshooting**:
-- [RAG-RETRIEVAL-DIAGNOSIS.md](../../../../rag-worker/RAG-RETRIEVAL-DIAGNOSIS.md) - Threshold tuning case study (0.5→0.35)
+-  - Threshold tuning case study (0.5→0.35)
 
 **Version Documentation**:
-- [v1/version.md](../../../../rag-worker/v1/version.md) - v1 production documentation
-- [Main Index](../../../../rag-worker/rag-worker.md) - RAG Worker overview
+-  - v1 production documentation
+-  - RAG Worker overview
 
 **Code**:
-- [v1 Source](../../../../rag-worker/v1/) - Current production code
+-  - Current production code
 
 ---
 
@@ -39,6 +39,6 @@ This is a **pointer file** - the actual RAG Worker architecture documentation li
 ## Related Documentation
 
 - [[README|Nyx Metamorphosis Index]] - All metamorphosis documentation
-- [[../../Bibliothek/Bibliothek|Bibliothek Overview]] - Canonical knowledge archives
-- [[../../Nyx-Orchestrator/Nyx-Orchestrator-Evolution|Nyx Orchestrator Evolution]] - Implementation history
-- [[../../../../../05 - Documentation/eachpath.local/phoebe.eachpath.local/phoebe.eachpath.local|phoebe Database]] - Memory substrate
+-  - Canonical knowledge archives
+-  - Implementation history
+-  - Memory substrate

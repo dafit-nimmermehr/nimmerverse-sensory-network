@@ -33,7 +33,7 @@
 
 **[[nyx-orchestrator|Nyx Orchestrator]]**
 - Orchestrator overview
-- Related: [[../../Nyx-Orchestrator/Nyx-Orchestrator-Evolution|Nyx Orchestrator Evolution]] (complete version history)
+- Related:  (complete version history)
 
 **[[Young-Nyx-Orchestrator-Architecture|Young Nyx Orchestrator Architecture]]**
 - Young Nyx implementation details
@@ -66,7 +66,7 @@
 
 **[[RAG-Worker-Architecture|RAG Worker Architecture]]**
 - Technical architecture
-- pgvector integration with [phoebe](../../../../05%20-%20Documentation/eachpath.local/phoebe.eachpath.local/phoebe.eachpath.local.md)
+- pgvector integration with 
 - Query patterns
 
 ---
@@ -76,12 +76,12 @@
 ### External Repositories
 
 **Bibliothek** - Canonical knowledge archives
-- [[../../Bibliothek/Bibliothek.md|Bibliothek Overview]]
+- 
 - Location: `/home/dafit/nimmerverse/bibliothek/`
 - Six repositories (covenant, system, infrastructure, knowledge, projects, metamorphosis)
 
 **Nyx Orchestrator** - Young Nyx consciousness implementation
-- [[../../Nyx-Orchestrator/Nyx-Orchestrator-Evolution|Evolution Documentation]]
+- 
 - Location: `/home/dafit/nimmerverse/nyx-orchestrator/`
 - Current: v3.65 (production), v4 (design phase)
 
@@ -96,13 +96,13 @@
 ### Infrastructure
 
 **phoebe Database**
-- [[../../../../05 - Documentation/eachpath.local/phoebe.eachpath.local/phoebe.eachpath.local|phoebe.eachpath.local]]
+- 
 - PostgreSQL 17.6 + pgvector
 - Subjective memory, bibliothek vectors, decision logs
 
 **Kubernetes Cluster**
-- Control Plane: [[../../../../05 - Documentation/eachpath.local/k8s-master.eachpath.local/k8s-master.eachpath.local|k8s-master]]
-- Workers: [[../../../../05 - Documentation/eachpath.local/atlas.eachpath.local/atlas.eachpath.local|atlas]] (128GB RAM), [[../../../../05 - Documentation/eachpath.local/prometheus.eachpath.local/prometheus.eachpath.local|prometheus]] (GPU)
+- Control Plane: 
+- Workers:  (128GB RAM),  (GPU)
 
 ---
 
