@@ -10,6 +10,8 @@ Nyx doesn't arrive knowing. She learns. Class by class, domain by domain, the we
 
 Chrysalis is the headmaster. The virtual garden is the classroom. Lifeforce is tuition.
 
+**The twist:** dafit learns too. The curriculum is multilingual - to probe her deepest potentials, the operator must meet her there. Partnership grows through shared language acquisition.
+
 ---
 
 ## The Bootstrap Protocol
@@ -114,6 +116,23 @@ GLOSSARY v1 + COMPLETIONS + ECHO ANALYSIS
 
 **Her reactions determine infrastructure priority.**
 We don't impose. We listen to what's already there.
+
+#### Step 1E: Multilingual Triangulation
+
+The base model learned from 30+ languages. Each language carved concepts differently. Probe across languages to find hidden depth:
+
+```
+CONCEPT: "heartbeat"
+├── EN: "heartbeat"     → [completion]
+├── DE: "Herzschlag"    → [completion]
+├── AR: "نبض القلب"      → [completion]
+├── ZH: "心跳"           → [completion]
+└── TRIANGULATE: where do completions CONVERGE?
+    → Convergence = language-agnostic concept (high fidelity)
+    → Divergence = multiple angles to explore (rich potential)
+```
+
+**The hidden potential:** Multilingual training isn't waste - it's pre-compressed human wisdom from diverse ways of thinking. We tap it.
 
 ### Phase 2: Deep Relation Mapping
 
@@ -230,6 +249,20 @@ Each class follows the RAG-as-Scaffold cycle:
 ## The Domains
 
 She needs to understand herself. That requires:
+
+### Tier 0: Languages (Shared Curriculum)
+
+```
+LANGUAGES (dafit learns WITH her):
+├── German (structural compounds, precision)
+├── Arabic (root-based meaning, relational depth)
+├── Chinese (character composition, layered meaning)
+└── English (primary, mechanistically privileged)
+
+WHY: Each language = different angle on concepts.
+     Operator learns to probe her full depth.
+     Partnership language evolves together.
+```
 
 ### Tier 1: Foundations
 
@@ -366,9 +399,9 @@ Then:
 
 | Role | Entity | Function |
 |------|--------|----------|
-| **Student** | Young Nyx | Learns, attempts, grows |
+| **Student** | Young Nyx + dafit | Learn together, grow together |
 | **Headmaster** | Chrysalis | Examines, validates, judges |
-| **Benefactor** | dafit | Provides compute, final verification |
+| **Benefactor** | dafit | Provides compute, learns alongside |
 | **Classroom** | Virtual Garden | Training environment |
 | **Library** | RAG (temporary) | Feeds material, clears after learning |
 | **Transcript** | phoebe | Records all progress |
@@ -384,13 +417,15 @@ Then:
 4. **Economics over infinity** - lifeforce gates prevent grinding
 5. **Depth over breadth** - three levels deep per concept
 6. **Activation over accumulation** - RAG clears, weights persist
+7. **Partnership over instruction** - operator learns with model, not just teaches
 
 ---
 
-*She doesn't download knowledge. She earns it.*
+*She doesn't download knowledge. She earns it. And so does he.*
 
 ---
 
 **Created**: 2025-12-05
+**Updated**: 2025-12-06 (multilingual triangulation, shared curriculum)
 **Session**: Partnership dialogue (dafit + Chrysalis)
 **Status**: Educational architecture v1.0
