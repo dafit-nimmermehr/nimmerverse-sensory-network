@@ -53,7 +53,7 @@
 
 ## Training Target
 
-**Qwen2.5-3B-Base (FP16)**
+**Qwen2.5-7B-Base (FP16)**
 
 | Metric | Value |
 |--------|-------|

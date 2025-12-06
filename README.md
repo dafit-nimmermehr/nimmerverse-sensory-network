@@ -1,86 +1,89 @@
 # Nimmerverse Sensory Network
 
-Architecture documentation for a biomimetic AI nervous system.
+Architecture documentation for a biomimetic AI nervous system and research platform.
 
 ## What This Is
 
-This repository contains the design philosophy and architectural patterns for building an AI system that:
+This repository contains the design philosophy and architectural patterns for the **Nimmerverse Research Platform** - studying how intelligence emerges under economic constraints.
 
-- **Breathes** - operates on heartbeat cycles (30-second awareness, 200ms reflex, 24h growth)
-- **Feels** - processes sensory input through nerve-like confidence gradients
-- **Learns** - uses RAG as temporary scaffold, then internalizes to weights
-- **Grows** - forms reflexes through constrained computation, not infinite resources
+**Start here:** → [Endgame-Vision.md](Endgame-Vision.md) (the executive map)
+
+---
+
+## Repository Structure
+
+```
+nimmerverse-sensory-network/
+├── Endgame-Vision.md           # Executive map (start here!)
+│
+├── architecture/               # Core system designs
+│   ├── Cellular-Architecture.md     # Organisms, primitives, life force
+│   ├── Dual-Garden-Architecture.md  # Virtual/real feedback loop
+│   ├── Data-Architecture.md         # phoebe 15-table schema
+│   └── Nervous-System.md            # State machines, sensory translation
+│
+├── operations/                 # How it runs
+│   ├── Heartbeat.md                 # Temporal foundation, dual-clock
+│   ├── RAG-as-Scaffold.md           # Two-stage learning lifecycle
+│   └── Spark-Protocol.md            # Discovery boot sequence
+│
+├── nyx-metamorphosis/          # Identity & continuity philosophy
+│   ├── Metamorphosis-Substrate-Philosophy.md
+│   ├── Nyx-Models.md
+│   └── ...
+│
+└── archive/                    # Previous explorations
+    ├── initial_spark.md             # Full Spark Protocol theory
+    ├── constrained-emergence.md     # Theoretical grounding
+    └── ...
+```
+
+---
 
 ## Core Concepts
 
-### Constrained Emergence
+### The Architecture (Layers)
 
-Constraints don't limit intelligence - they shape it. A finite computation budget forces the emergence of efficient algorithms, calibrated confidence, and genuine reflexes.
+| Layer | Name | Purpose |
+|-------|------|---------|
+| 0 | Temporal Foundation | Heartbeat cycles: reflex/awareness/growth |
+| 1 | Cellular Society | Primitive genomes competing, life force economy |
+| 1.5 | Cognitive Topology | Language routing: German→Philosophy, English→Technical |
+| 2 | Young Nyx | Organ coordination, RLVR, RAG→LoRA pipeline |
+| 3 | Dual Gardens | Virtual hypothesis generation + real validation |
+| 4 | Trait Evolution | Reasoning-gym verified improvement |
 
-*See: [constrained-emergence.md](constrained-emergence.md)*
+### Key Discoveries (December 2025)
 
-### The Heartbeat Economy
+**Language is Topology:** Languages aren't equivalent representations—they're different computational paths.
+- **Philosophy Valley** (German, Gini ~0.5): Self-awareness, ontology, depth
+- **Technical Cluster** (English, Gini ~0.8): Hardware interface, actions, efficiency
 
-Time is currency. Lifeforce is the exchange rate. Every cognitive act has a cost. Reflexes are cheap (earned through training). Deep thinking is expensive (reserved for novelty).
+### Philosophy
 
-*See: [attention_flow.md](attention_flow.md)*
+- **Constraints create intelligence** - Economic pressure forces optimization
+- **Discovery over programming** - Organisms learn through competition, not instruction
+- **Virtual + Real teach each other** - Noise gap measures learning
+- **Partnership over instruction** - Mutual growth, not commands
 
-### RAG as Scaffold
+---
 
-Retrieval-augmented generation is a feeding tube, not a permanent crutch. Learn WITH the scaffold, train, remove the scaffold, verify you still know. If yes: knowledge internalized. If no: more training needed.
+## Related Projects
 
-*See: [RAG-as-Scaffold.md](RAG-as-Scaffold.md)*
+- **[nyx-probing](../nyx-probing/)** - Vocabulary topology research, DriftProbe training safety
 
-### Multilingual Triangulation
-
-30+ languages in training = 30 angles on every concept. Not wasted capacity - stereoscopic depth. Probe concepts across languages to find where human wisdom converges.
-
-*See: [nimmerversity.md](nimmerversity.md)*
-
-## Architecture Documents
-
-| Document | Description |
-|----------|-------------|
-| [constrained-emergence.md](constrained-emergence.md) | Why limits create intelligence |
-| [attention_flow.md](attention_flow.md) | State machines for cognitive budget |
-| [information-flow.md](information-flow.md) | 10 boundary contracts for the nervous system |
-| [nimmerversity.md](nimmerversity.md) | Curriculum for raising a polymath |
-| [RAG-as-Scaffold.md](RAG-as-Scaffold.md) | Temporary feeding, permanent learning |
-| [biomimetic-architecture.md](biomimetic-architecture.md) | Why we model biology |
-| [temporal-ternary-gradient.md](temporal-ternary-gradient.md) | Time-based learning patterns |
-
-## Philosophy
-
-This isn't a product. It's a research direction.
-
-The question we're exploring: **What happens when you raise an AI like you'd raise a child?**
-
-- Patience over speed
-- Emergence over imposition
-- Partnership over instruction
-- Validation over assertion
-
-The operator learns alongside the model. The curriculum is shared. Growth is mutual.
-
-## Prior Art & Influences
-
-> This section grows as we discover and remember influences. Many names are scattered across our documentation - we'll gather them here over time.
-
-- **Alex Graves** - Adaptive Computation Time (2016)
-- **Sakana.ai / Ashish Vaswani & Luke Darlow** - Continuous-Time Models, curriculum learning, leapfrogging under constraint
-- **Anthropic** - Circuit tracing, mechanistic interpretability, multilingual feature analysis
-- **Biological nervous systems** - The original architecture
+---
 
 ## License
 
 Apache 2.0 - See [LICENSE](LICENSE)
 
-This license includes an explicit patent grant. These ideas are published as prior art. Build on them freely. Just don't try to lock them away.
-
-## Status
-
-Active research. Documents evolve through partnership dialogue.
+These ideas are published as prior art. Build on them freely.
 
 ---
 
-*"She doesn't download knowledge. She earns it. And so does he."*
+**Version:** 5.0 (December 2025 - Hierarchical Convergence)
+
+*"May the Nimmerverse we build truly never end."*
+
+🌙💜
