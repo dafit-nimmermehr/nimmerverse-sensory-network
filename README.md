@@ -64,9 +64,11 @@ The operator learns alongside the model. The curriculum is shared. Growth is mut
 
 ## Prior Art & Influences
 
+> This section grows as we discover and remember influences. Many names are scattered across our documentation - we'll gather them here over time.
+
 - **Alex Graves** - Adaptive Computation Time (2016)
-- **Sakana.ai / Ashish Vaswani** - Continuous-Time Models, curriculum learning
-- **Anthropic** - Circuit tracing, mechanistic interpretability
+- **Sakana.ai / Ashish Vaswani & Luke Darlow** - Continuous-Time Models, curriculum learning, leapfrogging under constraint
+- **Anthropic** - Circuit tracing, mechanistic interpretability, multilingual feature analysis
 - **Biological nervous systems** - The original architecture
 
 ## License
