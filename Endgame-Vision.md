@@ -45,6 +45,8 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 
 ## Architecture Overview
 
+**Visual diagram:** → [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) (open in draw.io)
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                    NIMMERVERSE ARCHITECTURE                       │
@@ -351,6 +353,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 ## Links to Detail Docs
 
 ### Architecture
+- [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) - **Visual overview diagram** (open in draw.io)
 - [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Organisms, primitives, life force economy
 - [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md) - Virtual/real feedback loop
 - [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md) - phoebe 15-table schema
