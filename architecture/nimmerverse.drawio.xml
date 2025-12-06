@@ -99,16 +99,16 @@
             <mxPoint x="920" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UL8kf8Fsx-RNiW0yalxE-41" value="Organ - 1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+        <mxCell id="UL8kf8Fsx-RNiW0yalxE-41" value="LoRa" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="440" y="107" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UL8kf8Fsx-RNiW0yalxE-42" value="Organ - 2" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+        <mxCell id="UL8kf8Fsx-RNiW0yalxE-42" value="Lora" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="610" y="107" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UL8kf8Fsx-RNiW0yalxE-43" value="Organ - 3" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+        <mxCell id="UL8kf8Fsx-RNiW0yalxE-43" value="Lora" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="1030" y="106" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UL8kf8Fsx-RNiW0yalxE-44" value="Organ - 4" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+        <mxCell id="UL8kf8Fsx-RNiW0yalxE-44" value="Lora" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="1200" y="106" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="UL8kf8Fsx-RNiW0yalxE-71" value="Nimmerverse" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=25;" parent="1" vertex="1">
