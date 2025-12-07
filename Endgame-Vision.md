@@ -49,6 +49,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 ## Architecture Overview
 
 **Visual diagram:** → [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) (open in draw.io)
+**Toolchain implementation:** → [`architecture/Toolchain-Architecture.md`](architecture/Toolchain-Architecture.md) | [Progress](architecture/TOOLCHAIN-PROGRESS.md)
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐

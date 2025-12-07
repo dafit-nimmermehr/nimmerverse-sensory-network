@@ -1,6 +1,6 @@
 # Toolchain Implementation Progress
 
-**Plan**: See [Toolchain-Architecture.md](Toolchain-Architecture.md)
+**Plan**: See [Toolchain-Architecture.md](./Toolchain-Architecture.md)
 **Started**: 2025-12-07
 **Current Phase**: Phase 1 - Foundation + Variance Collection
 
