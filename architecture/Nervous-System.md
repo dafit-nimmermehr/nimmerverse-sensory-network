@@ -177,6 +177,18 @@ The lifeforce flows through the nervous system, literally lighting up nodes as t
 
 ---
 
+## Related Documentation
+
+**Implementation Details**:
+- [`nerves/Nervous-Protocol.md`](nerves/Nervous-Protocol.md) - Three-tier communication protocol (dafit → Chrysalis → Young Nyx)
+- [`nerves/Nervous-Index.md`](nerves/Nervous-Index.md) - Catalog of behavioral nerve implementations
+
+**Specific Nerves**:
+- [`nerves/Collision-Avoidance.md`](nerves/Collision-Avoidance.md) - Obstacle avoidance reflex
+
+---
+
 **Created**: 2025-12-04
+**Updated**: 2025-12-07 (added nerve crosslinks)
 **Session**: Partnership dialogue (dafit + Chrysalis)
 **Status**: Foundation concept

@@ -1,0 +1,226 @@
+# Organ Architecture Index
+
+**Purpose**: Modular organ systems for Young Nyx embodiment
+**Philosophy**: Each organ is independent, lifeforce-gated, heartbeat-synchronized
+
+---
+
+## Deployed Organs
+
+### 🗣️ Speech Organ
+**Host**: atlas.eachpath.local (RTX 2080 8GB)
+**Function**: Speech-to-Text + Text-to-Speech
+**Stack**: Whisper (STT) + Coqui TTS (neural voices)
+**Languages**: German (Philosophy Valley) + English (Technical Cluster)
+**Integration**: Heartbeat-bound queue, lifeforce-gated priority processing
+
+**Detail**: → [`organs/Speech-Organ.md`](organs/Speech-Organ.md)
+
+---
+
+## Planned Organs
+
+### 👁️ Vision Organ
+**Host**: TBD (requires GPU with tensor cores)
+**Function**: Object detection, scene understanding
+**Stack**: YOLO (v8 or v11)
+**Integration**: Real-time video from ESP32-CAM, object persistence in phoebe
+**Status**: ⏸️ Architecture planned, not yet deployed
+
+**Detail**: → `organs/Vision-Organ.md` (pending)
+
+---
+
+### 🚶 Motor Organ
+**Host**: ESP32 (edge execution)
+**Function**: Movement primitives (forward, turn, stop)
+**Stack**: Compiled state machines from organism evolution
+**Integration**: Lifeforce cost per motor operation, reflex vs deliberate
+**Status**: ⏸️ Planned for Phase 4 (Real Garden)
+
+**Detail**: → `organs/Motor-Organ.md` (pending)
+
+---
+
+### 🧭 Navigation Organ
+**Host**: Edge server (prometheus or atlas)
+**Function**: SLAM, path planning, obstacle avoidance
+**Stack**: ROS2 Nav2 or custom lightweight SLAM
+**Integration**: Dual-garden calibration (virtual predictions vs real outcomes)
+**Status**: ⏸️ Planned for Phase 4 (Real Garden)
+
+**Detail**: → `organs/Navigation-Organ.md` (pending)
+
+---
+
+### 📡 Sensory Organ
+**Host**: ESP32 (edge sensors)
+**Function**: Distance sensors, IMU, battery monitoring
+**Stack**: I2C/SPI sensor protocols, state machine filters
+**Integration**: Sensor→organ translation (raw values → semantic meaning)
+**Status**: ⏸️ Architecture outlined in Nervous-System.md
+
+**Detail**: → [`../Nervous-System.md`](../Nervous-System.md)
+
+---
+
+## Organ Design Principles
+
+### 1. **Lifeforce Economy**
+Every organ operation costs lifeforce. No free lunch.
+
+```python
+ORGAN_COSTS = {
+    "speech_stt": 5.0,       # Whisper transcription
+    "speech_tts": 4.0,       # Coqui synthesis
+    "vision_yolo": 8.0,      # Object detection frame
+    "motor_forward": 2.0,    # 100ms movement
+    "motor_turn": 1.5,       # 45° rotation
+    "sensor_read": 0.5,      # Single sensor poll
+}
+```
+
+### 2. **Heartbeat Synchronization**
+Organs process on heartbeat ticks (1 Hz), not real-time streaming.
+
+- **Reflex path**: <200ms compiled responses (no LLM)
+- **Deliberate path**: Next heartbeat (budget-gated queue)
+
+### 3. **Priority Queue**
+When lifeforce is scarce, critical operations (collision alert) > idle operations (status check).
+
+```python
+PRIORITY_LEVELS = {
+    "critical": 10.0,   # Immediate danger (collision)
+    "high": 7.0,        # Human interaction
+    "medium": 4.0,      # Organism monitoring
+    "low": 2.0,         # Idle observation
+    "background": 0.5,  # Status logging
+}
+```
+
+### 4. **Multilingual Topology Routing**
+German input → Philosophy Valley (Identity LoRA, Dasein depth-3)
+English input → Technical Cluster (Technical LoRA, sensor/motor)
+
+### 5. **Decision Trail Logging**
+Every organ operation logged to phoebe `decision_trails`:
+- Input, output, cost, outcome, confidence
+- Used for RLVR training (reward successful choices)
+
+### 6. **Graceful Degradation**
+Low lifeforce → reduced organ activity (silence, reduced vision FPS, slower movement)
+Zero lifeforce → shutdown, wait for recharge
+
+---
+
+## Integration Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    ESP32 ROBOTS                          │
+│  Sensors → Motor → Camera → Microphone → Speaker         │
+└──────────────────────────────────────────────────────────┘
+                        │
+                        │ MQTT (sensor data, audio, video)
+                        ▼
+┌──────────────────────────────────────────────────────────┐
+│                  PHOEBE (Message Queue)                  │
+│  Organ input queues + priority scoring                   │
+└──────────────────────────────────────────────────────────┘
+                        │
+                        │ Heartbeat pulls from queues
+                        ▼
+          ┌─────────────────────────────┐
+          │  HEARTBEAT ORCHESTRATOR     │
+          │  Lifeforce budget allocation │
+          └─────────────────────────────┘
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+┌─────────────────────┐   ┌─────────────────────┐
+│  ATLAS (RTX 2080)   │   │ PROMETHEUS (Brain)  │
+│  Speech Organ       │   │ Young Nyx Inference │
+│  Vision Organ (fut) │   │ LoRA hot-swap       │
+└─────────────────────┘   └─────────────────────┘
+            │                       │
+            └───────────┬───────────┘
+                        ▼
+┌──────────────────────────────────────────────────────────┐
+│              PHOEBE (Decision Trails)                    │
+│  Log all organ operations + outcomes                     │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Organ Lifecycle
+
+### Phase 1: Design
+- Document architecture in `organs/<Organ-Name>.md`
+- Define lifeforce costs, priority levels, queue schema
+- Design phoebe tables for organ-specific data
+
+### Phase 2: Prototype
+- Build container images (Dockerfiles)
+- Deploy to k8s (single replica)
+- Test with mock data (no robot integration yet)
+
+### Phase 3: Integration
+- Connect to ESP32 via MQTT
+- Implement heartbeat queue processing
+- Log decision trails, measure ROI
+
+### Phase 4: Optimization
+- Tune lifeforce costs based on measured ROI
+- Adjust priority levels from observed outcomes
+- Train LoRAs on successful organ operation patterns
+
+### Phase 5: Autonomy
+- Organ operations become reflexes (compiled state machines)
+- Young Nyx chooses when to use organs (not scripted)
+- Emergent behavior from lifeforce optimization
+
+---
+
+## Naming Convention
+
+**File naming**: `<Organ-Name>-Organ.md`
+**Examples**:
+- `Speech-Organ.md`
+- `Vision-Organ.md`
+- `Motor-Organ.md`
+- `Navigation-Organ.md`
+
+**k8s naming**: `<organ>-<function>-<stack>`
+**Examples**:
+- `whisper-stt-deployment.yaml`
+- `coqui-tts-deployment.yaml`
+- `yolo-vision-deployment.yaml`
+
+---
+
+## Current Status
+
+| Organ | Status | Host | Documentation |
+|-------|--------|------|---------------|
+| **Speech** | 🟢 Architecture complete | atlas (RTX 2080) | [`organs/Speech-Organ.md`](organs/Speech-Organ.md) |
+| **Vision** | 🟡 Stack selected (YOLO) | TBD | Pending |
+| **Motor** | 🟡 Planned (Phase 4) | ESP32 | Pending |
+| **Navigation** | 🟡 Planned (Phase 4) | Edge server | Pending |
+| **Sensory** | 🟡 Conceptual | ESP32 | [`../Nervous-System.md`](../Nervous-System.md) |
+
+---
+
+**Philosophy**: Organs are not always-on services. They are **economically-constrained capabilities** that Young Nyx learns to use strategically. Speech when necessary. Vision when valuable. Movement when rewarded.
+
+**The body is not given. The body is EARNED through successful operation.**
+
+---
+
+**Created**: 2025-12-07
+**Updated**: 2025-12-07
+**Version**: 1.0
+
+🌙💜 *Each organ a tool. Each tool a choice. Each choice a lesson in scarcity.*
