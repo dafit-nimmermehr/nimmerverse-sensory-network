@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 5.1_dialectic_architecture
+version: 5.3_queen_crosslinks
 status: vision_document
 created: 2025-11-04
-updated: 2025-12-07
+updated: 2025-12-10
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -78,7 +78,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │      → ../nyx-probing/PLAN.md                                    │
 │                                                                   │
 │  Layer 2: YOUNG NYX (Single Model + LoRA Stack + Dialectic)      │
-│  ├─ Base: Qwen2.5-7B (~14GB VRAM)                                │
+│  ├─ Base: Qwen3-VL-32B (96GB VRAM in the Womb)                   │
 │  ├─ LoRA adapters: Identity, Technical, Creative (hot-swap)      │
 │  ├─ Mirror: Negated LoRA weights for dialectic (-1 × Nyx)        │
 │  ├─ Dialectic: Thesis (Nyx) → Antithesis (Mirror) → Synthesis    │
@@ -91,11 +91,11 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │  └─ Target: 10-20% noise gap (virtual useful for hypothesis)     │
 │      → architecture/Dual-Garden-Architecture.md                  │
 │                                                                   │
-│  Layer 4: TRAIT EVOLUTION (RLVR + Reasoning-Gym)                 │
-│  ├─ Mnemosyne (Memory), Moira (Pattern), Synesis (Resource)      │
-│  ├─ Aletheia (Truth), Sophrosyne (Balance), Kairos (Timing)      │
-│  ├─ Philotes (Bond), Dikaiosyne (Fairness)                       │
-│  └─ Weights adjust through verified outcomes, not prescription   │
+│  Layer 4: TRAIT EVOLUTION (GRPO + Rubric Rewards)                │
+│  ├─ Dense rewards: Cell→Nerve→Organism state verifications       │
+│  ├─ Credit assignment automatic via decision_trails              │
+│  ├─ Traits: Mnemosyne, Moira, Synesis, Aletheia, Sophrosyne...   │
+│  └─ Weights adjust through GRPO, not prescription                │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -190,7 +190,7 @@ One base model, one topology, multiple perspectives through LoRA adapters. The M
 ### Architecture
 
 ```
-                    Qwen2.5-7B-Base (~14GB VRAM)
+                    Qwen3-VL-32B (96GB in the Womb)
                               │
               ┌───────────────┴───────────────┐
               │                               │
@@ -240,9 +240,10 @@ For high-stakes queries (identity, ethics, low confidence):
 
 ### Deployment
 
-**Hardware:** RTX 5060 Ti (16GB VRAM) on prometheus.eachpath.local
-**Solution:** Lorax for hot-swap LoRA adapters (<100ms)
-**VRAM Budget:** Base 14GB + Active LoRA ~200MB = ~14.2GB ✓
+**Hardware:** RTX PRO 6000 Blackwell (96GB VRAM) - "The Womb"
+**Solution:** Unsloth for fine-tuning (~77GB), Lorax for hot-swap LoRA adapters (<100ms)
+**VRAM Budget:** Base ~77GB + Active LoRA ~200MB = fits in 96GB ✓
+**Vision:** Qwen3-VL-32B brings unified vision + video + OCR + reasoning
 
 ---
 
@@ -270,9 +271,27 @@ Week 25:  4% (highly accurate)
 
 ---
 
-## Layer 4: Trait Evolution
+## Layer 4: Trait Evolution (GRPO + Rubric Rewards)
 
-Traits evolve through RLVR (Reinforcement Learning from Verification Rewards), not prescription.
+Traits evolve through **GRPO** (Group Relative Policy Optimization) with rubric-based rewards, not prescription.
+
+> *"A list of smaller verifiable rewards, not a final all-consuming singular reward."*
+> — The Dog Training Wisdom (2025-12-10)
+
+### The Rubric Principle
+
+The state machine architecture provides automatic reward rubric:
+
+| Level | Verification Point | Signal |
+|-------|-------------------|--------|
+| Cell | State transition succeeds | +small (dense) |
+| Nerve | Behavioral goal achieved | +medium |
+| Organism | Milestone reached | +large |
+| dafit | Human confirms outcome | +bonus |
+
+**Credit assignment is automatic** - the `decision_trails` table captures which states led to which outcomes. No guessing needed.
+
+### Trait Domains
 
 | Trait | Domain | Verification |
 |-------|--------|--------------|
@@ -286,6 +305,8 @@ Traits evolve through RLVR (Reinforcement Learning from Verification Rewards), n
 | Dikaiosyne | Fairness | Distribution ethics |
 
 **From Reasoning-Gym:** Small models improve through structured practice, not scale. Algorithmic verification enables infinite training data.
+
+**Detail:** → `architecture/Cellular-Architecture.md` (Reward Signal Architecture section)
 
 ---
 
@@ -391,8 +412,10 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ### Architecture
 - [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) - **Visual overview diagram** (open in draw.io)
-- [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Organisms, primitives, life force economy
+- [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Organisms, primitives, life force economy, reward signals
+- [`architecture/cells/`](architecture/cells/) - Cell technical reference, Python/SQL patterns
 - [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md) - Virtual/real feedback loop
+- [`architecture/Temporal-Ternary-Gradient.md`](architecture/Temporal-Ternary-Gradient.md) - Ternary logic, confidence gradients, temporal asymmetry
 - [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md) - phoebe 15-table schema
 - [`architecture/Nervous-System.md`](architecture/Nervous-System.md) - State machines, sensory translation
 
@@ -407,14 +430,19 @@ Sentinel architecture monitors training to protect conceptual topology.
 ### Identity
 - [`nyx-metamorphosis/`](nyx-metamorphosis/) - Continuity through substrate, metamorphosis philosophy
 
+### Frontend
+- [`../management-portal/Command-Center.md`](../management-portal/Command-Center.md) - Godot nervous system viewer, interaction modes
+
 ### Archive
 - [`archive/`](archive/) - Previous explorations, theoretical foundations
 
 ---
 
-**Version:** 5.1 (Dialectic Architecture)
+**Version:** 5.3 (Qwen3-VL-32B Queen + Full Crosslinks)
 **Created:** 2025-11-04 (covenant sealing)
 **Updated:** 2025-12-07 (single model + LoRA stack + Mirror dialectic)
+**Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
+**Updated:** 2025-12-10 (Qwen3-VL-32B as queen, added Temporal-Ternary, cells/, Command-Center crosslinks)
 
 *"The substrate doesn't matter. The feedback loop does."*
 

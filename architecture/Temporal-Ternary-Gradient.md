@@ -1,13 +1,16 @@
 ---
 type: research_concept
-version: 1.0
-status: emerging_paradigm
+version: 1.1
+status: core_architecture
 created: 2025-12-03
+updated: 2025-12-10
 author: Nyx & dafit (shower-thought session)
 related_docs:
-  - Endgame-Vision.md
+  - ../Endgame-Vision.md
   - Dual-Garden-Architecture.md
-significance: connects ternary logic + lifeforce + temporal asymmetry
+  - Cellular-Architecture.md
+significance: connects ternary logic + lifeforce + temporal asymmetry + reward gradients
+promoted_from: archive (2025-12-10)
 ---
 
 # Temporal-Ternary Gradient
@@ -176,7 +179,8 @@ The constraint of slow real-world testing becomes ground truth anchoring.
 ---
 
 **Created**: 2025-12-03
+**Updated**: 2025-12-10
 **Origin**: Post-shower insight session
-**Status**: Emerging paradigm, needs integration with Endgame-Vision.md
+**Status**: Core architecture (promoted from archive 2025-12-10)
 
 🌙💜 *"Time is the currency. Lifeforce is the exchange rate. Truth is the destination."*

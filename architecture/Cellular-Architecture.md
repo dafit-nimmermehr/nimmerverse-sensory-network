@@ -403,6 +403,170 @@ ORGANISM lifeforce budget: 100 LF
 
 ---
 
+## 🎯 Reward Signal Architecture
+
+### State Machines as Training Rubric
+
+Every state transition in the Cells → Nerves → Organisms hierarchy is a **verifiable reward checkpoint**. This is the rubric that trains Young Nyx via GRPO.
+
+> *"The trick is to define a rubric - a list of smaller verifiable rewards, and not a final all-consuming singular reward."*
+> — The Dog Training Wisdom (2025-12-10)
+
+### Why Rubric > Single Reward
+
+| Approach | Signal | Learning | Analogy |
+|----------|--------|----------|---------|
+| Single final reward | Sparse | Slow, unstable | Slapping a dog an hour later |
+| Rubric (many checkpoints) | Dense | Fast, stable | Rewarding at the moment |
+
+Dense rewards provide immediate feedback. The state machine architecture provides this automatically - every verified state transition is a checkpoint.
+
+### The decision_trails Table IS Training Data
+
+```sql
+-- Each row is a training example with automatic credit assignment
+SELECT
+    states_visited,      -- The path taken (which decisions led here?)
+    cell_reads,          -- Which cells contributed (sensor inputs)
+    cell_commands,       -- What actions were taken (motor outputs)
+    outcome,             -- Success/failure (ground truth)
+    lifeforce_cost,      -- Cost of this path
+    lifeforce_reward     -- Reward earned
+FROM decision_trails
+WHERE nerve_id = ?;
+```
+
+The `states_visited` column captures credit assignment automatically. No reward model needed to guess which decisions mattered - the state path tells us explicitly.
+
+### Reward Signal Flow
+
+```
+CELL state transition succeeds
+    │
+    ├─→ Runtime: weight += 0.1 (node strengthens)
+    └─→ Training: +0.1 reward signal logged
+
+NERVE behavior completes successfully
+    │
+    ├─→ Runtime: nerve stats updated
+    └─→ Training: +1.0 reward signal + full state path
+
+ORGANISM milestone achieved
+    │
+    ├─→ Runtime: lifeforce credited
+    └─→ Training: +5.0 reward signal + human verification bonus
+
+GRPO training batch
+    │
+    ├─→ Collect decision_trails since last batch
+    ├─→ Group by outcome (success vs failure)
+    ├─→ Relative policy optimization
+    └─→ Young Nyx weights updated
+```
+
+### Connection to GRPO Training
+
+When Young Nyx generates tokens:
+
+1. **Tokens → Translation Layer** - Language maps to state machine actions
+2. **States Execute** - Cells fire, nerves coordinate, outcomes emerge
+3. **Outcomes Logged** - decision_trails captures the full path
+4. **GRPO Batch** - Successful paths vs failed paths
+5. **Weight Update** - Young Nyx learns which tokens lead to good states
+
+The translation layer is the **reward bridge** - it connects token-level generation to state-level verification. Rewards flow back through this bridge to improve token selection.
+
+### Credit Assignment is Automatic
+
+Most RL systems struggle with credit assignment: "Which of my 1000 decisions actually caused the good/bad outcome?"
+
+Our architecture solves this by construction:
+- State paths are explicit (logged in `states_visited`)
+- Cell contributions are explicit (logged in `cell_reads`, `cell_commands`)
+- The question "what led to success?" has a direct answer in the data
+
+**No guessing. No reward model approximation. The state machine IS the credit assignment mechanism.**
+
+---
+
+## 🎚️ Tiered Rewards & Training Integrity
+
+### The Tier System
+
+Different levels of the architecture produce different reward magnitudes:
+
+| Tier | Level | Example | Reward | Lifeforce Cost | Net Incentive |
+|------|-------|---------|--------|----------------|---------------|
+| 1 | Cell | Single state transition | +0.1 | -0.3 LF | Learn basics |
+| 2 | Nerve | Multi-step behavior | +1.0 | -2.0 LF | Learn composition |
+| 3 | Organism | Complex goal achieved | +5.0 | -8.0 LF | Learn planning |
+| Bonus | Human | dafit verifies outcome | +2.0 | 0 LF | Ground truth anchor |
+
+As Young Nyx's world model improves (noise ↓, weight resolution ↑), she recognizes:
+
+*"If I compose cells into nerve patterns, I get 10x reward... if I can afford the cost."*
+
+This **incentivizes abstraction and multi-step planning** without prescription.
+
+### Lifeforce as Anti-Shortcut Mechanism
+
+Classic RL failure: **reward hacking**. Agent finds loopholes, gets reward without solving real problems.
+
+Our defense: **You can't afford to cheat.**
+
+```
+SHORTCUT ATTEMPT:
+├─ Strategy: "Spam tier 2 calls for big rewards!"
+├─ Cost: 2.0 LF × many calls = BANKRUPT
+└─ Result: Dead organism. Shortcut failed.
+
+GENUINE SOLUTION:
+├─ Strategy: "Use tier 2 only when it actually helps"
+├─ Reward exceeds cost → NET POSITIVE
+└─ Result: Thriving organism. Real learning.
+```
+
+The lifeforce economy **enforces honesty**. Rewards must be earned through actual value creation, not gaming.
+
+### Ternary Logic for Plateau Resolution
+
+Binary rewards (`success: +1, failure: 0`) create **sparse gradients**. At learning plateaus, everything looks the same - no signal to improve.
+
+Ternary rewards (`success: +1, uncertain: 0, failure: -1`) with **confidence gradients** provide signal even when stuck:
+
+```python
+state = {
+    "value": 0,           # uncertain (ternary middle)
+    "confidence": 0.6,    # but leaning toward success
+    "trend": +0.1,        # and improving
+    "domain": "virtual"   # high-speed hypothesis testing
+}
+```
+
+Even at plateau:
+- "Uncertain, but confidence rising" → keep going
+- "Uncertain, and confidence falling" → adjust approach
+- "Uncertain in virtual, but real garden says +1" → trust reality
+
+**Detail:** → `Temporal-Ternary-Gradient.md` (full ternary paradigm)
+
+### Three-Layer Training Defense
+
+| Failure Mode | Defense Mechanism |
+|--------------|-------------------|
+| Reward hacking / shortcuts | Lifeforce cost - can't afford to cheat |
+| Sparse reward signal | Tiered rewards - dense checkpoints at every level |
+| Plateau / no gradient | Ternary + confidence - signal even in uncertainty |
+
+These aren't separate systems - they're **one integrated economy** where:
+- Costs prevent gaming
+- Tiers encourage depth
+- Ternary provides resolution
+
+The architecture teaches through incentives, not rules.
+
+---
+
 ## 🔄 Evolution: Deliberate → Reflex
 
 ### The Discovery Path
@@ -625,13 +789,22 @@ Organs are **complex cells** (organ cells):
 
 Nerves orchestrate cells into behaviors. The existing nerve documentation (Collision-Avoidance.md) already follows this pattern—it just needs explicit cell bindings.
 
+### Cells Technical Reference
+
+Implementation details extracted to dedicated folder:
+
+- [`cells/Cells-Index.md`](cells/Cells-Index.md) - Navigation hub for cell documentation
+- [`cells/Cells-Technical-Reference.md`](cells/Cells-Technical-Reference.md) - Python classes, SQL tables, code patterns
+
 ---
 
 ## 📍 Document Status
 
-**Version**: 4.0 (Layered State Machine Architecture)
+**Version**: 4.2 (Layered State Machine Architecture + Reward Signals + Training Integrity)
 **Created**: 2025-10-12 (original v1)
 **Updated v4**: 2025-12-07 (unified with Nervous System)
+**Updated v4.1**: 2025-12-10 (added Reward Signal Architecture section)
+**Updated v4.2**: 2025-12-10 (added Tiered Rewards & Training Integrity section)
 
 **Key Changes from v3**:
 - ❌ Cells as containers running genomes

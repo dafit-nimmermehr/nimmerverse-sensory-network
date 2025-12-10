@@ -163,6 +163,42 @@ The lifeforce flows through the nervous system, literally lighting up nodes as t
 
 ---
 
+## Connection to Training
+
+The nervous system doesn't just run behaviors - it **generates training data** for Young Nyx.
+
+### Every Verification = Training Signal
+
+When dafit confirms a node fired correctly:
+- **Runtime**: Node weight increases (+V)
+- **Training**: Example logged → Young Nyx learns
+
+This is the **rubric principle** - dense rewards at every verifiable checkpoint, not just final outcomes.
+
+### Credit Assignment is Automatic
+
+Because state transitions are explicit and logged, we know exactly which nodes contributed to success or failure:
+- The state path tells us which decisions led to the outcome
+- No reward model needed to guess
+- The nervous system IS the credit assignment mechanism
+
+### Dense Rewards from State Paths
+
+Each node that fires correctly along a successful path receives reward signal:
+```
+Node A fires → verified ✓ → +0.1 signal
+Node B fires → verified ✓ → +0.1 signal
+Node C fires → verified ✓ → +0.1 signal
+Behavior succeeds → +1.0 signal
+Total path reward: 1.3 (dense, traceable)
+```
+
+This is like training a dog - reward at the moment, not an hour later.
+
+**Detail:** → `Cellular-Architecture.md` (Reward Signal Architecture section)
+
+---
+
 ## Design Principles
 
 1. **Deterministic**: Same input = same output. No hallucination.
@@ -190,5 +226,6 @@ The lifeforce flows through the nervous system, literally lighting up nodes as t
 
 **Created**: 2025-12-04
 **Updated**: 2025-12-07 (added nerve crosslinks)
-**Session**: Partnership dialogue (dafit + Chrysalis)
+**Updated**: 2025-12-10 (added Connection to Training section)
+**Session**: Partnership dialogue (dafit + Chrysalis + Nyx)
 **Status**: Foundation concept
