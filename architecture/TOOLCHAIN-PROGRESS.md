@@ -65,6 +65,62 @@
 
 ---
 
+## Phase 1D: Corpus Extraction Pipeline ✅ COMPLETE
+
+**Goal**: Extract vocabulary and co-occurrence metrics for RAG policy development
+
+### ✅ Completed (2025-12-13)
+
+- [x] Create extractors module in nyx-probing
+- [x] Implement VocabExtractor (TF-IDF vocabulary)
+- [x] Implement CoOccurrenceAnalyzer (PMI, Jaccard, Dice)
+- [x] Generate anchor term signatures (20 anchors)
+- [x] Generate chunking recommendations (5 clusters)
+- [x] Run initial extraction on nimmerverse vault
+- [x] Export glossary to CSV/JSON (5,243 terms)
+- [x] Export co-occurrence analysis (18,169 pairs)
+
+**Files Created**: 7 new files
+- `nyx_probing/extractors/__init__.py`
+- `nyx_probing/extractors/vocab_extractor.py` (~350 LOC)
+- `nyx_probing/extractors/cooccurrence.py` (~400 LOC)
+- `data/nimmerverse_glossary.csv`
+- `data/nimmerverse_glossary.json`
+- `data/cooccurrence_analysis.csv`
+- `data/cooccurrence_analysis.json`
+
+**Key Metrics Extracted**:
+| Metric | Value |
+|--------|-------|
+| Documents scanned | 263 |
+| Total tokens | 130,229 |
+| Unique terms (filtered) | 5,243 |
+| Co-occurrence pairs | 18,169 |
+| Anchor signatures | 20 |
+| Chunking clusters | 5 |
+
+**Top Terms by TF-IDF**:
+1. nyx (1149.70)
+2. local (980.53)
+3. eachpath (902.31)
+4. tool (873.34)
+5. young (799.95)
+
+**Anchor Signature Examples** (for DriftProbe-lite):
+- `nyx`: chroma|chromadb|continuity|ingress|introspection
+- `system`: athena|freeipa|ipa|rocky|sssd
+- `network`: firewall|proxmox|saturn|vlan|vulkan
+
+**RAG Policy Integration**:
+- Tier 2: Synonym detection (Dice=1.0: yubi↔yubikey)
+- Tier 3: Anchor signatures for topology safety
+- Tier 4: Co-occurrence for chunking strategy
+- Tier 5: TF-IDF for utility filtering
+
+**Status**: 🟢 Corpus extraction complete, ready for RAG policy development
+
+---
+
 ## Future Phases (Not Started)
 
 ### Phase 2: ChromaDB Integration (iris) ⏸️ PLANNED
@@ -92,34 +148,44 @@
 
 ## Metrics
 
-**Phase 1 (A+B) Tasks**: 11 total
-**Completed**: 11 (100%) ✅
+**Phase 1 Tasks**: 19 total
+**Completed**: 19 (100%) ✅
 **In Progress**: 0
-**Remaining**: 0
+**Phases Complete**: A, B, D (C ready to execute)
 
-**Files Created**: 12 total
+**Files Created**: 19 total
 - nyx-substrate: 9 files
-- nyx-probing: 3 files
+- nyx-probing runners: 3 files
+- nyx-probing extractors: 3 files
+- Data outputs: 4 files
 
-**Files Modified**: 4 total
+**Files Modified**: 5 total
 - nyx-substrate/README.md
 - nyx-probing/pyproject.toml
 - nyx-probing/cli/probe.py
+- nyx-probing/extractors/__init__.py
 - TOOLCHAIN-PROGRESS.md
 
-**Lines of Code**: ~1250 total
+**Lines of Code**: ~2000 total
 - nyx-substrate: ~800 LOC
-- nyx-probing: ~450 LOC
+- nyx-probing runners: ~450 LOC
+- nyx-probing extractors: ~750 LOC
 
-**CLI Commands**: 4 new commands
+**CLI Commands**: 4 variance commands
 - nyx-probe variance collect
 - nyx-probe variance batch
 - nyx-probe variance stats
 - nyx-probe variance analyze
 
+**Data Artifacts**:
+- nimmerverse_glossary.csv (5,243 terms)
+- nimmerverse_glossary.json (130,229 tokens)
+- cooccurrence_analysis.csv (18,169 pairs)
+- cooccurrence_analysis.json (20 anchor signatures)
+
 ---
 
-**Last Updated**: 2025-12-07 17:00 CET
-**Status**: 🎉 Phase 1 (A+B) COMPLETE! Ready for baseline collection on prometheus.
+**Last Updated**: 2025-12-13 (Phase 1D complete)
+**Status**: 🎉 Phase 1 (A+B+D) COMPLETE! Corpus extraction ready. Variance collection on prometheus pending.
 
-🌙💜 *The substrate holds. Progress persists. The toolchain grows.*
+🌙💜 *The substrate holds. The glossary grows. Anchor signatures protect the topology.*

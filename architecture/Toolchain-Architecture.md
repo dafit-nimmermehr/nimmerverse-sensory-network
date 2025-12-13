@@ -30,6 +30,9 @@ Build a modular, composable toolchain for the Nimmerverse research and training 
 - CLI interface (7 commands)
 - NyxModel wrapper (Qwen2.5-7B loading, hidden state capture)
 - ProbeResult dataclasses (to_dict() serialization)
+- **Extractors module** (NEW 2025-12-13):
+  - VocabExtractor: TF-IDF vocabulary extraction from markdown corpus
+  - CoOccurrenceAnalyzer: PMI, Jaccard, Dice, anchor signatures
 - **Gap**: No database persistence, only local JSON files
 
 **nyx-substrate** (`/home/dafit/nimmerverse/nyx-substrate/`):
@@ -398,6 +401,106 @@ Godot Command Center displays live DriftProbe charts
    - Most common echo_types
    - Chain length variance
 7. ✅ All 6 depth-3 champions have baseline variance data in phoebe
+
+---
+
+## 📚 Phase 1D: Corpus Extraction Pipeline (NEW)
+
+### Goal
+Extract vocabulary and co-occurrence metrics from nimmerverse vault for RAG policy development.
+
+**Integration Point**: Feeds into [RAG-as-Scaffold.md](/home/dafit/nimmerverse/nimmerverse-sensory-network/operations/RAG-as-Scaffold.md) progressive policy validation.
+
+### Deliverables
+
+#### 1. VocabExtractor (`nyx_probing/extractors/vocab_extractor.py`)
+
+**Purpose**: Extract TF-IDF vocabulary glossary from markdown corpus
+
+**Features**:
+- Scans all .md files (skips venv, hidden dirs)
+- Strips YAML frontmatter, code blocks, markdown syntax
+- Tokenizes with compound term support (hyphenated, CamelCase)
+- Calculates TF, DF, TF-IDF per term
+- Exports to CSV and JSON
+
+**Output** (`data/nimmerverse_glossary.json`):
+```json
+{
+  "metadata": {
+    "total_docs": 263,
+    "total_tokens": 130229,
+    "unique_terms": 5243
+  },
+  "terms": [
+    {"term": "nyx", "tf": 1073, "df": 137, "tfidf": 1149.70, ...},
+    ...
+  ]
+}
+```
+
+**Usage**:
+```bash
+python3 nyx_probing/extractors/vocab_extractor.py /path/to/vault output.csv
+```
+
+#### 2. CoOccurrenceAnalyzer (`nyx_probing/extractors/cooccurrence.py`)
+
+**Purpose**: Analyze term co-occurrence for chunking and topology safety
+
+**Features**:
+- Computes PMI (Pointwise Mutual Information)
+- Computes Jaccard similarity and Dice coefficient
+- Generates anchor term signatures (for DriftProbe-lite)
+- Produces chunking recommendations based on cohesion
+
+**Key Metrics**:
+| Metric | Formula | Use Case |
+|--------|---------|----------|
+| PMI | log2(P(a,b) / P(a)*P(b)) | Semantic association strength |
+| Jaccard | \|A∩B\| / \|A∪B\| | Term overlap similarity |
+| Dice | 2\|A∩B\| / (\|A\|+\|B\|) | Chunking cohesion |
+
+**Anchor Signatures** (for Policy Tier 3: Topology Safety):
+```
+nyx: chroma|chromadb|continuity|ingress|introspection
+system: athena|freeipa|ipa|rocky|sssd
+network: firewall|proxmox|saturn|vlan|vulkan
+```
+
+**Output** (`data/cooccurrence_analysis.json`):
+- 18,169 co-occurrence pairs
+- 20 anchor signatures
+- 5 chunking recommendations
+
+**Usage**:
+```bash
+python3 nyx_probing/extractors/cooccurrence.py /path/to/vault glossary.json output.json
+```
+
+### RAG Policy Integration
+
+These tools directly feed into RAG-as-Scaffold progressive policies:
+
+| Policy Tier | Tool | Validation |
+|-------------|------|------------|
+| **Tier 2: Semantic Quality** | CoOccurrenceAnalyzer | Dice=1.0 terms are synonyms (de-duplicate) |
+| **Tier 3: Topology Safety** | Anchor Signatures | New terms shouldn't change anchor neighbors |
+| **Tier 4: Cross-Reference** | CoOccurrenceAnalyzer | High PMI pairs should chunk together |
+| **Tier 5: Utility** | VocabExtractor TF-IDF | Low TF-IDF terms have low utility |
+
+### Files Created
+
+**nyx-probing/nyx_probing/extractors/**:
+- `__init__.py` - Module exports
+- `vocab_extractor.py` - VocabExtractor class (~350 LOC)
+- `cooccurrence.py` - CoOccurrenceAnalyzer class (~400 LOC)
+
+**nyx-probing/data/**:
+- `nimmerverse_glossary.csv` - 5,243 terms with TF-IDF
+- `nimmerverse_glossary.json` - Same with metadata
+- `cooccurrence_analysis.csv` - 18,169 pairs
+- `cooccurrence_analysis.json` - Full analysis with signatures
 
 ---
 
