@@ -59,6 +59,10 @@ nimmerverse-sensory-network/
 - **Philosophy Valley** (German, Gini ~0.5): Self-awareness, ontology, depth
 - **Technical Cluster** (English, Gini ~0.8): Hardware interface, actions, efficiency
 
+### Color-Pattern Theory
+
+**Color/Form as Protocol:** Leverages color and patterns as a fast, universal, and evolutionarily-optimized communication protocol for broadcasting state (e.g., danger, success, seeking), inspired by 540 million years of biology. This is orders of magnitude faster than language.
+
 ### Philosophy
 
 - **Constraints create intelligence** - Economic pressure forces optimization

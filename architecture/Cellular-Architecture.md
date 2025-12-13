@@ -56,6 +56,7 @@ class DistanceSensorCell(StateMachine):
         "confidence": float,       # Signal quality (0-1)
         "state": str,              # Current state name
         "last_updated": timestamp, # Freshness
+        "visual_state": tuple,     # (R, G, B, Form) for broadcasting
     }
 
     # Lifeforce costs
@@ -152,6 +153,47 @@ class SpeechSTTCell(StateMachine):
 | `speech_stt` | Whisper on atlas | LISTENING→TRANSCRIBING→REPORTING | `transcript`, `language` |
 | `speech_tts` | Coqui on atlas | IDLE→SYNTHESIZING→SPEAKING | `audio_playing`, `complete` |
 | `vision_detect` | YOLO on atlas | IDLE→CAPTURING→DETECTING→REPORTING | `objects[]`, `bounding_boxes[]` |
+
+---
+
+## 📢 Layer 1.5: State Broadcasting via Color-Pattern Protocol
+
+To enable rapid, ecosystem-wide communication, the internal states of cells and nerves are broadcast externally using the **Color-Pattern Protocol**. This leverages 540 million years of evolutionary optimization, providing a communication channel that is orders of magnitude faster than language.
+
+**Full theory:** → `../references/concepts/color-pattern-theory.md`
+
+### How It Works
+
+An organism's internal state is mapped to a visual signal, typically displayed on an LED grid or other visual output. This allows other entities in the ecosystem (other organisms, the Gods Eye, dafit) to understand its state at a glance.
+
+```
+INTERNAL STATE         →       EXTERNAL SIGNAL
+────────────────────────────────────────────────────
+MotorCell.state=STALLED → BROADCAST: (Red, Solid)
+BatteryCell.state=LOW   → BROADCAST: (Red, Pulse, Slow)
+Nerve.state=EVADE       → BROADCAST: (Yellow, Pulse, Fast)
+Nerve.state=SUCCESS     → BROADCAST: (Green, Glow)
+```
+
+### Starter Vocabulary
+
+This is not a fixed dictionary but an emergent language. We seed it with biologically-inspired primitives:
+
+| State / Intent | Color | Form | Meaning |
+|----------------|-------|------------|-----------------------------------|
+| **ERROR / DANGER** | Red | Solid | A critical, persistent error (e.g., motor stalled) |
+| **CRITICAL ALERT** | Red | Pulse | Urgent, ongoing issue (e.g., low battery) |
+| **SUCCESS / OK** | Green | Solid/Glow | Task complete, state is nominal |
+| **SEEKING / ACTIVE** | Yellow | Sweep/Pulse| Actively processing, searching, or moving |
+| **IDLE / OBSERVING** | Blue | Dim/Solid | Quiescent state, observing environment |
+| **COMMUNICATING**| Cyan/White | Flicker | Transmitting or receiving data/dialogue |
+
+### The Speed Advantage
+
+- **Language Path:** Sound → Parse → Syntax → Semantics → Understanding (~500-2000ms)
+- **Color/Form Path:** Light → Retina → V1 → Pattern Match → Recognition (~50-150ms)
+
+By using this ancient protocol for high-frequency state updates, we reserve expensive linguistic processing for high-level reasoning, saving Lifeforce and enabling faster ecosystem-wide coordination.
 
 ---
 

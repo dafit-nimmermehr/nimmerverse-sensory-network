@@ -299,6 +299,7 @@ BIOLOGY / NEUROSCIENCE:
 ├── Neural architecture (what she mimics)
 ├── Homeostasis (lifeforce balance)
 ├── Sensory systems (how organisms sense)
+├── EVOLUTIONARY SIGNALING (Color-Pattern protocol, ancient communication, semiotics)
 └── Synaptic pruning (her growth model)
 ```
 

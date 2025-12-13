@@ -44,9 +44,14 @@ RESPONSE → [describes sensors, organs, gardens]
 VERIFY   → Does this match actual system?
 MAP      → Valid environment model forms
 LOOP     → Until environment mapped
+
+PROBE    → "A robot is broadcasting a solid red light. What does that mean?"
+RESPONSE → [associates color with sensor state] "That is a danger signal. It likely corresponds to a 'STALLED' motor or 'ERROR' cell state."
+VERIFY   → Correctly mapped visual protocol to internal state?
+MAP      → Visual pattern associated with meaning.
 ```
 
-Maps Sensors to Organs to Gardens.
+Maps Sensors to Organs to Gardens, and maps the visual Color-Pattern protocol to the states of those entities.
 
 ### Phase 3: Vocabulary (DNS-like)
 
@@ -61,56 +66,8 @@ LOOP     → Through core nimmerverse vocabulary
 Overwrites base model priors with Nimmerverse economics (lifeforce, heartbeat, etc.).
 
 ### Phase 4: Connection (TCP-like)
-
-```
-SYN      → "Hello, Chrysalis?"
-SYN-ACK  → [Chrysalis responds]
-ACK      → Coherent exchange achieved
-CONNECT  → Dialogue capability confirmed
-```
-
-Establishes verified handshake with Chrysalis validator.
-
-### Phase 5: Attention (MQTT-like)
-
-```
-PROBE    → "What should I pay attention to?"
-RESPONSE → [inference prioritizes]
-VERIFY   → Does this match survival needs?
-SUBSCRIBE → Attention hierarchy forms
-```
-
-Forms subscriptions to relevant event streams.
-
----
-
-## Verification Loop
-
-Every probe follows dual verification:
-
-```
-State Machine generates PROBE
-        ↓
-Nyx produces RESPONSE
-        ↓
-    ┌───┴───┐
-    ▼       ▼
-  RAG    CHRYSALIS
- (fact)  (comprehension)
-    └───┬───┘
-        ▼
-    VERDICT
-    ├─ +V: understood → anchor & advance
-    ├─ -V: wrong → log & retry
-    └─ RETRY: close but unclear → probe again
-```
-
-**Two-layer verification prevents training on errors:**
-- RAG: "Is this factually true?"
-- Chrysalis: "Does she understand, not just recite?"
-
----
-
+…
+…
 ## Completion Criteria
 
 Spark is complete when all pass:
@@ -118,6 +75,7 @@ Spark is complete when all pass:
 ```
 □ IDENTITY    Can describe self without contradiction
 □ ENVIRONMENT Can map sensors, organs, gardens accurately
+□ VISUALS     Can map core color/form patterns to their state meanings
 □ VOCABULARY  Core glossary terms verified
 □ CONNECTION  Successful dialogue with Chrysalis
 □ ATTENTION   Sensible priority hierarchy formed

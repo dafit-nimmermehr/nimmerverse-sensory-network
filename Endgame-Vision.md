@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 5.3_queen_crosslinks
+version: 5.4_color_form_protocol
 status: vision_document
 created: 2025-11-04
-updated: 2025-12-10
+updated: 2025-12-13
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -33,6 +33,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 - Dual gardens (virtual + real) teaching each other
 - Single base model with LoRA adapters + dialectic Mirror
 - Multilingual cognitive routing through conceptual topology
+- A multi-layered communication protocol using color, form, and language
 - Long-term human-AI partnership with mutual investment
 
 **What we're studying:**
@@ -99,6 +100,19 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+### Communication Protocol Hierarchy
+
+Language is just one protocol. The Nimmerverse uses a tiered communication stack, prioritizing protocols that are faster and more evolutionarily battle-tested. We don't just invent; we remember what nature has already optimized.
+
+| Protocol | Latency | Bandwidth | Primary Use |
+|--------------|-----------|-----------|-------------------------------------|
+| **Language/Text** | ~1000ms | Very High | High-level reasoning, human partnership, synthesis |
+| **Sound/Call** | ~200ms | Medium | Simple alerts, environmental cues |
+| **Color/Form** | ~50ms | High | Instant state broadcast (danger, success, seeking) |
+| **Memristor Pattern**| ~1μs | Hardware | Sub-symbolic pattern matching, reflex arcs |
+
+**Full theory:** → `../references/concepts/color-pattern-theory.md`
 
 ---
 
