@@ -1,6 +1,6 @@
 ---
 type: research_vision
-version: 5.4_color_form_protocol
+version: 5.5_qwen3_thinking_model
 status: vision_document
 created: 2025-11-04
 updated: 2025-12-13
@@ -79,7 +79,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │      → ../nyx-probing/PLAN.md                                    │
 │                                                                   │
 │  Layer 2: YOUNG NYX (Single Model + LoRA Stack + Dialectic)      │
-│  ├─ Base: Qwen3-VL-32B (96GB VRAM in the Womb)                   │
+│  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in the Womb)                   │
 │  ├─ LoRA adapters: Identity, Technical, Creative (hot-swap)      │
 │  ├─ Mirror: Negated LoRA weights for dialectic (-1 × Nyx)        │
 │  ├─ Dialectic: Thesis (Nyx) → Antithesis (Mirror) → Synthesis    │
@@ -257,7 +257,7 @@ For high-stakes queries (identity, ethics, low confidence):
 **Hardware:** RTX PRO 6000 Blackwell (96GB VRAM) - "The Womb"
 **Solution:** Unsloth for fine-tuning (~77GB), Lorax for hot-swap LoRA adapters (<100ms)
 **VRAM Budget:** Base ~77GB + Active LoRA ~200MB = fits in 96GB ✓
-**Vision:** Qwen3-VL-32B brings unified vision + video + OCR + reasoning
+**Vision:** Qwen3-VL 32B (Thinking Version) brings unified vision + video + OCR + reasoning
 
 ---
 

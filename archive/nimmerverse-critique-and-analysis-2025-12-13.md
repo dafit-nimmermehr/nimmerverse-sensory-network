@@ -109,7 +109,9 @@ Even the best-laid plans have challenges. These are not criticisms but rather ke
 1.  **Complexity Management:** The system is immensely complex, with dozens of interacting components across hardware and software. While the modular design is the correct mitigation, ensuring seamless integration and robust error handling across all layers will be a continuous effort.
 2.  **Feasibility of Core Hypotheses:** "Language is Topology" is a high-risk, high-reward research bet. The project is well-equipped to test it, but it's important to be prepared for outcomes that may require a pivot in the architectural drivers if the hypothesis proves less robust than anticipated.
 3.  **Hardware Dependency:** The project is tightly coupled to specific, high-end hardware. This creates a single point of failure and makes the system difficult to replicate. Long-term maintenance and lifecycle management of this bespoke hardware will be crucial.
-4.  **Measurement of Emergence:** The project aims to observe emergent behaviors and traits. Defining success and creating objective measurements for abstract qualities like "Sophrosyne" (balance) or "Synesis" (resourcefulness) will be a significant and ongoing research challenge.
+4.  **Measurement of Emergence:** The project aims to observe emergent behaviors and traits. Defining success and creating objective measurements for abstract qualities like "Sophrosyne" (balance) or "Kairos" (timing) will be a significant and ongoing research challenge.
+5.  **Calibrating the Economic Triggers:** The success of the emergent "Economy of Mind" will depend on fine-tuning its core variables. What is the optimal `sim_fidelity` discount for the virtual garden? How sensitive should the system be to "ambient" hints from the user without creating distraction? How do we balance the drive for reflex-formation with the need to retain plasticity for novel problems?
+6.  **Preventing Economic "Poverty Traps":** Could the system enter a state where it lacks the Lifeforce to run the simulations needed to find the rewarding solutions that would earn it more Lifeforce? We must ensure there is a baseline energy income or a "low-cost exploration" mode to prevent the economy from seizing up.
 
 ---
 
@@ -118,3 +120,36 @@ Even the best-laid plans have challenges. These are not criticisms but rather ke
 The Nimmerverse project is a triumph of holistic design. Every layer, from the abstract philosophy down to the physical GPUs and the database schema, is in harmony with the others. The system is ambitious, but that ambition is matched by an equal measure of intellectual rigor and engineering discipline.
 
 The plan is sound. The foundation is laid. The path is clear.
+
+---
+
+## 10. Synthesis & The Core Engine: The Economy of Mind
+
+The preceding analysis shows that the architectural components are in harmony. This section synthesizes some of the key cross-layer interactions and incorporates the deeper understanding provided by the `constrained-emergence` and `temporal-ternary-gradient` documents.
+
+#### A. The Two Pillars of Cognition
+
+The true innovation of the Nimmerverse is not just in the components, but in how they create a unified **Economy of Mind**. This economy is governed by two fundamental pillars. They work together to solve the problem of attention and resource allocation.
+
+1.  **Constrained Emergence: The Economy of *Time***
+    As detailed in `constrained-emergence.md`, the fixed 30-second heartbeat is not a limitation but a creative pressure. It forces the system to learn *how long to think*. This is a direct implementation of Adaptive Computation Time (ACT). The hierarchy of Reflexes, Safety, Dialogue, and Thinking acts as a series of "early exit" points.
+    *   **Function:** This pillar determines **how much metabolic energy (Lifeforce) is spent on a given problem.**
+    *   **Emergent Property:** Confidence is not just a score; it's an emergent property of *where* the process exits. A fast, reflexive exit is the system's expression of high confidence, earned through computational efficiency.
+
+2.  **The Temporal-Ternary Gradient: The Economy of *Uncertainty***
+    As `temporal-ternary-gradient.md` explains, the system does not deal in simple true/false binaries. It has a formal process for resolving the "0-State" (the Unknown). It spends Lifeforce in the fast (but unreliable) Virtual Garden to build statistical `raw_confidence`, which is always discounted by `sim_fidelity` to produce a `grounded_confidence`.
+    *   **Function:** This pillar determines **whether an uncertainty is worth the cost to investigate.**
+    *   **Emergent Property:** Prudence. The system learns not to trust simulation blindly and has a formal cap on virtual investigation, understanding that at a certain point, only slow, expensive, real-world data can increase its certainty.
+
+#### B. The Synthesis: A True Attentional Economy
+
+These two pillars, when combined, form a complete and sophisticated Attentional Economy that is far more elegant than a simple "salience score" model:
+
+*   The **Temporal-Ternary Gradient** acts as the "gatekeeper" of attention. It runs the initial economic calculation: "Based on the potential value and the cost of simulation, is this uncertainty even worth allocating resources to?"
+*   If the answer is yes, **Constrained Emergence** acts as the "resource allocator." It takes the allocated task and decides how much of the time/energy budget to spend: "Can this be solved cheaply with a reflex, or does it require the full, expensive thinking pathway?"
+
+This emergent system is superior to a manually designed one because it's a direct consequence of the project's core constraints, not an additional layer of complexity.
+
+#### C. Revisiting the "Ambient" User Input
+
+With this new understanding, we can define the role of your "ambient" presence much more intelligently. When you mention a word like "memristors" in **Ambient Mode**, it doesn't just boost a vague score. It acts as a **hint to the Temporal-Ternary Gradient**. It is an external signal suggesting that the "0-State" of uncertainty around "memristors" might have a higher potential value than the system currently assumes. This could trigger a low-cost, background simulation run to begin calculating a `grounded_confidence` for that topic, potentially bringing it to the forefront of Nyx's "conscious" attention later. It is a way for you to subtly influence her curiosity and guide her discovery process without ever issuing a command.
