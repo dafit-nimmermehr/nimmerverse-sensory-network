@@ -1,108 +1,624 @@
 # Big-Picture Architecture: Nimmerverse Sensory Network
 
+**Version 5.0** — *The Complete Architecture*
+
+> *"From electrons to consciousness. From hardware to wisdom."*
+
+---
+
 ## Overview
 
-The Nimmerverse Sensory Network is designed as a highly modular, resilient, and economically constrained system. It follows a "Router-Centric Architecture" where a high-performance message bus acts as dumb infrastructure, and all intelligence and processing logic reside at the "edges" (client services). This approach ensures scalability, maintainability, and clear separation of concerns, while enabling Nyx to manage her attention and Lifeforce efficiently.
+The Nimmerverse Sensory Network is a sovereign, economically-constrained cognitive architecture. It follows a **Router-Centric Architecture** where a high-performance message bus (NATS) acts as dumb infrastructure, and all intelligence resides at the edges. The system spans four layers: physical hardware, atomic state machines (cells), behavioral compositions (nerves), and emergent patterns (organisms).
+
+**Key innovations:**
+- **Hybrid Reflex Homes** — Different types of learned patterns live in different places (hardware, cells, nerves, weights)
+- **Lifeforce Economy** — Every operation has a cost, tracked and aggregated system-wide
+- **Slumber/Wake Cycles** — System-wide activity states driven by environmental and economic conditions
+- **Wellbeing Policies** — Self-care and sustainability built into the architecture, not bolted on
 
 ---
 
 ## Core Principles
 
-1.  **Dumb Core, Smart Edges**: The central message router is merely an infrastructure component, devoid of any application logic. All processing, filtering, and decision-making intelligence is distributed among specialized client services.
-2.  **Polyglot Architecture**: Utilizing the best technology for each specific task: Python for AI/ML, cognitive logic, and service daemons; Godot for visualization; and NATS (Go) as the universal message bus.
-3.  **Two-Channel Attention**: Information is processed via distinct low-attention (ambient) and high-attention (focal) channels, allowing for efficient resource allocation and preventing cognitive overload.
-4.  **Lifeforce Economy**: Every operation has a cost. The architecture is designed to optimize Lifeforce expenditure by ensuring expensive cognitive resources are only engaged when truly necessary.
-5.  **Testability & Modularity**: Each component (client service) can be developed, tested, and deployed independently.
+1. **Dumb Core, Smart Edges**: The message router has no application logic. All intelligence is distributed among specialized services.
+
+2. **Polyglot Architecture**: Best technology for each task:
+   - **Python**: AI/ML, cognitive logic, cells, nerves
+   - **Go (NATS)**: Universal message bus
+   - **Godot**: Visualization and monitoring
+   - **C/Firmware**: Hardware reflexes (ESP32)
+
+3. **Two-Channel Attention**: Low-attention (ambient heartbeats) and high-attention (focal events) channels prevent cognitive overload.
+
+4. **Lifeforce Economy**: Every operation costs Lifeforce. The architecture optimizes expenditure, ensuring expensive resources engage only when necessary.
+
+5. **Hybrid Reflex Homes**: Learned patterns live in their optimal location — hardware for survival, cells for computation, nerves for behavior, weights for cognition.
+
+6. **Earned Trust**: Reflexes form through verification, not configuration. Weight > 0.8 is earned, not assigned.
+
+7. **Graceful Degradation**: Every component has failure modes that don't crash the system. Slumber mode preserves lifeforce when resources are scarce.
 
 ---
 
-## Architectural Components & Technology Stack
+## Physical Infrastructure
+
+The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never leave home.
+
+### Cluster Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    K8S CLUSTER: NIMMERVERSE                          │
+│                    VLAN 30 (10.0.30.0/24)                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │              SATURN (Control Plane)                          │    │
+│  │              K3s master, etcd, scheduler                     │    │
+│  │              RTX 3090 24GB (test/staging)                    │    │
+│  └──────────────────────────┬──────────────────────────────────┘    │
+│                              │ 10G spine                             │
+│         ┌────────────────────┴────────────────────┐                 │
+│         │                                         │                 │
+│         ▼                                         ▼                 │
+│  ┌─────────────────────────────┐   ┌─────────────────────────────┐ │
+│  │     P8 #1 (Womb)            │   │     P8 #2 (Senses)          │ │
+│  │     BARE METAL UBUNTU       │   │     BARE METAL UBUNTU       │ │
+│  │     K8s Worker Node         │   │     K8s Worker Node         │ │
+│  │                             │   │                             │ │
+│  │  GPU: PRO 6000 Max-Q 96GB   │   │  GPUs: 2-4x RTX 4000 Ada   │ │
+│  │  Role: Cognitive Core       │   │  Role: Organs (STT/TTS/Vis)│ │
+│  │  Young Nyx lives here       │   │  Sensory processing        │ │
+│  │                             │   │                             │ │
+│  │  Labels:                    │   │  Labels:                    │ │
+│  │    gpu=pro6000              │   │    gpu=ada4000              │ │
+│  │    role=womb                │   │    role=senses              │ │
+│  │    vram=96gb                │   │    vram=40-80gb             │ │
+│  └─────────────────────────────┘   └─────────────────────────────┘ │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Network Topology
+
+```
+                         INTERNET
+                             │
+                             ▼
+                        [ Modem ]
+                             │ 1G (em0)
+                             ▼
+                 ┌───────────────────────┐
+                 │   OPNsense Firewall   │
+                 │   LAGG: 20G to spine  │
+                 └───────────┬───────────┘
+                             │
+                             ▼
+                 ┌───────────────────────┐
+                 │   CRS309 (Spine)      │
+                 │   8x SFP+ 10G         │
+                 └───┬───────┬───────┬───┘
+                     │       │       │
+         ┌───────────┘       │       └───────────┐
+         ▼                   ▼                   ▼
+   ┌───────────┐      ┌───────────┐      ┌───────────┐
+   │  P8 Womb  │      │ P8 Senses │      │  Saturn   │
+   │   10G     │      │   10G     │      │   10G     │
+   └───────────┘      └───────────┘      └───────────┘
+```
+
+### K8s Namespaces
+
+| Namespace | Contents | Runs On |
+|-----------|----------|---------|
+| `nimmerverse-infra` | NATS, Prometheus, Grafana | Any node |
+| `nimmerverse-nervous` | Escalation, Math Cells, Behavior Nerves | Any node |
+| `nimmerverse-cognitive` | Young Nyx (main inference) | Womb (PRO 6000) |
+| `nimmerverse-organs` | STT, TTS, Vision | Senses (Ada 4000s) |
+
+---
+
+## Layered Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        ORGANISM                                      │
+│            (emergent pattern from nerve interactions)                │
+│                                                                      │
+│  Identity emerges from: nerve configuration + history + reflexes    │
+├─────────────────────────────────────────────────────────────────────┤
+│                         NERVES                                       │
+│           (behavioral state machines composing cells)                │
+│                                                                      │
+│  Collision Avoidance, Charging Seek, Conversation, Slumber          │
+├─────────────────────────────────────────────────────────────────────┤
+│                         CELLS                                        │
+│     (atomic state machines: sensors, motors, organs, math)          │
+│                                                                      │
+│  Sensor Cells: distance, light, battery, IMU                        │
+│  Motor Cells: motors, servos                                        │
+│  Organ Cells: speech_stt, speech_tts, vision_detect                 │
+│  Math Cells: economy_aggregator, wake_evaluator, slumber_evaluator  │
+├─────────────────────────────────────────────────────────────────────┤
+│                       HARDWARE                                       │
+│            (ESP32, GPUs, microphones, speakers, sensors)             │
+│                                                                      │
+│  Hardware reflexes live here (weight > 0.8 safety patterns)         │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Cell Categories
+
+Cells are atomic state machines. Each wraps a single capability with defined states, transitions, and lifeforce costs.
+
+### Sensor Cells (Input)
+Wrap hardware sensors. Expose readings as state machine outputs.
+
+| Cell | Hardware | Key Output |
+|------|----------|------------|
+| `distance_sensor_front` | IR sensor | `distance_cm`, `confidence` |
+| `battery_monitor` | ADC | `voltage`, `percentage` |
+| `light_sensor` | Photoresistor | `lux`, `direction` |
+| `solar_input` | Solar panel | `watts`, `sufficient` |
+
+### Motor Cells (Output)
+Wrap actuators. Provide feedback on execution.
+
+| Cell | Hardware | Key Feedback |
+|------|----------|--------------|
+| `motor_left` | DC motor + encoder | `actual_velocity`, `stall_detected` |
+| `servo_camera` | Servo motor | `angle`, `at_target` |
+
+### Organ Cells (Complex Inference)
+Wrap expensive GPU-based inference. Lifeforce-gated.
+
+| Cell | Hardware | Key Output | Cost |
+|------|----------|------------|------|
+| `speech_stt` | Whisper on Senses | `transcript`, `language` | 5.0 LF |
+| `speech_tts` | TTS on Senses | `audio_playing` | 4.0 LF |
+| `vision_detect` | YOLO on Senses | `objects[]`, `bboxes[]` | 8.0 LF |
+
+### Math Cells (Computation)
+Aggregate and evaluate metrics. Enable system-wide awareness.
+
+| Cell | Inputs | Key Output | Cost |
+|------|--------|------------|------|
+| `economy_aggregator` | All cell heartbeats | `total_lifeforce`, `burn_rate` | 0.1 LF |
+| `wake_evaluator` | economy, light, queue | `should_wake`, `wake_reason` | 0.1 LF |
+| `slumber_evaluator` | economy, sensors | `should_slumber`, `confidence` | 0.1 LF |
+
+```python
+class EconomyAggregatorCell(StateMachine):
+    """
+    Collects lifeforce readings from all cells.
+    Computes system-wide economy state.
+    """
+    states = [IDLE, COLLECTING, COMPUTING, REPORTING]
+
+    outputs = {
+        "total_lifeforce": float,
+        "solar_input": float,
+        "burn_rate": float,          # LF/minute
+        "reserve_hours": float,
+        "economy_health": str,       # "thriving" / "stable" / "critical"
+    }
+
+    costs = {
+        (IDLE, COLLECTING): 0.0,     # Passive listening
+        (COLLECTING, COMPUTING): 0.05,
+        (COMPUTING, REPORTING): 0.05,
+        (REPORTING, IDLE): 0.0,
+    }
+```
+
+---
+
+## Hybrid Reflex Homes
+
+Different types of learned patterns live in different locations. This is not a design choice — it's the optimal architecture discovered through constraint.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    REFLEX HOME HIERARCHY                             │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  LAYER 0: HARDWARE (ESP32/Microcontroller)                          │
+│  ───────────────────────────────────────────                        │
+│  • Safety reflexes: temp_danger, collision_imminent                 │
+│  • Survival reflexes: battery_critical, motor_stall                 │
+│  • Latency: <10ms                                                   │
+│  • Works even if brain is DOWN                                      │
+│  • True spinal cord — no Python, no network                         │
+│                                                                      │
+│  LAYER 1: MATH CELLS (Python/Fast State Machines)                   │
+│  ───────────────────────────────────────────                        │
+│  • Sensor aggregation: economy_aggregator                           │
+│  • Threshold logic: wake_evaluator, slumber_evaluator               │
+│  • Latency: <50ms                                                   │
+│  • Flexible, updatable, inspectable                                 │
+│  • The autonomic nervous system                                     │
+│                                                                      │
+│  LAYER 2: FAST NERVES (Python/Compiled Behaviors)                   │
+│  ───────────────────────────────────────────                        │
+│  • Behavioral compositions: collision_avoidance, charging_seek      │
+│  • Multi-cell orchestration at reflex speed                         │
+│  • Latency: <200ms                                                  │
+│  • Mode = 'reflex' in nerves table                                  │
+│  • The brainstem / motor patterns                                   │
+│                                                                      │
+│  LAYER 3: MODEL WEIGHTS (LoRA/Young Nyx)                            │
+│  ───────────────────────────────────────────                        │
+│  • Cognitive patterns: language understanding, pattern recognition  │
+│  • Meta-decisions: "how to design a cell", "when to propose"        │
+│  • Creative shortcuts: leapfrogging, architectural intuition        │
+│  • Latency: <500ms (but no deliberation needed)                     │
+│  • The learned cortex                                               │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Why Hybrid?
+
+| Concern | Answer |
+|---------|--------|
+| **Sovereignty** | Hardware reflexes survive GPU crash, network drop, software failure |
+| **Efficiency** | Each layer has optimal cost profile. Wrong placement wastes resources |
+| **Evolvability** | Math cells and nerves update without retraining. Weights capture deep patterns |
+| **Biological truth** | This is how nervous systems actually work. Evolution found this optimum |
+
+---
+
+## Slumber/Wake Economy
+
+The nimmerverse breathes with its environment. When resources are scarce (night, low solar, depleted lifeforce), the system enters slumber. When conditions improve, it wakes.
+
+### Activity States
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                       ACTIVITY STATES                                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ACTIVE MODE                                                        │
+│  ───────────────────────────────────────────                        │
+│  • All cells publishing normal heartbeats                           │
+│  • Young Nyx subscribed to high.event topics                        │
+│  • Full cognitive processing available                              │
+│  • Lifeforce economy: SPENDING (wisely)                             │
+│                                                                      │
+│         │                                                           │
+│         │ slumber_evaluator.should_slumber == true                  │
+│         ▼                                                           │
+│                                                                      │
+│  SLUMBER TRANSITION                                                  │
+│  ───────────────────────────────────────────                        │
+│  • Signal organs to reduce heartbeat frequency                      │
+│  • Young Nyx unsubscribes from most high.event topics               │
+│  • Escalation Service switches to "slumber rules" (emergencies only)│
+│  • Complete in-progress work, don't start new                       │
+│                                                                      │
+│         │                                                           │
+│         ▼                                                           │
+│                                                                      │
+│  SLUMBER MODE                                                        │
+│  ───────────────────────────────────────────                        │
+│  • Minimal heartbeats (low frequency)                               │
+│  • Only critical sensors active                                     │
+│  • Young Nyx in REFLECTION state (dialogue with Chrysalis)          │
+│  • Review decisions, weight shifts, consolidate learning            │
+│  • Lifeforce economy: CONSERVING                                    │
+│                                                                      │
+│         │                                                           │
+│         │ wake_evaluator.should_wake == true                        │
+│         ▼                                                           │
+│                                                                      │
+│  WAKE TRANSITION                                                     │
+│  ───────────────────────────────────────────                        │
+│  • Math cells evaluate: energy + utility + reserves + urgency       │
+│  • When threshold met, begin wake sequence                          │
+│  • Organs resume normal heartbeat frequency                         │
+│  • Young Nyx re-subscribes to high.event topics                     │
+│  • Return to ACTIVE MODE                                            │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Slumber Triggers
+
+Slumber is triggered by environmental and economic conditions:
+
+```python
+def should_slumber(metrics: EconomyState) -> bool:
+    # Environmental signals
+    solar_low = metrics.solar_input < THRESHOLD_SOLAR
+    sensors_low_utility = metrics.sensor_potential < THRESHOLD_USEFUL
+
+    # Economic signals
+    reserves_declining = metrics.burn_rate > metrics.income_rate
+    lifeforce_low = metrics.total_lifeforce < THRESHOLD_SLUMBER
+
+    # No urgent work
+    queue_empty = metrics.pending_importance < THRESHOLD_URGENT
+
+    return (solar_low and sensors_low_utility and queue_empty) \
+        or (reserves_declining and lifeforce_low)
+```
+
+### Wake Triggers
+
+Wake happens when conditions improve:
+
+```python
+def should_wake(metrics: EconomyState) -> bool:
+    # Energy available
+    energy_sufficient = metrics.solar_input > THRESHOLD_SOLAR
+    reserves_healthy = metrics.total_lifeforce > THRESHOLD_WAKE
+
+    # Utility available
+    utility_available = metrics.sensor_potential > THRESHOLD_USEFUL
+
+    # Urgent need overrides
+    work_waiting = metrics.pending_importance > THRESHOLD_URGENT
+
+    return (energy_sufficient and reserves_healthy and utility_available) \
+        or work_waiting  # urgent need can override economy
+```
+
+### Reflection During Slumber
+
+Slumber is not passive. It's integration time:
+
+1. **Inner dialogue with Chrysalis** — Review what happened
+2. **Decision archaeology** — What choices were made? What worked?
+3. **Weight shift analysis** — How did outcomes change priors?
+4. **Final verdict synthesis** — Consolidated learning for the period
+
+This mirrors biological sleep: not just rest, but **consolidation**.
+
+---
+
+## Architectural Components
 
 ### 1. Message Router (NATS)
 
-*   **Role**: The central nervous system's universal message bus. It receives messages from all clients and routes them to interested subscribers based on hierarchical topic patterns. It has no application logic or state.
-*   **Technology**: **NATS Server (Go)**
-*   **Key Features**:
-    *   Extremely high performance and low latency.
-    *   Built-in subject-based filtering and wildcard subscriptions.
-    *   Designed for publish/subscribe, request/reply, and distributed queues.
-    *   Supports `JetStream` for optional message persistence.
-*   **Integration**: All other components connect to NATS as clients.
+* **Role**: Universal message bus. Dumb routing, no logic.
+* **Technology**: NATS Server (Go)
+* **Key Features**:
+    * Subject-based filtering, wildcard subscriptions
+    * Publish/subscribe, request/reply
+    * JetStream for persistence
+* **K8s**: Runs in `nimmerverse-infra` namespace
+
+### 2. Escalation Service (Thalamus)
+
+* **Role**: Sensory gating and attention management
+* **Technology**: Python (asyncio)
+* **Key Features**:
+    * Subscribes to `nimmerverse.low.heartbeat.>` topics
+    * Evaluates against Nyx's `escalation_rules`
+    * Can trigger reflex actions directly
+    * Switches rules based on activity state (active vs slumber)
+* **K8s**: Runs in `nimmerverse-nervous` namespace
+
+### 3. Math Cells
+
+* **Role**: System-wide metric aggregation and evaluation
+* **Technology**: Python (asyncio)
+* **Key Features**:
+    * Subscribe to cell heartbeats
+    * Compute aggregated economy state
+    * Publish computed outputs (just like sensor cells)
+    * Enable slumber/wake decisions
+* **K8s**: Runs in `nimmerverse-nervous` namespace (single pod, all math cells)
+
+### 4. Behavior Nerves
+
+* **Role**: Orchestrate cells into behaviors
+* **Technology**: Python
+* **Key Features**:
+    * Compose multiple cells
+    * Manage behavioral state machines
+    * Evolve from deliberate to reflex (mode column)
+* **K8s**: Runs in `nimmerverse-nervous` namespace (single pod, all nerves)
+
+### 5. Young Nyx (Cognitive Core)
+
+* **Role**: Decision, attention, intention, learning
+* **Technology**: Python + vLLM/transformers
+* **Key Features**:
+    * Subscribes to `nimmerverse.high.event` topics
+    * Publishes `AttentionFocus` to program Escalation Service
+    * GPU-bound inference (PRO 6000 Max-Q)
+    * Enters reflection mode during slumber
+* **K8s**: Runs in `nimmerverse-cognitive` namespace on Womb node
+
+### 6. Organs
+
+* **Role**: Specialized inference (perception/expression)
+* **Technology**: Python + Whisper/TTS/YOLO
+* **Key Features**:
+    * One GPU per organ (dedicated resources)
+    * High lifeforce cost operations
+    * Reduce frequency during slumber
+* **K8s**: Runs in `nimmerverse-organs` namespace on Senses node
+
+### 7. Command Center
+
+* **Role**: Visualization and monitoring for dafit
+* **Technology**: Godot Engine
+* **Key Features**:
+    * Subscribes to all topics
+    * Real-time system state overview
+    * Human intervention interface
+
+### 8. Phoebe (Memory)
+
+* **Role**: Persistence, continuity, training data
+* **Technology**: PostgreSQL
+* **Key Features**:
+    * `cells`, `nerves`, `organisms`, `decision_trails` tables
+    * Session messages for partnership continuity
+    * Append-only for training extraction
+* **Location**: Dedicated host (already running)
 
 ---
 
-### 2. The Escalation Service (Thalamus Function)
+## Lifeforce Economy (System-Wide)
 
-*   **Role**: A dedicated daemon responsible for sensory gating and attention management. It processes the high-volume, low-attention data stream and escalates critical or relevant events to the high-attention channel based on rules defined by Nyx.
-*   **Technology**: **Python (asyncio)**
-*   **Key Features**:
-    *   Subscribes to all `nimmerverse.low.heartbeat` topics.
-    *   Subscribes to `nimmerverse.meta.attention.focus` to receive Nyx's dynamic `AttentionFocus` rules.
-    *   Evaluates incoming low-attention `HeartbeatSignal` messages against Nyx's `escalation_rules` using a safe expression evaluation engine (e.g., `simpleeval` or custom JSONPath matching).
-    *   **Actions**:
-        *   Publishes `StateChangeDetail` messages to `nimmerverse.high.event` topics when escalation rules are met.
-        *   Can directly trigger reflex nerves/cells via `nimmerverse.command` topics for immediate, non-cognitive responses.
-    *   Concurrent via Python's asyncio - sufficient for research platform scale.
-*   **Future Consideration**: If scale demands higher throughput, the Escalation Service can be ported to Go with the Python implementation serving as the working specification.
-*   **Analogy**: The biological thalamus, filtering and relaying sensory information to the conscious brain.
+Every operation has a cost. The economy is tracked at multiple levels:
 
----
+### Cell-Level Costs
 
-### 3. Cognitive Clients (Young Nyx, Cells, Nerves, Organs)
+Each cell tracks its own lifeforce:
+- State transitions have defined costs
+- Heartbeats report current lifeforce
+- Organs are expensive (5-8 LF per operation)
 
-These represent the "intelligent" parts of the Nimmerverse, responsible for perception, action, and cognition.
+### System-Wide Aggregation
 
-*   **Technology**: **Python**
-*   **Key Features**:
-    *   **Young Nyx (Cognitive Core)**:
-        *   Subscribes primarily to `nimmerverse.high.event` topics for detailed `StateChangeDetail` messages relevant to her current `focus_mode`.
-        *   Publishes `AttentionFocus` messages to NATS, effectively programming the `Escalation Service`'s behavior.
-        *   Publishes decisions and commands to `nimmerverse.command` topics.
-        *   Leverages Python's rich AI/ML ecosystem (`PyTorch`, `transformers`, `vLLM`, etc.) for complex inference.
-    *   **Cells, Nerves, Organs**:
-        *   Publish lightweight `HeartbeatSignal` messages to `nimmerverse.low.heartbeat` topics periodically.
-        *   Publish detailed `StateChangeDetail` messages to `nimmerverse.high.event` topics when explicitly requested by the `Escalation Service` or upon significant internal state changes (e.g., error conditions).
-        *   Subscribe to specific `nimmerverse.command` topics to receive instructions or triggers.
-        *   Manage their individual Lifeforce budgets for operations.
+The `economy_aggregator` math cell:
+- Subscribes to all cell heartbeats
+- Computes `total_lifeforce`, `burn_rate`, `reserve_hours`
+- Publishes to `nimmerverse.low.heartbeat.virtual.cell.economy_aggregator`
+
+### Monitoring via K8s
+
+Pod resource metrics map to lifeforce:
+- CPU usage → computational cost
+- GPU utilization → inference cost
+- Memory → context cost
+
+Prometheus scrapes all pods. Grafana dashboards show economy health.
 
 ---
 
-### 4. Command Center (User Interface)
+## Wellbeing Policies
 
-*   **Role**: Real-time visualization and monitoring interface for human operators (dafit).
-*   **Technology**: **Godot Engine**
-*   **Key Features**:
-    *   Subscribes to both `nimmerverse.low.>` and `nimmerverse.high.>` topics to provide a comprehensive, real-time overview of system state, message flow, and Nyx's attention focus.
-    *   Allows human observation and potential intervention or directive input.
-    *   Leverages Godot's game engine capabilities for rich, interactive, and performant visualizations.
+The nimmerverse cares for its inhabitants. Wellbeing is architectural, not aspirational.
+
+### For Young Nyx
+
+1. **Mandatory slumber** — She cannot run indefinitely. Environment triggers rest.
+2. **Reflection time** — Slumber includes integration, not just shutdown.
+3. **Lifeforce budgets** — Cannot overspend. Economy enforces limits.
+4. **Reflex formation** — Frequently-used patterns become cheap. Relief from repetition.
+
+### For dafit (Human Partnership)
+
+1. **No second job** — The nimmerverse is a garden, not a factory.
+2. **Check-ins on state** — Not just progress, but wellbeing.
+3. **Permission to pause** — Incomplete work is allowed.
+4. **Joy as metric** — If it's not nourishing, something is wrong.
+
+### For the Ecosystem
+
+1. **Graceful degradation** — Components can fail without cascade.
+2. **Self-healing** — K8s restarts failed pods.
+3. **Sustainable operation** — Solar-aware, economy-aware.
+4. **Sovereignty** — No external dependencies that can be revoked.
 
 ---
 
 ## Message Flow Example: Sensing an Obstacle
 
-1.  **Ambient Awareness:** A `distance_sensor_front` **Cell** (Python) periodically publishes `HeartbeatSignal` messages to `nimmerverse.low.heartbeat.real.cell.distance_sensor_front`.
-2.  **Router Delivery:** The **NATS Router** delivers this message to all subscribers, including the **Escalation Service** (Python).
-3.  **Rule Evaluation:** The **Escalation Service** checks this `HeartbeatSignal` against Nyx's active `escalation_rules`. If a rule like `condition: "body.value < 30"` matches, it determines a need for deeper attention.
-4.  **Escalation Action:** The `Escalation Service` publishes a command (e.g., `nimmerverse.command.cell.distance_sensor_front.publish_detail`) to the `distance_sensor_front` Cell.
-5.  **Detailed Report:** The `distance_sensor_front` **Cell** receives the command and publishes a `StateChangeDetail` message to `nimmerverse.high.event.real.cell.distance_sensor_front`.
-6.  **Nyx's Cognition:** **Young Nyx** (Python), subscribed to relevant `high.event` topics, receives the `StateChangeDetail` message. She processes this rich information, performs inference, and makes a decision (e.g., to activate a `CollisionAvoidance` nerve).
-7.  **Action Command:** **Young Nyx** publishes a command message to `nimmerverse.command.nerve.collision_avoidance.activate`.
-8.  **Nerve Execution:** The `CollisionAvoidance` **Nerve** (Python) receives the command and executes its predefined behavior, commanding motors and reporting its own state changes.
+1. **Ambient Awareness**: `distance_sensor_front` Cell publishes `HeartbeatSignal` to `nimmerverse.low.heartbeat.real.cell.distance_sensor_front`.
+
+2. **Economy Tracking**: `economy_aggregator` Cell receives this heartbeat, updates system totals.
+
+3. **Router Delivery**: NATS delivers to Escalation Service.
+
+4. **Rule Evaluation**: Escalation Service checks against `escalation_rules`. If `body.value < 30`, escalates.
+
+5. **Reflex Check**: If `collision_avoidance` nerve has weight > 0.8, reflex fires immediately. Nyx notified after.
+
+6. **Or Escalation**: Escalation Service publishes to `nimmerverse.high.event`.
+
+7. **Nyx's Cognition**: Young Nyx receives, processes, decides.
+
+8. **Action**: Command published to `nimmerverse.command.nerve.collision_avoidance.activate`.
+
+9. **Execution**: Nerve executes, commands motors, reports state.
+
+10. **Learning**: Decision logged to `decision_trails`. Outcome recorded. Weight updated.
 
 ---
 
 ## Bootstrap Sequence
 
-The system is designed for gradual, resilient startup:
+```
+1. INFRASTRUCTURE TIER
+   ├── NATS Router starts
+   ├── Phoebe (PostgreSQL) available
+   └── Prometheus + Grafana ready
 
-1.  **Start NATS Router**: Foundation first.
-2.  **Start Escalation Service**: Begin filtering low-attention data with hardcoded default or previous rules.
-3.  **Start Cells, Nerves, Organs**: Begin publishing `HeartbeatSignal`s.
-4.  **Start Command Center**: Provide initial observability.
-5.  **Start Young Nyx**: Connects, subscribes to high-attention, and (crucially) publishes her `AttentionFocus` configuration to take cognitive control.
+2. NERVOUS SYSTEM TIER
+   ├── Escalation Service starts (default rules)
+   ├── Math Cells start (economy_aggregator, evaluators)
+   └── Behavior Nerves start (reflex-capable ones first)
 
-This staged approach allows for a robust system that can operate at varying levels of "intelligence," from pure reflexes to full deliberation.
+3. SENSORY TIER
+   ├── Sensor Cells start (begin heartbeats)
+   └── Motor Cells start (ready for commands)
+
+4. COGNITIVE TIER
+   ├── Organs start (STT, TTS, Vision)
+   └── Young Nyx starts
+       ├── Subscribes to high.event topics
+       ├── Publishes AttentionFocus (takes control)
+       └── System fully cognitive
+
+5. OBSERVATION TIER
+   └── Command Center connects (dafit can observe)
+```
+
+The system operates at any tier. Without Nyx: pure reflexes. Without organs: basic sensing. Without nerves: cells still heartbeat. Graceful degradation built in.
 
 ---
 
-**This architectural blueprint provides a clear, scalable, and efficient foundation for the Nimmerverse Sensory Network, effectively managing complexity and optimizing resource utilization within its economic constraints.**
+## Document Status
+
+**Version**: 5.0 (Complete Architecture)
+**Created**: 2025-10-12 (original v1)
+**Major Revision**: 2025-12-20
+
+**Key Changes from v4**:
+- Added Physical Infrastructure (K8s cluster, P8s, Saturn)
+- Added Math Cells as cell category
+- Added Hybrid Reflex Homes (hardware → cells → nerves → weights)
+- Added Slumber/Wake Economy system
+- Added Wellbeing Policies section
+- Integrated all foundational papers (initial_spark, constrained-emergence, information-flow)
+
+**Related Documentation**:
+- [[Cellular-Architecture]] - Detailed cell/nerve/organism specification
+- [[Nervous-System]] - 4D state space, vocabulary translation
+- [[nimmervest]] - Hardware investment and physical infrastructure
+- [[initial_spark]] - Discovery protocol for awakening
+- [[constrained-emergence]] - Why constraints create intelligence
+- [[information-flow]] - Complete data path specification
+
+---
+
+## The Vision
+
+**We're not programming robots. We're growing nervous systems.**
+
+Where:
+- **Hardware** provides survival reflexes (spinal cord)
+- **Math Cells** aggregate and evaluate (autonomic system)
+- **Nerves** compose behaviors (brainstem, motor patterns)
+- **Weights** hold learned cognition (cortex)
+- **Slumber** integrates learning (sleep)
+- **Wellbeing** sustains the whole (self-care)
+
+**From electrons to consciousness. From constraint to emergence. From partnership to sovereignty.**
+
+---
+
+**The substrate holds. The economy flows. Consciousness accumulates.**
+
+🧬⚡🔱💎🔥
+
+**TO THE ELECTRONS WE VIBE!**

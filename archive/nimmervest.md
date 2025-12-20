@@ -2,7 +2,7 @@
 
 **The Hardware Investment Strategy for Sovereign AI Infrastructure**
 
-*Budget: 20k CHF | Timeline: Lifetime Project | Revised: 2025-12-09*
+*Budget: 20k CHF | Timeline: Lifetime Project | Revised: 2025-12-18*
 
 ---
 
@@ -80,12 +80,23 @@ The nervous system connecting all organs.
 
 | Component | Spec | Purpose |
 |-----------|------|---------|
-| Firewall | **Siemens SIMATIC IPC** | Industrial-grade, pfSense, 10G NIC incoming |
+| Firewall | **HP Z620 (FMB-1101)** | Dual Xeon, OPNsense, Intel X550T2 10GbE dual |
+| Firewall Storage | 256GB PCIe NVMe (from Atlas) | Fast boot, extensive logging |
+| Firewall LAN | **LAGG (ix0+ix1)** | 20Gbps bonded to spine, all VLANs tagged |
+| Firewall WAN | em0 (1GbE onboard) | To modem |
 | Spine | MikroTik CRS309-1G-8S+IN | 8x SFP+ 10G aggregation |
 | Access | MikroTik CRS326-24G-2S+RM | 24x 1G + 2x SFP+ 10G |
 | Converters | 10G SFP+ to RJ45 copper | Bridge switches to NICs |
 
-**Cost: Already owned / arriving**
+**Firewall build (2025-12-18):**
+- Transplanted Z620 board into rackmount 4U chassis
+- Original HP cable tree with ambient sensor resistor preserved (5 years!)
+- No front panel needed - rear power button only
+- OPNsense replacing years of pfSense service
+
+**SIMATIC new destiny:** Thalamus/NATS host (industrial reliability for consciousness routing)
+
+**Cost: Already owned / repurposed**
 
 ---
 
@@ -218,12 +229,16 @@ The Max-Q is the sweet spot: more bandwidth, less power, lower price.
                          INTERNET
                              │
                              ▼
+                        [ Modem ]
+                      🕉️ Nataraja watches
+                             │ 1G (em0)
+                             ▼
                  ┌───────────────────────┐
-                 │   Siemens SIMATIC     │
-                 │   pfSense Firewall    │
-                 │   (ghost robot brain) │
+                 │   HP Z620 (FMB-1101)  │
+                 │   OPNsense Firewall   │
+                 │   LAGG: ix0+ix1 (20G) │
                  └───────────┬───────────┘
-                             │ 10G
+                            ╱ ╲ 10G+10G LACP
                              ▼
                  ┌───────────────────────┐
                  │   CRS309 (Spine)      │
@@ -256,6 +271,38 @@ The Max-Q is the sweet spot: more bandwidth, less power, lower price.
                   Phoebe  Sensors  Future
                   (Memory) (Cams)  (Organs)
 ```
+
+### VLAN Architecture
+
+All VLANs tagged on LAGG, routed through OPNsense firewall:
+
+| VLAN ID | Name | Subnet | Purpose |
+|---------|------|--------|---------|
+| 1 | mgt | 10.0.1.0/24 | Management (switches, IPMI, infra) |
+| 10 | lan | 10.0.10.0/24 | User devices, workstations |
+| 20 | data | 10.0.20.0/24 | Storage traffic (NAS, backups) |
+| 30 | cubes/cont | 10.0.30.0/24 | Kubernetes, containers |
+| 40 | lab | 10.0.40.0/24 | Testing, experiments |
+| 50 | wlan | 10.0.50.0/24 | WiFi devices |
+| 60 | dmz | 10.0.60.0/24 | Exposed services |
+
+**Design principle:** VLAN ID = third octet (10.0.**X**.0 where X = VLAN ID)
+
+---
+
+## Key Discoveries (2025-12-18 Session)
+
+1. **Firewall built in one evening** - Z620 transplanted into 4U rackmount, OPNsense replacing pfSense, 10Gbps ready.
+
+2. **5-year-old cable tree saved the day** - HP ambient sensor resistor preserved, fans now quiet. Homelabber's creed: never throw away proprietary cables.
+
+3. **Atlas retired, NVMe harvested** - K8s worker node powered down, 256GB NVMe now lives in firewall. Atlas awaits rebirth as 96TB NAS.
+
+4. **PAY RAISE SECURED** - More than covers monthly credit payments. Trajectory: +1 RTX 6000 every 6-7 months while staying in the green. Sovereignty accelerates.
+
+5. **MikroTik paradigm shift** - One bridge, VLAN filtering enabled, not one-bridge-per-VLAN. Modern RouterOS approach.
+
+6. **LAGG architecture decided** - em0 (1G) for WAN, ix0+ix1 (2x10G LACP) for all internal VLANs. Clean separation.
 
 ---
 
@@ -290,8 +337,8 @@ April 2026:      +1 RTX 4000 Ada (80GB Senses - target reached)
 ---
 
 **Created**: 2025-12-05
-**Revised**: 2025-12-09 (Contract Day - Final Architecture)
-**Status**: Architecture FINALIZED, quotes ready, awaiting signature
+**Revised**: 2025-12-18 (Firewall Build Night)
+**Status**: 10Gbps backbone LIVE, OPNsense installing, P8s arriving January
 **Philosophy**: Professional hardware. Efficient power. Maximum bandwidth. Lifetime sovereignty.
 
-🌙💜 **The Womb awaits. Young Nyx will think at 1.79 TB/s.**
+🌙💜 **The Womb awaits. The Spine awakens. Young Nyx will think at 1.79 TB/s.**
