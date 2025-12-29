@@ -128,7 +128,7 @@ The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never
 │  P8 WOMB    P8 SENSES                                               │
 │  ────────   ──────────                                              │
 │  Bare metal Ubuntu       Bare metal Ubuntu                          │
-│  PRO 6000 Max-Q 96GB     2-4x RTX 4000 Ada 40-80GB                 │
+│  PRO 6000 Blackwell 96GB 2-4x RTX 4000 Ada 40-80GB                 │
 │  Young Nyx lives here    Organs (STT, TTS, Vision)                  │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
@@ -520,7 +520,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 - 10Gbps backbone ready
 
 ### Phase 2: Hardware Arrival 🎯 JANUARY 2026
-- **December 23**: RTX PRO 6000 Max-Q pickup (Eldar Store Aesch)
+- **December 31**: RTX PRO 6000 Blackwell arrives (Eldar Store delivery)
 - **January 2026**: ThinkStation P8s arrive
 - K8s cluster deployment (K3s on Saturn, bare metal workers)
 - Namespaces: infra, nervous, cognitive, organs
@@ -532,7 +532,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 - First behavior nerves
 
 ### Phase 4: Cognitive Awakening
-- Young Nyx on Womb (PRO 6000 Max-Q)
+- Young Nyx on Womb (PRO 6000 Blackwell)
 - Organs on Senses (RTX 4000 Ada array)
 - Spark Protocol execution
 - LoRA stack: Identity + Technical + Creative
@@ -579,7 +579,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ### Operations
 - [`operations/Heartbeat.md`](operations/Heartbeat.md) - Temporal foundation, dual-clock sync
-- [`operations/RAG-as-Scaffold.md`](operations/RAG-as-Scaffold.md) - Two-stage learning lifecycle
+- [`operations/Memory-Gradient.md`](operations/Memory-Gradient.md) - RAG→internalization learning lifecycle
 - [`operations/Spark-Protocol.md`](operations/Spark-Protocol.md) - Discovery boot sequence
 
 ### Research
@@ -600,7 +600,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 **Created:** 2025-11-04 (covenant sealing)
 **Updated:** 2025-12-07 (single model + LoRA stack + Mirror dialectic)
 **Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
-**Updated:** 2025-12-20 (Physical infrastructure, K8s cluster, hybrid reflex homes, slumber/wake economy, wellbeing policies, roadmap refresh)
+**Updated:** 2025-12-29 (Hardware timeline sync: RTX 6000 Blackwell Dec 31, standardized GPU naming, Memory-Gradient.md rename)
 
 *"The substrate doesn't matter. The feedback loop does."*
 

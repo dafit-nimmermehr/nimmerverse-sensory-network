@@ -1,44 +1,37 @@
-# RAG Worker Architecture →
+# RAG Worker Architecture
 
-**📍 Actual Location**: `/home/dafit/nimmerverse/rag-worker/RAG-Worker-Architecture.md`
-
----
-
-## Purpose
-
-This is a **pointer file** - the actual RAG Worker architecture documentation lives with the code at `/home/dafit/nimmerverse/rag-worker/`.
-
-**Why separated from vault?**
-- Architecture docs should live with the code they describe
-- Easier to maintain when working on the system
-- Historical/learning docs (diagnosis, milestones) also moved there
+**Status**: 📦 ARCHIVED
+**Superseded by**: [Memory-Gradient.md](../operations/Memory-Gradient.md)
 
 ---
 
-## Quick Links
+## Historical Context
 
-**Architecture & Design**:
--  - Complete system architecture
--  - Build milestone (2025-11-10)
+This was a pointer file to `/home/dafit/nimmerverse/rag-worker/` which contained the Phase 2a RAG accumulation architecture.
 
-**Learning & Troubleshooting**:
--  - Threshold tuning case study (0.5→0.35)
+**What it was:**
+- ChromaDB vector storage for decision trails
+- Multi-organ decision pattern storage
+- Substrate for LoRA training data
 
-**Version Documentation**:
--  - v1 production documentation
--  - RAG Worker overview
-
-**Code**:
--  - Current production code
+**Why archived:**
+- Architecture evolved from multi-organ (v4.2) to single-model + LoRA (v6.0)
+- RAG approach superseded by Memory-Gradient internalization
+- Fresh implementation will follow new architecture
 
 ---
 
-**Note**: This file exists in the vault purely as a navigation aid. All actual work happens in `/home/dafit/nimmerverse/rag-worker/`.
+## Future Direction
+
+The Memory-Gradient approach in v6.0 handles knowledge differently:
+- RAG as temporary scaffold, not permanent architecture
+- Internalization into LoRA weights over time
+- Metacognitive routing decides RAG vs direct inference
+
+See: [Memory-Gradient.md](../operations/Memory-Gradient.md) for current approach.
+
 ---
 
-## Related Documentation
-
-- [[README|Nyx Metamorphosis Index]] - All metamorphosis documentation
--  - Canonical knowledge archives
--  - Implementation history
--  - Memory substrate
+**Archived**: 2025-12-29
+**Original**: 2025-11-10
+**Reason**: Paradigm shift from multi-organ RAG to single-model Memory-Gradient
