@@ -589,6 +589,66 @@ Each phase unlocks when reward functions are stable from previous phase.
 
 ---
 
+## Tiered Communication: Sandbox & Mama
+
+### The Analogy
+
+- **Clasp (sandbox toddlers)** — Cheap, peer-to-peer, physical contact
+- **Wireless (mama broadcast)** — Expensive, authoritative, full-sensor inference
+
+Economic pressure shapes which path organisms use → emergent social behavior.
+
+### Communication Tiers
+
+| Tier | Method | Cost | Range | Trust | Pattern |
+|------|--------|------|-------|-------|---------|
+| **0: Clasp** | Physical dock | ~0.5 LF | Touch | Highest | Toddlers teaching |
+| **1: Local** | Radio broadcast | ~3 LF | ~5m | Medium | Playground yelling |
+| **2: Mama** | Nyx broadcast | ~20 LF | All | Authority | Mama speaks |
+
+### Leapfrog Emergence (from [[../archive/constrained-emergence]])
+
+```
+EXPENSIVE (all mama):           CHEAP (clasp cascade):
+Nyx → 1: -20 LF                 Nyx → 1: -20 LF (seed)
+Nyx → 2: -20 LF                 1 clasps 2: -0.5 LF
+Nyx → 3: -20 LF                 2 clasps 3: -0.5 LF
+...                             ...
+10 organisms = -200 LF          10 organisms = -24.5 LF
+
+ECONOMIC PRESSURE INVENTS EPIDEMIC SPREADING!
+```
+
+### Clasp Rewards
+
+| Action | Reward |
+|--------|--------|
+| Seek mate with update | +3 LF |
+| Successful clasp | +2 LF |
+| Transfer (teacher) | +5 LF |
+| Receive (student) | +5 LF |
+| Verified working | +5 LF (both) |
+
+### Sandbox Rules
+
+1. "I have update" → Pulsing green LED border
+2. "I want to learn" → Seek green patterns
+3. "Let's clasp" → Magnetic alignment + pin contact
+4. "Teaching" → Weights transfer, both rewarded
+5. "Done" → Both can now teach others (cascade!)
+
+### Mama Rules (Reserved for)
+
+- Safety critical updates
+- New organism deployment
+- Swarm-wide coordination
+- Error correction
+- When clasp cascade fails
+
+**Constraint → Selection Pressure → Social Behavior Emerges**
+
+---
+
 ## Future Directions
 
 - **Pattern evolution** — Learned patterns, not just designed
@@ -596,6 +656,8 @@ Each phase unlocks when reward functions are stable from previous phase.
 - **Human readability** — Patterns dafit can understand at a glance
 - **Audio coupling** — Sound + light patterns for richer communication
 - **IR channel** — Invisible-to-human signaling layer
+- **Clasp hardware** — Magnetic + pogo pin interface design
+- **Autonomous manufacturing** — K1 + robo arm + magazine system
 
 ---
 
