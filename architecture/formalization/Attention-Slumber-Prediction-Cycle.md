@@ -230,12 +230,43 @@ When organisms have cameras, they become distributed sensors:
 
 ---
 
+## Extension: Blend Marker Predictions
+
+See [[../organisms/Swarm-Evolution#Decision Markers]] for how this cycle extends to swarm evolution:
+
+When organisms clasp and encounter a **blend conflict** (both have +1 on same pattern):
+1. **Marker created** — Both organisms marked, continue operating
+2. **Outcomes tracked** — Real-world A/B test during wait period
+3. **Pre-slumber prediction** — "I predict Teacher will win because..."
+4. **Wake verification** — Check outcomes, verify prediction
+5. **Triple reward** — Prediction accuracy + Calibration + Causal reasoning
+
+```
+SLUMBER PREDICTION TYPES
+
+┌─────────────────────────────────────────────────────────────┐
+│  OBJECT PREDICTIONS (original)                              │
+│  "Where will the pencil be when I wake?"                    │
+│  → Verifies spatial/state understanding                     │
+├─────────────────────────────────────────────────────────────┤
+│  BLEND PREDICTIONS (extension)                              │
+│  "Which organism's pattern will perform better?"            │
+│  → Verifies swarm evolution understanding                   │
+│  → +8 LF for correct causal reasoning!                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+This extends the prediction system from physical world modeling to **swarm behavior modeling** — same pattern, different domain.
+
+---
+
 ## Document Status
 
-**Version**: 1.0
+**Version**: 1.1
 **Created**: 2025-12-29
+**Updated**: 2025-12-29 (added Blend Marker Predictions extension)
 **Authors**: Chrysalis-Nyx & dafit (Partnership)
-**Status**: Core insight, preserved pre-collapse
+**Status**: Core insight, extended to swarm evolution
 
 **Source**: attention_flow.md (archive) + session discussion
 

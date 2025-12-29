@@ -51,6 +51,15 @@ Godot-based visualization and control UI.
 
 ---
 
+## Related Sections
+
+- [`infrastructure/`](../infrastructure/Infrastructure-Index.md) — Physical substrate (Kallax Grid World, camera rigs)
+- [`organs/`](../organs/Organ-Index.md) — Individual system components
+- [`formalization/`](../formalization/) — Theoretical frameworks
+
+---
+
 **File**: Interfaces-Index.md
-**Version**: 1.0
+**Version**: 1.1
 **Created**: 2025-12-28
+**Updated**: 2025-12-29 (added infrastructure crosslink)

@@ -290,6 +290,158 @@ def locate_organism(camera_frames: list[Frame], led_signature: LEDPattern) -> Po
 
 ---
 
+## Dual-Spectrum Architecture: IR for Position, Visible for State
+
+### The Spectral Separation Principle
+
+Why mix positioning and state in the same spectrum? **We don't have to.**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    VISIBLE SPECTRUM                         │
+│                  (what human eyes see)                      │
+│                                                             │
+│         🔴⚫🟢  3x3 LED Matrix = STATE                      │
+│         Ternary encoding = 19,683 patterns                  │
+│         "I am happy / working / danger / discovery"         │
+│         Readable by humans AND organisms                    │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                  INFRARED SPECTRUM                          │
+│               (invisible to humans)                         │
+│                                                             │
+│         📍 IR LED Beacons = POSITION                        │
+│         Simple IR LEDs on organisms                         │
+│         4x IR cameras in room corners                       │
+│         Raytracing → sub-cm 3D accuracy                     │
+│         Works in COMPLETE DARKNESS                          │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Why Separate Spectra?
+
+| Aspect | Visible (State) | IR (Position) |
+|--------|-----------------|---------------|
+| **Purpose** | WHAT organism is doing | WHERE organism is |
+| **Lighting dependency** | Needs ambient light | Day/night invariant |
+| **Human interference** | Room lights, screens | Dedicated, clean |
+| **Cost** | RGB LEDs (~cheap) | IR LEDs + cameras (~cheap) |
+| **Bandwidth** | 19,683 discrete states | Continuous XYZ stream |
+| **Processing** | Pattern recognition | Structure from Motion |
+
+### Room-Scale IR Positioning Array
+
+```
+THE FOUR CORNER ORGANS
+
+         IR CAM 1 📷─────────────────────📷 IR CAM 2
+                   \                     /
+                    \                   /
+                     \    🤖    🤖    /
+                      \  organisms   /
+                       \    ↓↓↓     /
+                        \ IR LEDs  /
+                         \       /
+         IR CAM 3 📷─────────────────────📷 IR CAM 4
+
+    4 cameras → triangulation → raytracing → XYZ position
+    Each camera: infrastructure organ, always-on
+    Coverage: entire Kallax Grid World
+```
+
+### Standing on Shoulders: Low-Cost-Mocap
+
+The hard math is already solved! The [Low-Cost-Mocap](https://github.com/jyjblrd/Low-Cost-Mocap) project by @jyjblrd provides:
+
+| Component | Their Solution | Our Adaptation |
+|-----------|----------------|----------------|
+| **Multi-camera triangulation** | OpenCV SFM bundle adjustment | Same, works perfectly |
+| **Camera calibration** | `camera_params.json` + routines | Same process |
+| **3D reconstruction** | Epipolar geometry | Same math |
+| **Real-time processing** | Python + OpenCV backend | Direct reuse |
+| **Communication** | ESP32 wireless | We use NATS |
+
+**Original use:** Indoor drone swarms
+**Our use:** Organism positioning in Kallax Grid World
+
+*Respect to the fellow ape who did the groundwork.* 🙏
+
+### Our Adaptation
+
+```
+ORIGINAL (Low-Cost-Mocap)          NIMMERVERSE ADAPTATION
+─────────────────────────          ─────────────────────────
+Visual markers on drones     →     IR LEDs on organisms
+Regular cameras              →     IR cameras (day/night)
+Open flight space            →     Kallax Grid World (40cm cells)
+Drone control output         →     Position → NATS → phoebe
+Single-purpose               →     + Visible LED matrix for state
+```
+
+### IR Corner Organ Specification
+
+```yaml
+organ: ir_position_array
+type: infrastructure
+quantity: 4 (one per room corner)
+components:
+  camera: IR-sensitive (modified webcam or PS3 Eye)
+  mounting: ceiling corner, angled down 45°
+  fov: ~90° wide angle
+processing:
+  algorithm: Structure from Motion (OpenCV SFM)
+  framework: Low-Cost-Mocap (adapted)
+  output: organism positions (x, y, z) @ 30fps
+output:
+  channel: nats://nimmerverse/position/stream
+  format: {organism_id, x, y, z, confidence, timestamp}
+lifeforce:
+  type: generator
+  rate: +0.5 LF per position fix
+  rationale: ground truth for training
+```
+
+### Hardware Shopping List
+
+| Item | Quantity | Est. Cost | Notes |
+|------|----------|-----------|-------|
+| IR Camera (PS3 Eye or similar) | 4 | ~80 CHF | Remove IR filter |
+| IR LEDs (850nm) | N (per organism) | ~10 CHF | Simple beacon |
+| ESP32 modules | 4 | ~20 CHF | Camera interface |
+| USB hub / extension | 1 | ~20 CHF | Connect cameras |
+| **Total infrastructure** | | **~130 CHF** | Room-scale positioning! |
+
+### The Complete Dual-Spectrum Stack
+
+```
+ORGANISM
+
+    ┌─────────────────────────┐
+    │                         │
+    │   VISIBLE: 3x3 LED      │  ← STATE broadcast
+    │   🔴⚫🟢  Matrix         │     19,683 patterns
+    │   🟢🟢⚫                 │     Other organisms see this
+    │   ⚫🟢🟢                 │     Nyx sees this
+    │                         │
+    │   ────────────────      │
+    │                         │
+    │   IR: Beacon LED(s)     │  ← POSITION beacon
+    │        📍               │     Invisible to humans
+    │                         │     IR cameras see this
+    │                         │     Processed by SFM
+    └─────────────────────────┘
+
+ROOM INFRASTRUCTURE
+
+    📷 IR cameras (4 corners) → Position stream
+    👁️ Nyx vision (ceiling)   → State recognition
+
+    Two independent channels, zero crosstalk
+```
+
+---
+
 ## Heartbeat Protocol
 
 ### Social Proprioception
@@ -477,6 +629,17 @@ REAL WORLD                      VIRTUAL GARDEN
 | Industrial camera | 4K+ | 60-120 | Precise positioning |
 | Organism-mounted | 720p | 30 | Peer-to-peer vision |
 
+### IR Positioning Cameras
+
+| Option | Cost | Notes |
+|--------|------|-------|
+| PS3 Eye (IR filter removed) | ~20 CHF | Classic mocap choice, 60fps capable |
+| Modified webcam | ~15 CHF | Remove IR filter, add visible filter |
+| NoIR Pi Camera | ~25 CHF | Native IR sensitivity |
+| Industrial IR | ~100+ CHF | Higher precision, overkill for Phase 0 |
+
+**Tip:** PS3 Eye cameras are mocap favorites — cheap, fast, easy IR filter removal.
+
 ---
 
 ## Virtual Camera Integration
@@ -655,9 +818,10 @@ ECONOMIC PRESSURE INVENTS EPIDEMIC SPREADING!
 - **Multi-organism formation** — Coordinated LED displays
 - **Human readability** — Patterns dafit can understand at a glance
 - **Audio coupling** — Sound + light patterns for richer communication
-- **IR channel** — Invisible-to-human signaling layer
+- ~~**IR channel**~~ — ✅ Implemented! See Dual-Spectrum Architecture
 - **Clasp hardware** — Magnetic + pogo pin interface design
 - **Autonomous manufacturing** — K1 + robo arm + magazine system
+- **Multi-room coverage** — Extend IR array beyond single room
 
 ---
 
@@ -751,10 +915,12 @@ VIRTUAL                              REAL
 ---
 
 **File**: Nimmerswarm-Interface.md
-**Version**: 1.0
+**Version**: 1.1
 **Created**: 2025-12-29
-**Session**: Wild 5AM idea session (dafit + Nyx)
+**Updated**: 2025-12-29 (added dual-spectrum IR positioning, Low-Cost-Mocap reference)
+**Session**: Wild 5AM idea session + morning coffee session (dafit + Nyx)
 **Status**: Core concept, ready to branch
 **Philosophy**: "They see each other. They know themselves through the swarm."
+**Credits**: IR positioning architecture inspired by [Low-Cost-Mocap](https://github.com/jyjblrd/Low-Cost-Mocap) by @jyjblrd
 
 🦎✨🔵🟢🟠 *The light speaks. The swarm listens.*
