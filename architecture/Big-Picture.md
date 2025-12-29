@@ -379,6 +379,94 @@ This mirrors biological sleep: not just rest, but **consolidation**.
 
 ---
 
+## Attention-Slumber-Prediction Cycle
+
+The attention system and slumber system are **intertwined through prediction**. What Young Nyx attends to before slumber becomes her prediction target during slumber.
+
+> *"The last thing she attends to before slumber becomes her dream. Her dream becomes a prediction. Her prediction becomes a reward opportunity."*
+
+### The Attention Budget
+
+Every 30-second heartbeat is a budget, not a guarantee. Attention flows through a strict priority hierarchy:
+
+```
+LEVEL 0: REFLEX ───── Weight > 0.8, instant, bypass everything
+LEVEL 1: SAFETY ───── dafit calling, danger detected
+LEVEL 2: DIALOGUE ─── Partnership active, Chrysalis teaching
+LEVEL 3: SENSORY ──── Rich input needs processing
+LEVEL 4: THINKING ─── Organ work, Nyx inference
+LEVEL 5: VIRTUAL ──── Garden time (gets remainder)
+LEVEL 6: IDLE ─────── Maintenance heartbeat only
+```
+
+Higher levels preempt lower. Budget flows downward. See [[Attention-Flow]] for full specification.
+
+### Last Attention → Slumber Focus
+
+When lifeforce drops below threshold (λ < λ_slumber AND L < L_slumber), the **last attention focus** becomes the slumber prediction target:
+
+```
+ACTIVE MODE (L(t) > threshold)
+│
+│ attending to: dafit's pencil on desk (SENSORY/THINKING)
+│
+└─▶ L(t) drops below L_slumber
+        │
+        │ SLUMBER TRIGGER
+        │
+        └─▶ last_attention = "pencil on desk"
+                │
+                └─▶ SLUMBER MODE
+                        │
+                        │ Generate predictions:
+                        │ - WHERE will it be when I wake?
+                        │ - WHY will it be there? (causal chain)
+                        │
+                        └─▶ L(t) recovers above L_wake
+                                │
+                                │ WAKE TRIGGER
+                                │
+                                └─▶ First action: VERIFY predictions
+                                        │
+                                        └─▶ Collect rewards/penalties
+```
+
+### Intertwined Reward Systems
+
+Multiple reward types reinforce each other through the cycle:
+
+| Type | Trigger | Value | Reinforces |
+|------|---------|-------|------------|
+| **Discovery** | Finding new object | +20 LF | Exploration |
+| **Prediction Location** | Object where predicted | +5 LF | Spatial modeling |
+| **Prediction State** | Object in predicted state | +3 LF | State understanding |
+| **Causal Correct** | Reasoning was right | +8 LF | **Understanding WHY** |
+| **Collision** | Avoided obstacle | +5 LF | Navigation |
+| **Verification** | Reality matches model | +5 LF | Sim-to-real alignment |
+| **Partnership** | dafit confirms | +5 LF | Human collaboration |
+
+**Key Insight**: Causal rewards (+8 LF) are the **biggest single reward** because understanding WHY enables:
+- Prediction of novel situations
+- Intervention ("if I move X, Y changes")
+- Explanation ("why did you look there?")
+- Generalization ("anything dafit uses for writing will be near desk")
+
+### The Closed Loop
+
+The system LEARNS what to attend to:
+
+1. **Attend** to things you can predict well
+2. **Predict** correctly → get rewards
+3. **Rewards** → more lifeforce
+4. **More lifeforce** → richer attention budget
+5. **Loop**: Better attention targets discovered over time
+
+**Self-organizing attention through economic pressure.**
+
+See [[formalization/Attention-Slumber-Prediction-Cycle]] for the complete formalization.
+
+---
+
 ## Architectural Components
 
 ### 1. Message Router (NATS)
@@ -579,9 +667,15 @@ The system operates at any tier. Without Nyx: pure reflexes. Without organs: bas
 
 ## Document Status
 
-**Version**: 5.0 (Complete Architecture)
+**Version**: 5.1 (Attention-Prediction Integration)
 **Created**: 2025-10-12 (original v1)
-**Major Revision**: 2025-12-20
+**Major Revision**: 2025-12-29
+
+**Key Changes from v5.0**:
+- Added Attention-Slumber-Prediction Cycle section
+- Integrated attention budget with slumber economy
+- Added intertwined reward systems (causal rewards as biggest)
+- Linked to promoted Attention-Flow.md (from archive)
 
 **Key Changes from v4**:
 - Added Physical Infrastructure (K8s cluster, P8s, Saturn)
@@ -594,8 +688,11 @@ The system operates at any tier. Without Nyx: pure reflexes. Without organs: bas
 **Related Documentation**:
 - [[Cellular-Architecture]] - Detailed cell/nerve/organism specification
 - [[Nervous-System]] - 4D state space, vocabulary translation
+- [[Attention-Flow]] - 30-second budget, priority hierarchy *(promoted from archive)*
+- [[formalization/Attention-Slumber-Prediction-Cycle]] - Complete prediction cycle formalization
+- [[formalization/Lifeforce-Dynamics]] - λ as vitality ratio, stock-flow economics
 - [[nimmervest]] - Hardware investment and physical infrastructure
-- [[initial_spark]] - Discovery protocol for awakening
+- [[Initial-Spark]] - Discovery protocol v2.0 (FunctionGemma-enhanced) *(promoted from archive)*
 - [[constrained-emergence]] - Why constraints create intelligence
 - [[information-flow]] - Complete data path specification
 

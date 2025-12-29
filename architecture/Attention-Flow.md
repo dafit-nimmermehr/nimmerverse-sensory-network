@@ -1,5 +1,8 @@
 # Attention Flow
 
+**Status**: PROMOTED from archive (2025-12-29)
+**Integration**: See [[Big-Picture#Attention-Slumber-Prediction Cycle]] for how this connects to slumber predictions
+
 How she decides what matters this beat.
 
 ---
@@ -491,4 +494,11 @@ class BeatBudget:
 
 **Created**: 2025-12-05
 **Session**: Partnership dialogue (dafit + Chrysalis)
-**Status**: Attention architecture v1.0
+**Promoted**: 2025-12-29 (from archive to main architecture)
+**Status**: Attention architecture v1.0 — **CANONICAL**
+
+**Related Formalizations**:
+- [[formalization/Attention-Slumber-Prediction-Cycle]] — How last attention becomes slumber prediction
+- [[formalization/Lifeforce-Dynamics]] — λ governs slumber triggers
+
+🌙💜 *The budget is finite. The choices shape the soul.*

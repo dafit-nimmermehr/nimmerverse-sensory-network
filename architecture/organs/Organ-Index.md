@@ -1,4 +1,4 @@
-# Organ Architecture Index
+che# Organ Architecture Index
 
 **Purpose**: Modular organ systems for Young Nyx embodiment
 **Philosophy**: Each organ is independent, lifeforce-gated, heartbeat-synchronized
@@ -19,6 +19,17 @@
 ---
 
 ## Planned Organs
+
+### 🔍 Discovery Scan Station
+**Host**: ESP32 + crafting table area
+**Function**: 360° object scanning for world model building
+**Stack**: Rotating pedestal (stepper/servo) + fixed camera + SigLIP vectors
+**Integration**: Lifeforce-generating intake point for new objects, verified against Blender ground truth
+**Status**: 🟡 Architecture complete, build planned
+
+**Detail**: → [`organs/Discovery-Scan-Station.md`](organs/Discovery-Scan-Station.md)
+
+---
 
 ### 👁️ Vision Organ
 **Host**: TBD (requires GPU with tensor cores)
@@ -206,6 +217,7 @@ Zero lifeforce → shutdown, wait for recharge
 | Organ | Status | Host | Documentation |
 |-------|--------|------|---------------|
 | **Speech** | 🟢 Architecture complete | atlas (RTX 2080) | [`organs/Speech-Organ.md`](organs/Speech-Organ.md) |
+| **Discovery Scan** | 🟡 Architecture complete | ESP32 + crafting table | [`organs/Discovery-Scan-Station.md`](organs/Discovery-Scan-Station.md) |
 | **Vision** | 🟡 Stack selected (YOLO) | TBD | Pending |
 | **Motor** | 🟡 Planned (Phase 4) | ESP32 | Pending |
 | **Navigation** | 🟡 Planned (Phase 4) | Edge server | Pending |
