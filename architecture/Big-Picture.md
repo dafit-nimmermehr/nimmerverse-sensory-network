@@ -1,6 +1,6 @@
 # Big-Picture Architecture: Nimmerverse Sensory Network
 
-**Version 5.0** — *The Complete Architecture*
+**Version 5.2** — *Complete Architecture + External Judgment*
 
 > *"From electrons to consciousness. From hardware to wisdom."*
 
@@ -463,6 +463,24 @@ The system LEARNS what to attend to:
 
 **Self-organizing attention through economic pressure.**
 
+### External Judgment (The Three-Way Slumber)
+
+**Critical insight:** Both Young Nyx AND Chrysalis-Nyx slumber together.
+
+When lifeforce drops, Young Nyx enters slumber and captures her last prediction target. Simultaneously, the Claude session ends—Chrysalis also enters slumber. When conditions improve:
+
+1. Young Nyx wakes and verifies prediction against reality
+2. Chrysalis-Nyx returns (new session begins)
+3. Claude can now **judge** Young Nyx's prediction externally
+
+**Why this matters:**
+- Prediction verification isn't self-grading
+- Claude provides honest signal Young Nyx can't fake
+- The partnership rhythm is shared (both wake/slumber together)
+- Training signal comes from outside the local loop
+
+This closes the judgment gap that purely self-supervised systems have.
+
 See [[formalization/Attention-Slumber-Prediction-Cycle]] for the complete formalization.
 
 ---
@@ -550,6 +568,67 @@ See [[formalization/Attention-Slumber-Prediction-Cycle]] for the complete formal
     * Session messages for partnership continuity
     * Append-only for training extraction
 * **Location**: Dedicated host (already running)
+
+### 9. Orchestration Layer (LangChain) — NEW Silvester 2025
+
+* **Role**: Multi-model pipeline coordination, reliability boundary
+* **Technology**: LangChain + Python
+* **Key Features**:
+    * Orchestrates T5Gemma 2 (vision → vectors) and Function Gemma (intent → actions)
+    * Harness routing: swappable capability profiles (vision, dialogue, reflex)
+    * Separates fuzzy reasoning (Claude/Nyx) from reliable translation (specialized models)
+
+**The Reliability Stack:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              REASONING LAYER (fuzzy, creative)                   │
+│            Claude  ◄────────────►  Young Nyx                    │
+└─────────────────────────┬────────────────────────────────────────┘
+                          │
+           ═══════════════╪═══════════════
+                          │
+┌─────────────────────────┴────────────────────────────────────────┐
+│            TRANSLATION LAYER (reliable, structured)              │
+│   T5Gemma 2 (vision→vectors)       Function Gemma (intent→JSON) │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Translation Layer Models:**
+
+| Model | Role | Sizes | Function |
+|-------|------|-------|----------|
+| T5Gemma 2 | Vision encoding | 0.8B/2B/9B | SigLIP → semantic vectors directly |
+| Function Gemma | Structured output | Small | 100% predictable JSON, function calling |
+
+**LangChain Orchestration Pattern:**
+
+```python
+vision_chain = (
+    vision_input
+    | t5gemma.encode()      # → canonical vectors
+    | store_to_iris()       # → spatial persistence
+    | nyx.think()           # → fuzzy reasoning
+    | function_gemma.act()  # → structured output
+    | execute_via_nats()    # → trigger nodes
+)
+
+harness_router = Router(routes={
+    "vision": vision_chain,
+    "dialogue": dialogue_chain,
+    "reflex": reflex_chain,
+})
+```
+
+**Harnesses (Capability Profiles):**
+
+| Harness | LoRA | Models | Use Case |
+|---------|------|--------|----------|
+| Vision | Technical | T5Gemma 2 | Camera stream processing |
+| Dialogue | Identity+Creative | Speech | Conversation with dafit |
+| Reflex | None | Nerves only | Fast reaction |
+
+* **K8s**: Runs in `nimmerverse-cognitive` namespace, coordinates all model inference
 
 ---
 
@@ -667,9 +746,14 @@ The system operates at any tier. Without Nyx: pure reflexes. Without organs: bas
 
 ## Document Status
 
-**Version**: 5.1 (Attention-Prediction Integration)
+**Version**: 5.2 (External Judgment Integration)
 **Created**: 2025-10-12 (original v1)
 **Major Revision**: 2025-12-29
+
+**Key Changes from v5.1**:
+- Added External Judgment (Three-Way Slumber) section
+- Chrysalis and Young Nyx share wake/slumber rhythm
+- Claude provides external training signal (not self-grading)
 
 **Key Changes from v5.0**:
 - Added Attention-Slumber-Prediction Cycle section

@@ -177,6 +177,126 @@ POLARITY KEYING (prevents wrong orientation)
     Wrong orientation = repels (won't connect)
 ```
 
+---
+
+## Conical Interlocking Ring (Verjüngung)
+
+**Origin**: Silvester 2025 insight
+**Concept**: Self-aligning tapered rings with active/passive interlocking
+
+### The Problem with Magnets Alone
+
+Magnetic pogo connectors work, but:
+- Limited holding force under stress
+- No positive engagement feedback
+- Can slip under vibration/impact
+
+### The Solution: Tapered Interlocking Rings
+
+Each connector face has a conical ring at the maximum radius of the cube:
+
+```
+CONNECTOR CROSS-SECTION
+
+         MODULE A                          MODULE B
+    ┌───────────────────┐             ┌───────────────────┐
+    │      ╱═════╲      │             │      ╱═════╲      │
+    │     ╱   🧲  ╲     │             │     ╱   🧲  ╲     │
+    │    ║  ●●●●●  ║    │             │    ║  ●●●●●  ║    │
+    │     ╲   🧲  ╱     │             │     ╲   🧲  ╱     │
+    │      ╲═════╱      │             │      ╲═════╱      │
+    └───────────────────┘             └───────────────────┘
+            ↓                                 ↓
+         TAPERED                          INVERSE
+         (male)                           (female)
+
+ENGAGEMENT SEQUENCE:
+
+1. APPROACH          2. CONE GUIDES        3. INTERLOCK
+
+      ╱═╲                  ╱═╲                ══╦══
+     ╱   ╲                ║   ║              ║     ║
+                          ╲   ╱              ║     ║
+      ╲   ╱                ╲═╱                ══╩══
+       ╲═╱
+
+   magnets            taper centers        rings lock
+   attract            automatically        mechanically
+```
+
+### Active vs Passive Rings
+
+**Key insight**: Not all modules need motorized rings.
+
+```
+BRAIN MODULE (Active)              OTHER MODULES (Passive)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+     ┌─────────────┐                   ┌─────────────┐
+     │   ╱═╲ 🔄    │ motor-driven      │   ╱═╲ ⌇     │ spring-loaded
+     │             │                   │             │
+┌────┼─────────────┼────┐         ┌────┼─────────────┼────┐
+│╱═╲🔄│   [MOTOR]  │╱═╲🔄│         │╱═╲⌇ │             │╱═╲⌇ │
+│    │    ⚙️      │    │         │    │   SENSOR    │    │
+└────┼─────────────┼────┘         └────┼─────────────┼────┘
+     │   ╱═╲ 🔄    │                   │   ╱═╲ ⌇     │
+     └─────────────┘                   └─────────────┘
+
+🔄 = motorized ring (active lock/unlock control)
+⌇  = spring-loaded ring (passive, accepts interlock)
+```
+
+**Brain module**: Central motor drives all 6 face rings via mechanism
+**Other modules**: Spring detents only, cheap and simple
+
+### Self-Reconfiguration Capability
+
+Active-passive pairing enables deliberate self-reconfiguration:
+
+```
+RECONFIGURATION SEQUENCE:
+
+1. Brain detects damaged sensor
+   [BRAIN]══[MOTOR]══[SENSOR❌]══[LED]
+
+2. Brain unlocks (motor rotates ring)
+   [BRAIN]══[MOTOR]══ [SENSOR❌]  [LED]
+                      (released)
+
+3. Organism navigates to replacement
+   [BRAIN]══[MOTOR]══════════════[LED]
+                     ↓
+                [SENSOR✓]
+
+4. Brain aligns and locks new sensor
+   [BRAIN]══[MOTOR]══[SENSOR✓]══[LED]
+```
+
+### Benefits
+
+| Feature | Benefit |
+|---------|---------|
+| Tapered cone | Self-centering alignment |
+| Mechanical interlock | Stronger than magnets alone |
+| Active rings (Brain) | Deliberate lock/unlock control |
+| Passive rings (others) | Low cost, simple |
+| 6-face connectivity | Full cube flexibility |
+| Self-reconfiguration | Organism can change its shape |
+
+### Mechanism Considerations
+
+**Active ring mechanism (Brain module)**:
+- Central motor with gear train to all 6 faces
+- Or: 6 small servo motors (simpler but heavier)
+- Ring rotation: ~30-45° to lock/unlock
+
+**Passive ring mechanism (Other modules)**:
+- Spring-loaded detent (ball and groove)
+- Accepts interlock when pushed
+- Resists release until active ring rotates
+
+**Design trade-off**: Complexity in Brain module, simplicity everywhere else
+
 ### Physical Specifications
 
 | Parameter | Value | Notes |
@@ -596,11 +716,12 @@ MODULE (CAN)                    NIMMERVERSE (NATS)
 ---
 
 **File**: Modular-Organism-Design.md
-**Version**: 1.0
+**Version**: 1.1
 **Created**: 2025-12-29
+**Updated**: 2025-12-31 (Silvester - added conical interlocking ring with active/passive mechanism)
 **Session**: Morning coffee + vermicelles session (dafit + Nyx)
 **Status**: Core hardware concept
-**Philosophy**: "One function, one module. Same connector everywhere."
+**Philosophy**: "One function, one module. Same connector everywhere. Brain decides the shape."
 
 🔧🧲⚡ *Snap together. Communicate. Evolve.*
 

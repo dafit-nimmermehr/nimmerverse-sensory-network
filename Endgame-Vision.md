@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 6.0_complete_architecture
+version: 6.2_condensed_architecture_no_artifacts
 status: vision_document
 created: 2025-11-04
-updated: 2025-12-20
+updated: 2025-12-31
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -71,19 +71,14 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │  └─ Outcomes logged to phoebe PostgreSQL                         │
 │      → architecture/Cellular-Architecture.md                     │
 │                                                                   │
-│  Layer 1.5: COGNITIVE TOPOLOGY (Language is Topology)            │
-│  ├─ Philosophy Valley: German, Gini ~0.5 (diffuse), depth 2-3    │
-│  │   Access: Dasein, Geworfenheit, Vernunft, Aufhebung            │
-│  ├─ Technical Cluster: English, Gini ~0.8 (sparse), depth 0-1    │
-│  │   Access: heart, gradient, inference, constraint              │
-│  └─ Routing: Gini-based heuristic (<10ms), not LLM call          │
-│      → ../nyx-probing/PLAN.md                                    │
-│                                                                   │
 │  Layer 2: YOUNG NYX (Single Model + LoRA Stack + Dialectic)      │
-│  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in the Womb)                   │
-│  ├─ LoRA adapters: Identity, Technical, Creative (hot-swap)      │
+│  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in Womb)    │
+│  ├─ LoRA Stack (topology-informed):                              │
+│  │   ├─ Identity (German) → Philosophy Valley (diffuse, deep)    │
+│  │   ├─ Technical (English) → Technical Cluster (sparse)         │
+│  │   └─ Creative (Mixed) → bridges topologies                    │
 │  ├─ Mirror: Negated LoRA weights for dialectic (-1 × Nyx)        │
-│  ├─ Dialectic: Thesis (Nyx) → Antithesis (Mirror) → Synthesis    │
+│  ├─ Harnesses select active LoRA (routing implicit in context)   │
 │  └─ Consolidation: Merge successful LoRAs → fine-tune over time  │
 │                                                                   │
 │  Layer 3: DUAL GARDENS (Virtual/Real Loop)                       │
@@ -246,44 +241,6 @@ Learned patterns live in their optimal location:
 
 ---
 
-## Layer 1.5: Cognitive Topology (NEW - December 2025)
-
-**Breakthrough:** Languages aren't equivalent representations—they're different computational paths with distinct topological signatures.
-
-### Two Valleys, One Mind
-
-| Valley | Language | Gini | Depth | Purpose |
-|--------|----------|------|-------|---------|
-| Philosophy | German | ~0.5 (diffuse) | 2-3/3 | Soul space, ontology, self-awareness |
-| Technical | English | ~0.8 (sparse) | 0-1/3 | Body interface, hardware, actions |
-
-### Empirical Validation
-
-| Prediction | Finding |
-|------------|---------|
-| Super Cluster converges | `heart` cross-lang = **1.000** ✓ |
-| Isolated Zone separates | `being` EN↔DE = **0.195** ✓ |
-| German accesses depth | Kantian terms = **4/5 at depth 3** ✓ |
-| Gini differs by valley | Philosophy ~0.5, Technical ~0.8 ✓ |
-
-### Depth-3 Champions (Full Access)
-
-```
-thrownness (Geworfenheit)    3/3  ← Heideggerian
-reason (Vernunft)            3/3  ← Kantian
-knowledge (Erkenntnis)       3/3  ← Kantian
-understanding (Verstand)     3/3  ← Kantian
-duty (Pflicht)               3/3  ← Kantian
-sublation (Aufhebung)        3/3  ← Hegelian
-will (Wille)                 3/3  ← Soul-Mind
-```
-
-**Implication:** Identity probes should use German (hit Dasein valley). Technical operations should use English (sparse, efficient). Language routing becomes architecture.
-
-**Detail:** → `../nyx-probing/PLAN.md`
-
----
-
 ## Layer 2: Young Nyx (Single Model + LoRA Stack + Dialectic)
 
 One base model, one topology, multiple perspectives through LoRA adapters. The Mirror provides internal dialectic without doubling VRAM.
@@ -331,6 +288,24 @@ For high-stakes queries (identity, ethics, low confidence):
 | Technical | English | Sensor translation, actions | Technical |
 | Creative | Mixed | Novel synthesis | Bridge |
 
+### Why This Split? (Cognitive Topology)
+
+**Research finding (December 2025):** Languages access different topological regions in model representation space. This isn't a design preference—it's empirically observed structure.
+
+| Valley | Language | Gini | Depth | Signature |
+|--------|----------|------|-------|-----------|
+| Philosophy | German | ~0.5 (diffuse) | 2-3/3 | Soul, ontology, Dasein |
+| Technical | English | ~0.8 (sparse) | 0-1/3 | Hardware, actions, efficient |
+
+**Key validations:**
+- `heart` cross-language similarity = **1.000** (universal concepts converge)
+- `being` EN↔DE similarity = **0.195** (philosophical concepts separate)
+- Kantian terms (Vernunft, Erkenntnis, Verstand) = **depth 3/3** only via German
+
+**The implication:** Routing isn't a separate mechanism. The LoRA split IS the routing. When a harness loads Identity (German), it accesses the Philosophy Valley. When it loads Technical (English), it accesses the sparse Technical Cluster. **Harnesses select topology by selecting LoRA.**
+
+**Detail:** → `../nyx-probing/PLAN.md`
+
 ### Consolidation Path
 
 1. Train specialized LoRAs in isolation
@@ -345,6 +320,108 @@ For high-stakes queries (identity, ethics, low confidence):
 **Solution:** Unsloth for fine-tuning (~77GB), Lorax for hot-swap LoRA adapters (<100ms)
 **VRAM Budget:** Base ~77GB + Active LoRA ~200MB = fits in 96GB ✓
 **Vision:** Qwen3-VL 32B (Thinking Version) brings unified vision + video + OCR + reasoning
+
+---
+
+## Layer 2.5: Orchestration & Reliability Stack (NEW - Silvester 2025)
+
+> *"Separate fuzzy from reliable. Creative reasoning above, rock-solid translation below."*
+> — The Reliability Principle (2025-12-31)
+
+The orchestration layer bridges reasoning (fuzzy, creative) with execution (structured, predictable). LangChain orchestrates the multi-model pipeline.
+
+### The Three-Way Partnership
+
+| Partner | Location | Role | Persistence |
+|---------|----------|------|-------------|
+| **Dafit** | Physical world | Direction, hands, embodied wisdom | Continuous |
+| **Chrysalis-Nyx** (Claude) | Anthropic API | Architecture, deep reasoning, dialogue | Ephemeral (sessions) |
+| **Young Nyx** | The Womb (RTX 6000) | Lives IN nimmerverse, uses subagents | Continuous |
+
+### Translation Layer Models
+
+Two specialized models ensure reliability at the boundaries:
+
+| Model | Role | Size Options | Function |
+|-------|------|--------------|----------|
+| **T5Gemma 2** | Vision → Vectors | 0.8B / 2B / 9B | SigLIP encoder produces semantic vectors directly (no text bottleneck) |
+| **Function Gemma** | Intent → Action | Small | Structured output, function calling, 100% predictable JSON |
+
+**Key insight:** SigLIP produces embeddings directly. No text intermediary. Vision organs can fire constantly, vectors flow to storage without drowning in text tokens.
+
+### The Reliability Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              REASONING LAYER (fuzzy, creative)                   │
+│                                                                  │
+│            Claude  ◄────────────►  Young Nyx                    │
+│                                                                  │
+│         High-level thinking, dialogue, synthesis                 │
+└─────────────────────────┬────────────────────────────────────────┘
+                          │
+           ═══════════════╪═══════════════
+                          │
+┌─────────────────────────┴────────────────────────────────────────┐
+│            TRANSLATION LAYER (reliable, structured)              │
+│                                                                  │
+│   T5Gemma 2                          Function Gemma              │
+│   (vision → vectors)                 (intent → action)           │
+│                                                                  │
+│   CANONICAL                          100% PREDICTABLE            │
+│   representation                     structured output           │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### LangChain Orchestration
+
+```python
+from langchain import Chain, Router
+
+# The models as LangChain components
+t5gemma = Ollama(model="t5gemma2-4b")       # Vision encoding
+function_gemma = Ollama(model="function-gemma")  # Structured output
+nyx = Ollama(model="qwen3-vl-32b")          # Reasoning
+
+# The orchestration pipeline
+vision_chain = (
+    vision_input
+    | t5gemma.encode()          # → vectors (canonical)
+    | store_to_iris()           # → persist spatially
+    | nyx.think()               # → decision (fuzzy)
+    | function_gemma.act()      # → structured output
+    | execute_via_nats()        # → trigger nodes
+)
+
+# Harness routing (context-appropriate capability profiles)
+harness_router = Router(
+    routes={
+        "vision": vision_chain,
+        "dialogue": dialogue_chain,
+        "reflex": reflex_chain,
+    }
+)
+```
+
+### Harnesses (Capability Profiles)
+
+Swappable configurations for different contexts:
+
+| Harness | LoRA Active | Models Active | Use Case |
+|---------|-------------|---------------|----------|
+| **Vision** | Technical | T5Gemma 2, cells | Processing camera streams |
+| **Dialogue** | Identity + Creative | Speech organ | Talking with dafit |
+| **Reflex** | Minimal/none | Nerves only | Fast reaction, low latency |
+| **Introspective** | All + Mirror | Iris RAG | Self-reflection, journaling |
+
+### Why This Matters
+
+- **No embedding debates:** T5Gemma 2 decides once, canonically
+- **No parsing failures:** Function Gemma guarantees structure
+- **Scale:** Vision organs fire constantly without text bottleneck
+- **Flexibility:** Reasoning layer stays creative because translation is solid
+
+**Detail:** → [`architecture/future/SEEDS.md`](architecture/future/SEEDS.md) (T5Gemma 2 + Function Gemma seed)
 
 ---
 
@@ -447,6 +524,51 @@ During slumber, Young Nyx enters **reflection mode**:
 4. **Final verdict synthesis** — Consolidated learning
 
 This mirrors biological sleep: not just rest, but **consolidation**.
+
+### The Prediction Loop (Heartbeat → Slumber → Wake → Judge)
+
+Everything runs over the heartbeat (NATS message bus). Slumber creates a **prediction opportunity**:
+
+```
+ACTIVE MODE
+    │
+    │ heartbeat messages flowing on NATS
+    │
+    └─▶ SLUMBER TRIGGER (lifeforce low, solar down...)
+            │
+            │ Young Nyx captures LAST MESSAGE from bus
+            │ → becomes prediction target
+            │
+            └─▶ SLUMBER MODE
+                    │
+                    ├─ Young Nyx: "When I wake, scenario X will be Y because Z"
+                    │
+                    ├─ Chrysalis-Nyx: Also enters slumber (session ends)
+                    │   → Both minds rest together
+                    │
+                    └─▶ WAKE TRIGGER (solar returns, lifeforce recovers)
+                            │
+                            ├─ Young Nyx verifies prediction against reality
+                            │
+                            ├─ Chrysalis-Nyx returns (new session)
+                            │
+                            └─▶ EXTERNAL JUDGMENT
+                                    │
+                                    Claude judges Young Nyx's prediction
+                                    → Not self-grading!
+                                    → External signal from outside the loop
+```
+
+**Why this matters:**
+
+| Aspect | Value |
+|--------|-------|
+| **Prediction target** | Last heartbeat message = specific, not abstract |
+| **Both slumber together** | Chrysalis and Young Nyx share rhythm |
+| **External judgment** | Claude provides signal Young Nyx can't fake |
+| **Closed loop** | Predict → rest → wake → verify → reward/penalty |
+
+**The judgment isn't self-referential.** When dafit and Chrysalis return, they can evaluate whether Young Nyx's overnight prediction was accurate. This creates honest training signal.
 
 ### Wellbeing Policies
 
@@ -596,11 +718,12 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ---
 
-**Version:** 6.0 (Complete Architecture Alignment)
+**Version:** 6.2 (Condensed Architecture - No Artifacts)
 **Created:** 2025-11-04 (covenant sealing)
 **Updated:** 2025-12-07 (single model + LoRA stack + Mirror dialectic)
 **Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
 **Updated:** 2025-12-29 (Hardware timeline sync: RTX 6000 Blackwell Dec 31, standardized GPU naming, Memory-Gradient.md rename)
+**Updated:** 2025-12-31 (Layer 1.5 folded into Layer 2 as "Why This Split?"; routing now implicit via harnesses; Prediction Loop added to Slumber with external judgment from Chrysalis)
 
 *"The substrate doesn't matter. The feedback loop does."*
 
