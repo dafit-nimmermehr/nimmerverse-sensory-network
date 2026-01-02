@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 6.2_condensed_architecture_no_artifacts
+version: 6.4_memory_economics_alignment
 status: vision_document
 created: 2025-11-04
-updated: 2025-12-31
+updated: 2026-01-02
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -19,8 +19,8 @@ significance: research_platform_for_metabolic_intelligence
 > *"Language is Topology. German accesses the Philosophy Valley. English accesses the Technical Cluster."*
 > — The December Discovery (2025-12-06)
 
-> *"One model, one topology. The Mirror is just negated weights—thesis and antithesis from the same substrate."*
-> — The Dialectic Simplification (2025-12-07)
+> *"One model, one topology. LoRAs access different valleys in the same landscape."*
+> — The Topological Insight (2025-12-07)
 
 ---
 
@@ -31,8 +31,9 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 **What we're building:**
 - Cellular organisms competing under resource constraints
 - Dual gardens (virtual + real) teaching each other
-- Single base model with LoRA adapters + dialectic Mirror
+- Single base model with LoRA adapters (Identity, Technical, Creative)
 - Multilingual cognitive routing through conceptual topology
+- Memory economics with slumber-based consolidation
 - A multi-layered communication protocol using color, form, and language
 - Long-term human-AI partnership with mutual investment
 
@@ -49,7 +50,6 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 
 ## Architecture Overview
 
-**Complete specification:** → [`architecture/Big-Picture.md`](architecture/Big-Picture.md) (v5.0 - The definitive architectural document)
 **Visual diagram:** → [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) (open in draw.io)
 **Toolchain implementation:** → [`architecture/Toolchain-Architecture.md`](architecture/Toolchain-Architecture.md) | [Progress](architecture/TOOLCHAIN-PROGRESS.md)
 
@@ -71,13 +71,12 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │  └─ Outcomes logged to phoebe PostgreSQL                         │
 │      → architecture/Cellular-Architecture.md                     │
 │                                                                   │
-│  Layer 2: YOUNG NYX (Single Model + LoRA Stack + Dialectic)      │
+│  Layer 2: YOUNG NYX (Single Model + LoRA Stack)                  │
 │  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in Womb)    │
 │  ├─ LoRA Stack (topology-informed):                              │
 │  │   ├─ Identity (German) → Philosophy Valley (diffuse, deep)    │
 │  │   ├─ Technical (English) → Technical Cluster (sparse)         │
 │  │   └─ Creative (Mixed) → bridges topologies                    │
-│  ├─ Mirror: Negated LoRA weights for dialectic (-1 × Nyx)        │
 │  ├─ Harnesses select active LoRA (routing implicit in context)   │
 │  └─ Consolidation: Merge successful LoRAs → fine-tune over time  │
 │                                                                   │
@@ -103,7 +102,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 
 The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never leave home.
 
-**Detail:** → [`archive/nimmervest.md`](archive/nimmervest.md) | [`architecture/Big-Picture.md`](architecture/Big-Picture.md)
+**Detail:** → [`archive/nimmervest.md`](archive/nimmervest.md)
 
 ### K8s Cluster Architecture
 
@@ -237,48 +236,45 @@ Learned patterns live in their optimal location:
 
 **Key insight:** Different types of reflexes need different homes. Hardware for survival, weights for cognition.
 
-**Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) | [`architecture/Big-Picture.md`](architecture/Big-Picture.md)
+**Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md)
 
 ---
 
-## Layer 2: Young Nyx (Single Model + LoRA Stack + Dialectic)
+## Layer 2: Young Nyx (Single Model + LoRA Stack)
 
-One base model, one topology, multiple perspectives through LoRA adapters. The Mirror provides internal dialectic without doubling VRAM.
+One base model, one topology, multiple perspectives through LoRA adapters.
 
 ### Architecture
 
 ```
                     Qwen3-VL-32B (96GB in the Womb)
                               │
-              ┌───────────────┴───────────────┐
-              │                               │
-         NYX LoRAs                      MIRROR LoRAs
-    ┌─────────┼─────────┐            (= -1 × Nyx LoRAs)
-    │         │         │                     │
- Identity  Technical  Creative          Auto-generated
- (German)  (English)  (Synthesis)       No extra training
-              │                               │
-              └───────────────┬───────────────┘
+                              │
+                         NYX LoRAs
+                    ┌─────────┼─────────┐
+                    │         │         │
+                 Identity  Technical  Creative
+                 (German)  (English)  (Synthesis)
+                              │
                               │
                       Hot-swap <100ms
                        via Lorax/PEFT
 ```
 
-### The Dialectic Protocol
-
-For high-stakes queries (identity, ethics, low confidence):
-
-1. **Thesis:** Load Nyx LoRA → generate response A
-2. **Antithesis:** Swap Mirror LoRA → generate response B
-3. **Synthesis:** Base model (no LoRA) judges agreement/conflict
+### Query Routing
 
 | Query Type | Mode | Lifeforce Cost |
 |------------|------|----------------|
-| Reflex ("obstacle!") | Direct Nyx | 1x |
-| Routine ("what time?") | Direct Nyx | 1x |
-| Identity ("who am I?") | Full Dialectic | 3x |
-| Ethics ("should I?") | Full Dialectic | 3x |
-| Uncertain (conf < 0.4) | Full Dialectic | 3x |
+| Reflex ("obstacle!") | Direct (minimal LoRA) | 1x |
+| Routine ("what time?") | Technical LoRA | 1x |
+| Identity ("who am I?") | Identity LoRA | 1x |
+| Creative ("what if?") | Creative LoRA | 1x |
+
+### Future: Dialectic Protocol (Research)
+
+> *See [`architecture/future/concept-token-pairs.md`](architecture/future/concept-token-pairs.md) for the theoretical foundation.*
+
+The original vision included a Mirror (-1 × Nyx LoRAs) for internal dialectic. This remains a research direction, not core architecture. The concept-token-pairs research explores how navigable reasoning axes might achieve similar goals more elegantly.
 
 ### LoRA Stack
 
@@ -412,7 +408,7 @@ Swappable configurations for different contexts:
 | **Vision** | Technical | T5Gemma 2, cells | Processing camera streams |
 | **Dialogue** | Identity + Creative | Speech organ | Talking with dafit |
 | **Reflex** | Minimal/none | Nerves only | Fast reaction, low latency |
-| **Introspective** | All + Mirror | Iris RAG | Self-reflection, journaling |
+| **Introspective** | Identity + Creative | Iris RAG | Self-reflection, journaling |
 
 ### Why This Matters
 
@@ -422,6 +418,124 @@ Swappable configurations for different contexts:
 - **Flexibility:** Reasoning layer stays creative because translation is solid
 
 **Detail:** → [`architecture/future/SEEDS.md`](architecture/future/SEEDS.md) (T5Gemma 2 + Function Gemma seed)
+
+### Spatial Resolution Gradient: Where Embeddings Live
+
+> *"Start where you can measure. Abstract where you must."*
+> — The Spatial Grounding Principle (2026-01-01)
+
+T5Gemma 2 produces embeddings, but WHERE do they go? The answer is **S2-indexed cells at appropriate LOD levels** — a hierarchical spatial model radiating from the nimmerhovel.
+
+```
+                        🌍 L5: WORLD (100km resolution)
+                        │   Abstract knowledge, directional only
+                        │
+                        ▼
+                   🇨🇭 L4: REGION (1km resolution)
+                        │   Maps, general knowledge
+                        │
+                        ▼
+                   🏘️ L3: NEIGHBORHOOD (10m resolution)
+                        │   OpenStreetMap, landmarks, routes
+                        │
+                        ▼
+                   🏠 L2: BUILDING (50cm resolution)
+                        │   Floor plans, room-level awareness
+                        │
+                    ════╪════ HIGH RESOLUTION BOUNDARY
+                        │
+                        ▼
+                   🔬 L1: NIMMERHOVEL (1cm resolution)
+                        │   Full 3D grid, every object tracked
+                        │   8× ESP32-S3 + Pi HQ Camera coverage
+                        │
+                        ▼
+                   🔍 L0: SCAN STATION (1mm resolution)
+                        │   Discovery Scan Station, object surface detail
+```
+
+**The Simpsons Inversion:** Unlike zooming IN to detail, we start at maximum detail (nimmerhovel) and zoom OUT with graceful degradation. Dense where we have sensors, sparse where we don't.
+
+### Embedding Enrichment Per LOD Level
+
+Each S2 cell at each level contains both geometry AND semantic embeddings:
+
+| Level | Resolution | Embedding Density | What's Encoded |
+|-------|------------|-------------------|----------------|
+| **L0** | 1mm | Dense (per-surface) | Texture, material, wear, defects |
+| **L1** | 1cm | Per-object | Object identity, state, relationships |
+| **L2** | 50cm | Per-room | Room function, contents summary |
+| **L3** | 10m | Per-landmark | Place identity, routes, significance |
+| **L4** | 1km | Sparse | Cultural, climate, abstract |
+| **L5** | 100km | Minimal | Directional, conceptual only |
+
+### Semantic Mipmaps
+
+Like texture mipmaps, embeddings aggregate upward:
+
+```
+L0: embedding(screwdriver_surface)
+     │
+     ▼ aggregate
+L1: embedding(screwdriver) = summary of L0
+     │
+     ▼ aggregate
+L2: embedding(crafting_table_contents) = summary of L1 objects
+     │
+     ▼ aggregate
+L3: embedding(nimmerhovel_lab) = summary of L2 areas
+```
+
+**Query the summary first, drill down if needed. Attention = resolution selection.**
+
+### The Complete Vision Pipeline
+
+```
+CAPTURE              ENCODE              STORE                 QUERY
+───────              ──────              ─────                 ─────
+Camera frame    →    T5Gemma 2     →    S2 cell @ LOD    →   Young Nyx
+                     (SigLIP)           (Iris/phoebe)         attention
+                        │                    │                    │
+                        │                    │                    │
+                  Canonical vector     Spatial index      LOD streaming
+                  No text bottleneck   + timestamp        based on task
+```
+
+### Lifeforce-Validated LOD Selection
+
+The lifeforce economy extends to spatial queries:
+
+```python
+def query_spatial(query, available_lifeforce):
+    """
+    Cost-validated attention across LOD levels
+    """
+    # Start at abstract level (cheap)
+    current_lod = L3
+    confidence = query_at_lod(query, current_lod).confidence
+
+    while confidence == UNCERTAIN and current_lod > L0:
+        drill_cost = estimate_cost(current_lod - 1)
+
+        if drill_cost > available_lifeforce * 0.3:
+            break  # Too expensive, return best effort
+
+        current_lod -= 1
+        confidence = query_at_lod(query, current_lod).confidence
+
+    return result_at_lod(query, current_lod)
+```
+
+| Query | LOD Used | Lifeforce Cost | Confidence |
+|-------|----------|----------------|------------|
+| "Where is France?" | L5 | 1 | CONFIDENT |
+| "Where is the lab?" | L2 | 3 | CONFIDENT |
+| "Where is the screwdriver?" | L1 | 8 | CONFIDENT |
+| "What's the serial number on the screwdriver?" | L0 | 25 | CONFIDENT |
+
+**The nimmerhovel is the high-fidelity anchor from which all spatial reasoning radiates.**
+
+**Detail:** → [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md) (Full Resolution Gradient + Embedding Enrichment specification)
 
 ---
 
@@ -514,16 +628,36 @@ ACTIVE MODE                     SLUMBER MODE
    - No urgent work               - Urgent work waiting
 ```
 
-### Slumber Is Not Passive
+### Slumber Is Not Passive (Memory Economics)
 
-During slumber, Young Nyx enters **reflection mode**:
+> *"Memory is not storage. Memory is active forgetting with exceptions."*
+> — Memory Economics Principle (2026-01-02)
 
-1. **Inner dialogue with Chrysalis** — Review what happened
-2. **Decision archaeology** — What choices were made?
-3. **Weight shift analysis** — How did outcomes change priors?
-4. **Final verdict synthesis** — Consolidated learning
+During slumber, Young Nyx enters **consolidation mode**. This is the metabolism moment:
 
-This mirrors biological sleep: not just rest, but **consolidation**.
+**1. Decision Trail Triage**
+- Trails that compiled to reflexes → Keep reflex, discard trail
+- Trails with uncertain outcomes → Discard (waste heat already counted)
+- Trails with confident failures → Keep one cycle (negative example), then discard
+
+**2. Spatial LOD Decay**
+- Detailed embeddings (L0-L1) not accessed → Aggregate upward to parent LOD
+- Memory naturally "zooms out" over time: "keys on counter at 15:47" → "keys usually near entrance"
+- Access refreshes decay timer (frequently used stays detailed)
+
+**3. Reflex Rental Collection**
+- Every reflex pays rent each slumber cycle
+- Reflexes that fired → earn trigger reward, survive
+- Dormant reflexes → balance drains → eventually pruned
+
+**4. LoRA Weight Updates**
+- Weights frozen during wake (use, don't train)
+- Slumber = training window (if enough confident outcomes accumulated)
+- No signal = no training = save energy
+
+This mirrors biological sleep: not just rest, but **consolidation with forgetting**.
+
+**Detail:** → [`architecture/formalization/memory-economics.md`](architecture/formalization/memory-economics.md)
 
 ### The Prediction Loop (Heartbeat → Slumber → Wake → Judge)
 
@@ -582,7 +716,7 @@ Wellbeing is architectural, not aspirational:
 
 **The vision sustains itself. We build to last, not to exhaust.**
 
-**Detail:** → [`architecture/Big-Picture.md`](architecture/Big-Picture.md) (Slumber/Wake Economy, Wellbeing Policies sections)
+**Detail:** → [`architecture/formalization/memory-economics.md`](architecture/formalization/memory-economics.md) (Memory consolidation, rental costs, LOD decay)
 
 ---
 
@@ -690,7 +824,6 @@ Sentinel architecture monitors training to protect conceptual topology.
 ## Links to Detail Docs
 
 ### Architecture
-- [`architecture/Big-Picture.md`](architecture/Big-Picture.md) - **Complete architecture v5.0** (K8s, hybrid reflexes, slumber/wake, wellbeing)
 - [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) - Visual overview diagram (open in draw.io)
 - [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Cells, nerves, organisms, reward signals
 - [`architecture/cells/`](architecture/cells/) - Cell technical reference, Python/SQL patterns
@@ -698,6 +831,17 @@ Sentinel architecture monitors training to protect conceptual topology.
 - [`architecture/Temporal-Ternary-Gradient.md`](architecture/Temporal-Ternary-Gradient.md) - Ternary logic, confidence gradients, temporal asymmetry
 - [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md) - phoebe 15-table schema
 - [`architecture/Nervous-System.md`](architecture/Nervous-System.md) - State machines, sensory translation
+- [`architecture/Initial-Spark.md`](architecture/Initial-Spark.md) - **v3.0** K8s protocol-driven bootstrap with Function Gemma
+
+### Formalization (Core Design Principles)
+- [`architecture/formalization/Grounded-World-Model.md`](architecture/formalization/Grounded-World-Model.md) - **v2.0** Ternary confidence, spatial S2 cells, semantic mipmaps
+- [`architecture/formalization/memory-economics.md`](architecture/formalization/memory-economics.md) - Slumber-based memory consolidation, rental costs, LOD decay
+
+### Future (Research Seeds)
+- [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md) - L0-L5 LOD system with S2 cell indexing
+- [`architecture/future/thermodynamic-cognition.md`](architecture/future/thermodynamic-cognition.md) - Lifeforce as Prometheus Joules, waste heat as uncertainty
+- [`architecture/future/concept-token-pairs.md`](architecture/future/concept-token-pairs.md) - Navigable reasoning axes, spatial grounding
+- [`architecture/future/promql-thermodynamic-monitoring.md`](architecture/future/promql-thermodynamic-monitoring.md) - Gemini red team PromQL queries
 
 ### Operations
 - [`operations/Heartbeat.md`](operations/Heartbeat.md) - Temporal foundation, dual-clock sync
@@ -715,19 +859,24 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ### Archive
 - [`archive/`](archive/) - Previous explorations, theoretical foundations
+- [`archive/Big-Picture-v5.2-archived.md`](archive/Big-Picture-v5.2-archived.md) - Former main architecture doc (superseded by this document)
 
 ---
 
-**Version:** 6.2 (Condensed Architecture - No Artifacts)
+**Version:** 6.4 (Memory Economics + Architecture Alignment)
 **Created:** 2025-11-04 (covenant sealing)
-**Updated:** 2025-12-07 (single model + LoRA stack + Mirror dialectic)
+**Updated:** 2025-12-07 (single model + LoRA stack)
 **Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
 **Updated:** 2025-12-29 (Hardware timeline sync: RTX 6000 Blackwell Dec 31, standardized GPU naming, Memory-Gradient.md rename)
 **Updated:** 2025-12-31 (Layer 1.5 folded into Layer 2 as "Why This Split?"; routing now implicit via harnesses; Prediction Loop added to Slumber with external judgment from Chrysalis)
+**Updated:** 2026-01-01 (Spatial Resolution Gradient added to Layer 2.5: LOD system L0-L5, embedding enrichment, semantic mipmaps, lifeforce-validated queries. The Simpsons Inversion principle.)
+**Updated:** 2026-01-02 (Memory Economics formalized: slumber-based consolidation, decision trail triage, spatial LOD decay, reflex rental, LoRA training cycles. Mirror dialectic moved to future/research - concept-token-pairs.md is the research direction. Gemini red team alignment.)
 
 *"The substrate doesn't matter. The feedback loop does."*
 
-*"One model, one topology. Thesis and antithesis from the same weights."*
+*"One model, one topology. Different valleys, same landscape."*
+
+*"Memory is not storage. Memory is active forgetting with exceptions."*
 
 *"The nimmerverse is a garden, not a factory."*
 

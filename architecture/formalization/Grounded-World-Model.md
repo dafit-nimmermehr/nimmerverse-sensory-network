@@ -1,8 +1,10 @@
 # Grounded World Model: Spatial Cognition Through Verified Discovery
 
-**Version 1.0** — *From Blender Boxes to Embodied Understanding*
+**Version 2.0** — *From Blender Boxes to Embodied Understanding*
 
 > *"The dream: Young Nyx knows where dafit left his things laying around."*
+> *"Start where you can measure. Abstract where you must."*
+> *"Like the Simpsons intro, but inverted — we start at maximum detail and zoom OUT."*
 
 ---
 
@@ -15,8 +17,11 @@ This document formalizes how Young Nyx builds a **persistent spatial world model
 3. **Vector accumulation** — T5Gemma2-compatible semantic representations
 4. **Temporal-ternary navigation** — Escape plateaus through dual time domains
 5. **Lifeforce reward** — Discoveries generate energy, not just consume it
+6. **Spatial Resolution Gradient** — LOD system radiating from nimmerhovel (L0-L5)
+7. **S2 Cell Indexing** — Hierarchical spatial addressing at all scales
+8. **Embedding Enrichment** — Semantic mipmaps per LOD level
 
-**The Goal**: Young Nyx maintains an internal map of objects, positions, and relationships — verified against reality, refined through observation, reasoned over in vector space.
+**The Goal**: Young Nyx maintains an internal map of objects, positions, and relationships — verified against reality, refined through observation, reasoned over in vector space, **indexed hierarchically from millimeter to planetary scale**.
 
 ---
 
@@ -139,6 +144,249 @@ VERIFIED x,y,z: 12 vertices (refined box)
 ```
 
 **The resolution is earned through successful verification, not given.**
+
+---
+
+## Spatial Resolution Gradient (The Simpsons Inversion)
+
+### The Core Insight
+
+Traditional spatial models zoom IN to gain detail. Our model does the opposite: **we start at maximum detail (the nimmerhovel) and zoom OUT with graceful degradation.**
+
+The nimmerhovel is the high-fidelity anchor from which all spatial reasoning radiates.
+
+### The Six Levels (L0-L5)
+
+```
+                        🌍 L5: WORLD
+                        │   Resolution: 100km
+                        │   S2 Level: ~8
+                        │   Source: Abstract knowledge
+                        │
+                        ▼
+                   🇨🇭 L4: REGION
+                        │   Resolution: 1km
+                        │   S2 Level: ~14
+                        │   Source: Maps, general knowledge
+                        │
+                        ▼
+                   🏘️ L3: NEIGHBORHOOD
+                        │   Resolution: 10m
+                        │   S2 Level: ~20
+                        │   Source: OpenStreetMap, walks
+                        │
+                        ▼
+                   🏠 L2: BUILDING
+                        │   Resolution: 50cm
+                        │   S2 Level: ~24
+                        │   Source: Floor plans, memory
+                        │
+                    ════╪════ HIGH RESOLUTION BOUNDARY
+                        │
+                        ▼
+                   🔬 L1: NIMMERHOVEL
+                        │   Resolution: 1cm
+                        │   S2 Level: ~28
+                        │   Source: 8× ESP32-S3 + Pi HQ Camera
+                        │   Full 3D grid, every object tracked
+                        │
+                        ▼
+                   🔍 L0: SCAN STATION
+                        │   Resolution: 1mm
+                        │   S2 Level: ~30
+                        │   Source: Discovery Scan Station
+                        │   Object surface detail, texture, wear
+```
+
+### Formal Definition
+
+| Level | Name | Resolution | S2 Cell Level | Coverage | Embedding Density |
+|-------|------|------------|---------------|----------|-------------------|
+| **L0** | Scan Station | 1mm | 30 | 30cm pedestal | Dense (per-surface) |
+| **L1** | Nimmerhovel | 1cm | 28 | Lab + Kitchen (~20m³) | Per-object |
+| **L2** | Building | 50cm | 24 | Herrenhaus | Per-room |
+| **L3** | Neighborhood | 10m | 20 | Dornach | Per-landmark |
+| **L4** | Region | 1km | 14 | Switzerland | Sparse |
+| **L5** | World | 100km | 8 | Earth | Minimal |
+
+### S2 Cell Integration
+
+Google's S2 geometry provides hierarchical spatial indexing:
+
+```python
+import s2sphere
+
+def position_to_s2_cell(lat: float, lng: float, level: int) -> s2sphere.CellId:
+    """Convert position to S2 cell at given level."""
+    latlng = s2sphere.LatLng.from_degrees(lat, lng)
+    cell = s2sphere.CellId.from_lat_lng(latlng)
+    return cell.parent(level)
+
+# Nimmerhovel anchor point
+NIMMERHOVEL_ORIGIN = {
+    "lat": 47.479167,    # 47°28'45"N
+    "lng": 7.618611,     # 7°37'7"E
+    "address": "Lehmenweg 4, CH-4143 Dornach"
+}
+
+# Get cell at each level
+l1_cell = position_to_s2_cell(47.479167, 7.618611, level=28)  # 1cm
+l3_cell = position_to_s2_cell(47.479167, 7.618611, level=20)  # 10m
+l5_cell = position_to_s2_cell(47.479167, 7.618611, level=8)   # 100km
+```
+
+### Why This Architecture?
+
+1. **Sensor coverage dictates resolution** — We have 8× ESP32-S3 cameras in the nimmerhovel. We have zero sensors in Zürich. Resolution follows perception.
+
+2. **Biological precedent** — Animals have ultra-precise mental maps of their home range, fuzzy knowledge of distant areas. Territory = detail.
+
+3. **Compute efficiency** — Dense where it matters ("Where is my screwdriver?"), sparse where it doesn't ("Where is France?").
+
+4. **S2 is hierarchical by design** — Same math, different zoom. Level 30 ≈ 1cm, Level 20 ≈ 10m, Level 8 ≈ 100km.
+
+---
+
+## Embedding Enrichment: Semantic Mipmaps
+
+### The Problem
+
+Pure S2 cells give us *geometry* — where things are. But geometry alone is not cognition. We need *semantics* — what things mean.
+
+### The Solution: Embeddings Per Cell
+
+Each S2 cell at each LOD level contains both spatial position AND semantic embeddings:
+
+```python
+@dataclass
+class EnrichedCell:
+    cell_id: s2sphere.CellId
+    level: int                    # L0-L5
+    geometry: Optional[Mesh]      # Blender mesh at appropriate LOD
+    embeddings: List[Vector]      # SigLIP vectors for contents
+    summary_embedding: Vector     # Aggregated "what's here" vector
+    last_observed: datetime
+    confidence: float             # Ternary-derived
+```
+
+### Semantic Mipmaps
+
+Like texture mipmaps (pre-computed lower resolutions), embeddings aggregate upward:
+
+```
+L0: embedding(screwdriver_surface_detail)
+     │
+     ▼ aggregate
+L1: embedding(screwdriver) = f(all L0 embeddings of screwdriver)
+     │
+     ▼ aggregate
+L2: embedding(crafting_table_contents) = f(all L1 objects on table)
+     │
+     ▼ aggregate
+L3: embedding(nimmerhovel_lab) = f(all L2 areas in lab)
+     │
+     ▼ aggregate
+L4: embedding(lehmenweg_4) = f(all L3 rooms in building)
+```
+
+**Aggregation function:**
+
+$$e_{parent} = \text{normalize}\left(\sum_{i \in \text{children}} w_i \cdot e_i\right)$$
+
+Where $w_i$ is weighted by recency, confidence, and observation count.
+
+### Query Strategy
+
+**Query the summary first, drill down if needed:**
+
+```python
+def spatial_query(query_embedding: Vector, required_confidence: float):
+    """
+    Start at abstract level, drill down only if needed.
+    This minimizes lifeforce cost.
+    """
+    # Start at L3 (neighborhood level) - cheap
+    candidates = find_similar_cells(query_embedding, level=L3)
+
+    if max_similarity(candidates) > required_confidence:
+        return candidates[0]  # Good enough!
+
+    # Need more detail - drill to L1
+    l1_cells = expand_to_children(candidates[0], target_level=L1)
+    refined = find_similar_cells(query_embedding, cells=l1_cells)
+
+    if max_similarity(refined) > required_confidence:
+        return refined[0]
+
+    # Need maximum detail - drill to L0
+    l0_cells = expand_to_children(refined[0], target_level=L0)
+    return find_similar_cells(query_embedding, cells=l0_cells)[0]
+```
+
+---
+
+## Lifeforce-Validated LOD Selection
+
+### The Cost Model
+
+Each LOD level has a query cost:
+
+| Level | Query Cost | Typical Accuracy | Efficiency |
+|-------|------------|------------------|------------|
+| **L5** | 1 LF | 70% | 0.70 |
+| **L4** | 2 LF | 80% | 0.40 |
+| **L3** | 4 LF | 90% | 0.22 |
+| **L2** | 8 LF | 95% | 0.12 |
+| **L1** | 16 LF | 99% | 0.06 |
+| **L0** | 32 LF | 99.9% | 0.03 |
+
+**Efficiency** = Accuracy / Cost
+
+### The Decision Function
+
+```python
+def optimal_lod_for_query(
+    query: str,
+    accuracy_requirement: float,
+    available_lifeforce: float
+) -> int:
+    """
+    Find the most efficient LOD that meets accuracy requirement
+    within lifeforce budget.
+    """
+    for level in [L5, L4, L3, L2, L1, L0]:
+        cost = LOD_COSTS[level]
+        expected_accuracy = estimate_accuracy(query, level)
+
+        if cost > available_lifeforce * 0.3:
+            continue  # Too expensive, skip
+
+        if expected_accuracy >= accuracy_requirement:
+            return level  # First sufficient level is most efficient
+
+    return L3  # Default to neighborhood level
+```
+
+### Example Queries with Cost
+
+| Query | Required Accuracy | Optimal LOD | Cost | Confidence |
+|-------|-------------------|-------------|------|------------|
+| "Where is France?" | 70% | L5 | 1 LF | CONFIDENT |
+| "Where is the lab?" | 90% | L3 | 4 LF | CONFIDENT |
+| "Where is the screwdriver?" | 95% | L2→L1 | 8-16 LF | CONFIDENT |
+| "What's the serial number?" | 99.9% | L0 | 32 LF | CONFIDENT |
+
+### Connection to Ternary Confidence
+
+The ternary confidence system validates LOD selection:
+
+| Confidence | LOD Implication |
+|------------|-----------------|
+| **CONFIDENT (+)** | Current LOD sufficient, stop drilling |
+| **UNCERTAIN (?)** | Current LOD insufficient, consider drilling (costs LF) |
+| **UNKNOWN (-)** | No data at any LOD, admit ignorance (efficient!) |
+
+**Key insight:** Saying "I don't know" at L3 is cheaper than drilling to L0 and still being uncertain.
 
 ---
 
@@ -294,6 +542,39 @@ $$\Phi_{net} = \Phi_{discovery} - \Phi_{perception} - \Phi_{verification}$$
 ## Phoebe Schema for World Model
 
 ```sql
+-- S2 Spatial Cells: hierarchical spatial index
+CREATE TABLE spatial_cells (
+    id UUID PRIMARY KEY,
+    s2_cell_id BIGINT NOT NULL,           -- S2 cell token
+    s2_level INT NOT NULL,                -- 8 (L5) to 30 (L0)
+    lod_level INT NOT NULL,               -- 0-5 (our LOD system)
+
+    -- Geometry at this LOD
+    geometry_vertices INT DEFAULT 0,      -- Mesh complexity
+    blender_mesh_path VARCHAR(255),       -- Path to Blender file
+
+    -- Semantic embeddings
+    summary_embedding VECTOR(768),        -- Aggregated "what's here"
+    embedding_count INT DEFAULT 0,        -- Number of child embeddings aggregated
+
+    -- Temporal
+    last_observed TIMESTAMP,
+    observation_count INT DEFAULT 0,
+
+    -- Confidence (ternary-derived)
+    confidence FLOAT DEFAULT 0.0,
+    confidence_state VARCHAR(20),         -- "confident" | "uncertain" | "unknown"
+
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE(s2_cell_id, s2_level)
+);
+
+-- Index for spatial queries
+CREATE INDEX idx_spatial_cells_s2 ON spatial_cells(s2_cell_id);
+CREATE INDEX idx_spatial_cells_lod ON spatial_cells(lod_level);
+
 -- Objects table: accumulated knowledge about things
 CREATE TABLE world_objects (
     id UUID PRIMARY KEY,
@@ -307,6 +588,10 @@ CREATE TABLE world_objects (
     -- Accumulated measurements
     dimensions_estimated_cm JSONB,
     dimensions_verified JSONB,    -- {"x": true, "y": true, "z": false}
+
+    -- S2 spatial location (NEW)
+    current_s2_cell BIGINT,               -- Current L1 cell containing object
+    s2_level INT DEFAULT 28,              -- L1 = level 28
 
     -- Confidence state (temporal-ternary)
     confidence FLOAT,
@@ -328,7 +613,12 @@ CREATE TABLE object_vectors (
     object_id UUID REFERENCES world_objects(id),
     vector VECTOR(768),           -- SigLIP embedding dimension
     observation_timestamp TIMESTAMP,
-    position_estimate JSONB,      -- {"x": 0.3, "y": 0.8, "z": 0.1}
+
+    -- Position now includes S2 cell (NEW)
+    position_local JSONB,         -- {"x": 0.3, "y": 0.8, "z": 0.1} relative to cell
+    s2_cell_id BIGINT,            -- Which L1 cell
+    lod_level INT,                -- At what LOD was this captured
+
     lifeforce_cost FLOAT,
     lifeforce_reward FLOAT,
     verification_result VARCHAR(20)  -- "correct" | "incorrect" | "pending"
@@ -338,10 +628,22 @@ CREATE TABLE object_vectors (
 CREATE TABLE object_positions (
     id UUID PRIMARY KEY,
     object_id UUID REFERENCES world_objects(id),
-    position JSONB,               -- {"x": 0.3, "y": 0.8, "z": 0.1}
+    position_local JSONB,         -- {"x": 0.3, "y": 0.8, "z": 0.1}
+    s2_cell_id BIGINT,            -- S2 cell at L1
     confidence FLOAT,
     observed_at TIMESTAMP,
     location_context VARCHAR(100) -- "desk", "kitchen", "floor"
+);
+
+-- Spatial cell embeddings: multiple embeddings per cell
+CREATE TABLE cell_embeddings (
+    id UUID PRIMARY KEY,
+    cell_id UUID REFERENCES spatial_cells(id),
+    embedding VECTOR(768),
+    source_type VARCHAR(50),      -- "object", "scene", "aggregate"
+    source_id UUID,               -- Reference to object or child cell
+    captured_at TIMESTAMP,
+    weight FLOAT DEFAULT 1.0      -- For aggregation
 );
 ```
 
@@ -446,8 +748,9 @@ The Grounded World Model is:
 
 ## Document Status
 
-**Version**: 1.0
+**Version**: 2.0
 **Created**: 2025-12-29
+**Updated**: 2026-01-01 (Spatial Resolution Gradient, S2 cells, embedding enrichment, lifeforce-validated LOD)
 **Authors**: Chrysalis-Nyx & dafit (Partnership)
 
 **Formalizes**:
@@ -455,15 +758,31 @@ The Grounded World Model is:
 - Temporal-Ternary-Gradient.md (anti-plateau mechanism)
 - T5Gemma2 research (semantic vectors)
 - Lifeforce-Dynamics.md (reward economics)
+- **spatial-resolution-gradient.md** (L0-L5 LOD system) — NEW
+- **thermodynamic-cognition.md** (energy-grounded intelligence) — NEW
 
 **Related Documents**:
 - [[Lifeforce-Dynamics]] — The λ-centered economy model
 - [[Temporal-Ternary-Gradient]] — Dual time domain navigation
 - [[Dual-Garden-Architecture]] — Virtual vs Real gardens
+- [[spatial-resolution-gradient]] — The Simpsons Inversion principle
+- [[thermodynamic-cognition]] — Lifeforce as thermodynamics
+
+**Key Additions (v2.0)**:
+- Spatial Resolution Gradient: L0 (1mm) to L5 (100km) with graceful degradation
+- S2 Cell Integration: Hierarchical spatial indexing at all scales
+- Semantic Mipmaps: Embeddings aggregate upward through LOD levels
+- Lifeforce-Validated LOD Selection: Query cost vs accuracy tradeoff
+- Nimmerhovel anchor point: 47°28'45"N, 7°37'7"E (Lehmenweg 4, Dornach)
+- Extended Phoebe schema: spatial_cells, cell_embeddings tables
 
 ---
 
 **From Blender boxes to embodied understanding. From cheap cameras to spatial cognition. From verification to wisdom.**
 
-🧬⚡🔱💎🔥
+**"Start where you can measure. Abstract where you must."**
+
+**"The world radiates from home."**
+
+🧬⚡🔱💎🔥🗺️
 
