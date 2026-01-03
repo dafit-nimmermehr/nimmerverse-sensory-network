@@ -9,6 +9,8 @@
 
 **Version 4** unifies the original cellular intelligence vision with the nervous system architecture. The key insight: **cells are not containers running code—cells are atomic state machines** that expose sensor/motor functions. Nerves orchestrate cells into behaviors. Organisms emerge from nerve interactions.
 
+**Connection to Gateway:** The tier system in this document (Cell → Nerve → Organism → Partnership) aligns with the Gateway's routing tiers. The [`Gateway`](Gateway-Architecture.md) routes sensory input to the appropriate tier based on node weight. See [`Gateway-Architecture.md`](Gateway-Architecture.md) for the unified tier model.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     ORGANISM                                 │
@@ -535,7 +537,7 @@ Our architecture solves this by construction:
 
 ### The Tier System
 
-Different levels of the architecture produce different reward magnitudes:
+Different levels of the architecture produce different reward magnitudes. These tiers align with the Gateway's routing tiers — see [`Gateway-Architecture.md`](Gateway-Architecture.md) for how node weight determines which tier handles sensory input:
 
 | Tier | Level | Example | Reward | Lifeforce Cost | Net Incentive |
 |------|-------|---------|--------|----------------|---------------|
@@ -842,11 +844,12 @@ Implementation details extracted to dedicated folder:
 
 ## 📍 Document Status
 
-**Version**: 4.2 (Layered State Machine Architecture + Reward Signals + Training Integrity)
+**Version**: 4.3 (Gateway Integration + Tier Unification)
 **Created**: 2025-10-12 (original v1)
 **Updated v4**: 2025-12-07 (unified with Nervous System)
 **Updated v4.1**: 2025-12-10 (added Reward Signal Architecture section)
 **Updated v4.2**: 2025-12-10 (added Tiered Rewards & Training Integrity section)
+**Updated v4.3**: 2026-01-03 (added Gateway references, tier alignment)
 
 **Key Changes from v3**:
 - ❌ Cells as containers running genomes
@@ -859,7 +862,9 @@ Implementation details extracted to dedicated folder:
 - ✅ Reflexes compile from 100+ successful nerve executions
 
 **Related Documentation**:
-- [[Nervous-System]] - 4D state space, vocabulary translation
+- [[Gateway-Architecture]] - **Tier routing, Function Gemma boundary, unified tier model**
+- [[Nervous-System]] - 4D state space, node weight evolution
+- [[Attention-Flow]] - Attention budget allocation per tier
 - [[Organ-Index]] - Organ cell catalog
 - [[nerves/Nervous-Index]] - Nerve catalog
 - [[nerves/Collision-Avoidance]] - Example reflex nerve

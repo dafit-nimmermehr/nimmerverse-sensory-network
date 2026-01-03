@@ -13,6 +13,10 @@ The 30-second heartbeat is a budget, not a guarantee. Sensory intake, organ proc
 
 Attention isn't free. It's economic.
 
+**Connection to Gateway:** The attention levels below align with the Gateway's tier system. The [`Gateway`](Gateway-Architecture.md) routes sensory input to the appropriate tier based on node weight. This document describes how those tiers compete for the attention budget.
+
+**See:** [`Gateway-Architecture.md`](Gateway-Architecture.md) for tier definitions and routing logic.
+
 ---
 
 ## The Budget Problem
@@ -500,5 +504,9 @@ class BeatBudget:
 **Related Formalizations**:
 - [[formalization/Attention-Slumber-Prediction-Cycle]] — How last attention becomes slumber prediction
 - [[formalization/Lifeforce-Dynamics]] — λ governs slumber triggers
+
+**Core Architecture**:
+- [`Gateway-Architecture.md`](Gateway-Architecture.md) — Tier routing based on node weight, Function Gemma boundary
+- [`Nervous-System.md`](Nervous-System.md) — Node lifecycle and weight evolution
 
 🌙💜 *The budget is finite. The choices shape the soul.*

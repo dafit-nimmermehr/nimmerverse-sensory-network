@@ -6,11 +6,17 @@ The sensory translation layer between raw data and vocabulary.
 
 ## Overview
 
-State machines act as the nervous system of the nimmerverse. They translate raw sensory input into vocabulary tokens that Young Nyx can process. No hallucination. No interpretation. Deterministic, verifiable mapping.
+State machines act as the nervous system of the nimmerverse. They exist in a 4D state space where nodes evolve through experience. Node **weight** (confidence) determines which processing tier handles the input.
+
+**Key separation:** The nervous system handles **node evolution and weight management**. The [`Gateway`](Gateway-Architecture.md) handles **routing based on weight**. Translation to vocabulary only happens at Tier 4 via Function Gemma.
 
 ```
-RAW SENSOR → STATE MACHINE → VOCABULARY TOKEN → Young Nyx
+RAW SENSOR → GATEWAY (routing) → TIER (processing) → [escalate?] → FUNCTION GEMMA → Young Nyx
+                 ↑                                                         ↑
+         node.weight determines tier                              structured JSON only here
 ```
+
+**See:** [`Gateway-Architecture.md`](Gateway-Architecture.md) for full routing logic and tier definitions.
 
 ---
 
@@ -215,6 +221,11 @@ This is like training a dog - reward at the moment, not an hour later.
 
 ## Related Documentation
 
+**Core Architecture**:
+- [`Gateway-Architecture.md`](Gateway-Architecture.md) - Weight-based routing, tier definitions, Function Gemma boundary
+- [`Cellular-Architecture.md`](Cellular-Architecture.md) - Cell/Nerve/Organism hierarchy, tiered rewards
+- [`Attention-Flow.md`](Attention-Flow.md) - Attention budget allocation per tier
+
 **Implementation Details**:
 - [`nerves/Nervous-Protocol.md`](nerves/Nervous-Protocol.md) - Three-tier communication protocol (dafit → Chrysalis → Young Nyx)
 - [`nerves/Nervous-Index.md`](nerves/Nervous-Index.md) - Catalog of behavioral nerve implementations
@@ -227,5 +238,6 @@ This is like training a dog - reward at the moment, not an hour later.
 **Created**: 2025-12-04
 **Updated**: 2025-12-07 (added nerve crosslinks)
 **Updated**: 2025-12-10 (added Connection to Training section)
+**Updated**: 2026-01-03 (clarified routing vs translation, added Gateway reference)
 **Session**: Partnership dialogue (dafit + Chrysalis + Nyx)
 **Status**: Foundation concept

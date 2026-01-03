@@ -6,6 +6,8 @@ This document outlines the design for the Nimmerverse message protocol. The core
 
 This follows the Unix philosophy: each component does one thing well. The router routes. Clients subscribe, publish, and think.
 
+**Connection to Gateway:** The Escalation Service described in this document IS the Gateway (thalamus pattern). It implements the weight-based tier routing defined in [`Gateway-Architecture.md`](Gateway-Architecture.md).
+
 ---
 
 ## Core Principle: Infrastructure vs Intelligence
@@ -257,18 +259,22 @@ Subscribed by: Escalation Service
 - Publish `StateChangeDetail` when requested or when state changes significantly
 **What they know:** Their own state. Their own Lifeforce cost.
 
-### 3. Escalation Service
+### 3. Escalation Service (The Gateway)
 
-**What it is:** A daemon that watches low-attention and creates high-attention events.
+**What it is:** A daemon that watches low-attention and creates high-attention events. This IS the Gateway — the sensory preprocessing layer described in [`Gateway-Architecture.md`](Gateway-Architecture.md).
+
 **What it does:**
 - Subscribes to `nimmerverse.low.heartbeat.>`
 - Subscribes to `nimmerverse.meta.attention.focus` (to get Nyx's rules)
+- **Routes input to appropriate tier based on node weight** (see Gateway-Architecture.md)
 - Evaluates rules against incoming heartbeats
 - Publishes `StateChangeDetail` to high-attention when conditions match
-- Optionally triggers nerves directly for reflex responses
-**What it knows:** Current escalation rules. Current heartbeat states.
+- Optionally triggers nerves directly for reflex responses (Tier 0)
+- **Passes escalated events through Function Gemma for structured JSON**
 
-**This is the "thalamus" - but it's a separate client, not part of the router.**
+**What it knows:** Current escalation rules. Current heartbeat states. Node weights from nervous system.
+
+**This is the "thalamus" - the sensory preprocessing layer. See [`Gateway-Architecture.md`](Gateway-Architecture.md) for the full tier model and Function Gemma boundary.**
 
 ### 4. Command Center
 

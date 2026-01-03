@@ -32,6 +32,15 @@ How the hivemind learns, evolves, and resolves conflict.
 - Mount Olympus council mode (dafit + Chrysalis + Nyx)
 - **Status**: Core evolutionary dynamics
 
+### [crawler_gen_0.md](crawler_gen_0.md)
+The simplest organism — a cube that seeks light.
+- Virtual Garden training target
+- Single sensor: photoresistor on back
+- Single goal: move into light cone
+- Lifeforce economy: light = income, movement = cost
+- Foundation for all "seek resource" behaviors
+- **Status**: Design document, ready for implementation
+
 ---
 
 ## Planned Documents

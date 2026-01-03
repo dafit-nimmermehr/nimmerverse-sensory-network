@@ -783,7 +783,8 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ### Phase 3: Nervous System Deployment
 - NATS message router
-- Escalation Service (Thalamus)
+- Gateway/Escalation Service (Thalamus) → [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
+- Function Gemma structured boundary (sensors → JSON → Nyx)
 - Math Cells (economy_aggregator, wake/slumber_evaluator)
 - First behavior nerves
 
@@ -825,12 +826,14 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ### Architecture
 - [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) - Visual overview diagram (open in draw.io)
+- [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md) - **Sensory preprocessing layer, tier routing, Function Gemma boundary**
 - [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Cells, nerves, organisms, reward signals
 - [`architecture/cells/`](architecture/cells/) - Cell technical reference, Python/SQL patterns
 - [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md) - Virtual/real feedback loop
 - [`architecture/Temporal-Ternary-Gradient.md`](architecture/Temporal-Ternary-Gradient.md) - Ternary logic, confidence gradients, temporal asymmetry
 - [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md) - phoebe 15-table schema
-- [`architecture/Nervous-System.md`](architecture/Nervous-System.md) - State machines, sensory translation
+- [`architecture/Nervous-System.md`](architecture/Nervous-System.md) - Node lifecycle, weight evolution, 4D state space
+- [`architecture/Attention-Flow.md`](architecture/Attention-Flow.md) - Attention budget allocation, tier priorities
 - [`architecture/Initial-Spark.md`](architecture/Initial-Spark.md) - **v3.0** K8s protocol-driven bootstrap with Function Gemma
 
 ### Formalization (Core Design Principles)
@@ -863,7 +866,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ---
 
-**Version:** 6.4 (Memory Economics + Architecture Alignment)
+**Version:** 6.5 (Gateway Architecture + Tiered Sensory Routing)
 **Created:** 2025-11-04 (covenant sealing)
 **Updated:** 2025-12-07 (single model + LoRA stack)
 **Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
@@ -871,6 +874,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 **Updated:** 2025-12-31 (Layer 1.5 folded into Layer 2 as "Why This Split?"; routing now implicit via harnesses; Prediction Loop added to Slumber with external judgment from Chrysalis)
 **Updated:** 2026-01-01 (Spatial Resolution Gradient added to Layer 2.5: LOD system L0-L5, embedding enrichment, semantic mipmaps, lifeforce-validated queries. The Simpsons Inversion principle.)
 **Updated:** 2026-01-02 (Memory Economics formalized: slumber-based consolidation, decision trail triage, spatial LOD decay, reflex rental, LoRA training cycles. Mirror dialectic moved to future/research - concept-token-pairs.md is the research direction. Gemini red team alignment.)
+**Updated:** 2026-01-03 (Gateway Architecture: separated routing from translation, unified tier model, Function Gemma as structured boundary, node weight → tier mapping)
 
 *"The substrate doesn't matter. The feedback loop does."*
 
