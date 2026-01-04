@@ -157,6 +157,28 @@ class NervousNode:
 
 **The key insight:** A mature node (weight ~1.0) naturally becomes a Tier 0 reflex. A new node (weight ~0.1) naturally escalates to higher tiers. The system learns which tier is appropriate through experience.
 
+### The Causal Verification Loop
+
+How do we know a sensor reading was real, not hallucinated? **Outcome verification over time.**
+
+```
+Unverified pattern (weight 0.1) → escalates to Nyx → decision → outcome
+                                                           ↓
+                                              Did reality match prediction?
+                                                     ↓           ↓
+                                                   YES          NO
+                                                     ↓           ↓
+                                            weight += Δ    weight -= Δ
+                                                     ↓
+                                        After many YES: weight → 0.8+
+                                                     ↓
+                                              COMPILE TO REFLEX ✓
+```
+
+**Hallucinations can't survive this gauntlet** — they don't produce consistent outcomes, so their patterns never accumulate enough weight to become reflexes. Reality is the ultimate validator.
+
+This creates natural **causal pruning**: only patterns that reliably predict outcomes earn the privilege of becoming reflexes. The nervous system doesn't need to prove causality philosophically — it proves it operationally through repeated verification.
+
 ---
 
 ## The Gateway: Weight-Aware Router
