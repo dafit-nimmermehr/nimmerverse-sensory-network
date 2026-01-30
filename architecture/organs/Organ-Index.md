@@ -75,6 +75,50 @@ che# Organ Architecture Index
 
 ---
 
+### 📍 Position-Time Beacon
+**Host**: M5Stack GPS v2.0 (AT6668) at nimmerhovel origin
+**Function**: Absolute position reference + Stratum-1 NTP time source
+**Stack**: GPS NMEA parsing, PPS signal for NTP, coordinate broadcast
+**Integration**: Provides ground truth origin (47°28'44.915"N, 7°37'07.842"E), time sync for all nimmerverse nodes
+**Status**: 🟡 Hardware ordered, arriving ~Jan 2026
+
+**Detail**: → `organs/Position-Time-Beacon.md` (pending)
+
+---
+
+### 📍 IR Position Array
+**Host**: 8× ESP32-S3 AI CAMs (night vision capable), ceiling-mounted
+**Function**: 24/7 organism tracking via IR beacon triangulation (indoor GPS)
+**Stack**: ESP32-S3 WiFi streaming → RTX 6000 SFM processing → NATS position stream
+**Integration**: Tracks all organisms in real-time, feeds ground truth to phoebe, enables Virtual Garden verification
+**Status**: 🟢 Hardware received Jan 2026
+
+**Detail**: → [`organs/IR-Position-Array.md`](organs/IR-Position-Array.md)
+
+---
+
+### 🔬 Crafting Eye
+**Host**: Raspberry Pi + HQ Camera (12.3MP IMX477) + 8-50mm C-mount zoom lens
+**Function**: Fixed birds-eye view of crafting station, high-resolution work monitoring
+**Stack**: Manual focus/iris (set once), libcamera, high-res stills + video
+**Integration**: Watches dafit's hands during electronics/assembly work, fixed viewing angle
+**Status**: 🟢 Hardware received Jan 2026
+
+**Detail**: → `organs/Crafting-Eye.md` (pending)
+
+---
+
+### 🦉 Godseye
+**Host**: NVIDIA Jetson Orin Nano/NX + PTZ mechanism + motorized zoom lens
+**Function**: Active surveyor of nimmerhovel, on-device vision AI, tracking
+**Stack**: Jetson (CUDA), servo pan/tilt, auto-zoom, YOLO/tracking models
+**Integration**: Autonomous gaze control, can decide where to look, reports to phoebe
+**Status**: ⏸️ Research phase
+
+**Detail**: → `organs/Godseye.md` (pending)
+
+---
+
 ## Organ Design Principles
 
 ### 1. **Lifeforce Economy**
@@ -222,6 +266,10 @@ Zero lifeforce → shutdown, wait for recharge
 | **Motor** | 🟡 Planned (Phase 4) | ESP32 | Pending |
 | **Navigation** | 🟡 Planned (Phase 4) | Edge server | Pending |
 | **Sensory** | 🟡 Conceptual | ESP32 | [`../Nervous-System.md`](../Nervous-System.md) |
+| **Position-Time Beacon** | 🟡 Hardware ordered | M5Stack GPS AT6668 | Pending |
+| **IR Position Array** | 🟢 Hardware received | 8× ESP32-S3 AI CAM | [`IR-Position-Array.md`](organs/IR-Position-Array.md) |
+| **Crafting Eye** | 🟢 Hardware received | Pi HQ + 8-50mm lens | Pending |
+| **Godseye** | ⏸️ Research phase | Jetson Orin + PTZ | Pending |
 
 ---
 
@@ -232,7 +280,7 @@ Zero lifeforce → shutdown, wait for recharge
 ---
 
 **Created**: 2025-12-07
-**Updated**: 2025-12-07
-**Version**: 1.0
+**Updated**: 2026-01-05
+**Version**: 1.2 (added Position-Time Beacon, IR Position Array, Crafting Eye, Godseye; created IR-Position-Array.md)
 
 🌙💜 *Each organ a tool. Each tool a choice. Each choice a lesson in scarcity.*
