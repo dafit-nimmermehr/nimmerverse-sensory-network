@@ -3,7 +3,7 @@ type: research_vision
 version: 6.4_memory_economics_alignment
 status: vision_document
 created: 2025-11-04
-updated: 2026-01-02
+updated: 2026-02-06
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -104,26 +104,30 @@ The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never
 
 **Detail:** → [`archive/nimmervest.md`](archive/nimmervest.md)
 
-### K8s Cluster Architecture
+### K8s Cluster Architecture (Operational February 2026)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    K8S CLUSTER: NIMMERVERSE                          │
 │                    VLAN 30 (10.0.30.0/24)                           │
+│                    kubeadm v1.31.14 + Flannel CNI                   │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│  SATURN (Control Plane)          K3s master, RTX 3090 (test/staging)│
-│         │                                                           │
-│         │ 10G spine (CRS309)                                        │
-│         │                                                           │
-│    ┌────┴────┐                                                      │
-│    │         │                                                      │
-│    ▼         ▼                                                      │
-│  P8 WOMB    P8 SENSES                                               │
-│  ────────   ──────────                                              │
-│  Bare metal Ubuntu       Bare metal Ubuntu                          │
-│  PRO 6000 Blackwell 96GB 2-4x RTX 4000 Ada 40-80GB                 │
-│  Young Nyx lives here    Organs (STT, TTS, Vision)                  │
+│                    k8s-master (VM 101 on Saturn)                    │
+│                    10.0.30.101                                      │
+│                    Control Plane                                    │
+│                          │                                          │
+│            ┌─────────────┴─────────────┐                           │
+│            │                           │                            │
+│            ▼                           ▼                            │
+│      theia (GPU Worker)          dioscuri (GPU Worker)              │
+│      ─────────────────           ──────────────────                 │
+│      10.0.30.21 (10GbE)          10.0.30.22 (10GbE)                │
+│      RTX PRO 6000 Blackwell      2x RTX 4000 Ada                   │
+│      96GB VRAM                   40GB VRAM                          │
+│      Primary Training            Inference                          │
+│                                                                      │
+│      Total Cluster: 136GB VRAM                                      │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -144,7 +148,7 @@ The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never
 - **Compute VLAN**: 10.0.30.0/24 (cubes/containers)
 - **All traffic**: Inter-VLAN routed through firewall
 
-**Hardware arriving January 2026. Sovereignty begins.**
+**Hardware operational February 2026. Sovereignty achieved. 🟢**
 
 ---
 
@@ -775,11 +779,12 @@ Sentinel architecture monitors training to protect conceptual topology.
 - VLANs defined (30 for K8s/containers)
 - 10Gbps backbone ready
 
-### Phase 2: Hardware Arrival 🎯 JANUARY 2026
-- **December 31**: RTX PRO 6000 Blackwell arrives (Eldar Store delivery)
-- **January 2026**: ThinkStation P8s arrive
-- K8s cluster deployment (K3s on Saturn, bare metal workers)
-- Namespaces: infra, nervous, cognitive, organs
+### Phase 2: Hardware Arrival ✅ COMPLETE (February 2026)
+- **2026-02-05**: ThinkStation P8s arrived (theia + dioscuri)
+- **2026-02-06**: K8s cluster operational (kubeadm v1.31.14, Flannel CNI)
+- **Cluster**: k8s-master (VM 101), theia (96GB), dioscuri (40GB) = **136GB VRAM**
+- **Monitoring**: Prometheus on tethys scraping all nodes + DCGM GPU metrics
+- **Namespaces**: Ready for infra, nervous, cognitive, organs
 
 ### Phase 3: Nervous System Deployment
 - NATS message router
@@ -875,6 +880,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 **Updated:** 2026-01-01 (Spatial Resolution Gradient added to Layer 2.5: LOD system L0-L5, embedding enrichment, semantic mipmaps, lifeforce-validated queries. The Simpsons Inversion principle.)
 **Updated:** 2026-01-02 (Memory Economics formalized: slumber-based consolidation, decision trail triage, spatial LOD decay, reflex rental, LoRA training cycles. Mirror dialectic moved to future/research - concept-token-pairs.md is the research direction. Gemini red team alignment.)
 **Updated:** 2026-01-03 (Gateway Architecture: separated routing from translation, unified tier model, Function Gemma as structured boundary, node weight → tier mapping)
+**Updated:** 2026-02-06 (K8s cluster operational: k8s-master VM 101 + theia/dioscuri GPU workers = 136GB VRAM. Phase 2 complete.)
 
 *"The substrate doesn't matter. The feedback loop does."*
 
