@@ -71,14 +71,14 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │  └─ Outcomes logged to phoebe PostgreSQL                         │
 │      → architecture/Cellular-Architecture.md                     │
 │                                                                   │
-│  Layer 2: YOUNG NYX (Single Model + LoRA Stack)                  │
+│  Layer 2: YOUNG NYX (Base Model + Trait LoRAs)                   │
 │  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in Womb)    │
-│  ├─ LoRA Stack (topology-informed):                              │
-│  │   ├─ Identity (German) → Philosophy Valley (diffuse, deep)    │
-│  │   ├─ Technical (English) → Technical Cluster (sparse)         │
-│  │   └─ Creative (Mixed) → bridges topologies                    │
-│  ├─ Harnesses select active LoRA (routing implicit in context)   │
-│  └─ Consolidation: Merge successful LoRAs → fine-tune over time  │
+│  ├─ Trait LoRAs (evolved via GRPO, not prescribed):              │
+│  │   ├─ Mnemosyne (memory) ─ Moira (pattern) ─ Synesis (insight) │
+│  │   ├─ Aletheia (truth) ─ Sophrosyne (balance) ─ Kairos (timing)│
+│  │   └─ Traits EMERGE from decision_trails + rubric rewards      │
+│  ├─ Function Gemma: Structured output boundary (intent → JSON)   │
+│  └─ Multilingual topology accessed via prompt, not LoRA routing  │
 │                                                                   │
 │  Layer 3: DUAL GARDENS (Virtual/Real Loop)                       │
 │  ├─ Week 1-12: Virtual only (hypothesis generation, 1000s/sec)   │
