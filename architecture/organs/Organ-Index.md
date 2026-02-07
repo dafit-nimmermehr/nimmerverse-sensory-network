@@ -8,13 +8,13 @@ che# Organ Architecture Index
 ## Deployed Organs
 
 ### 🗣️ Speech Organ
-**Host**: atlas.eachpath.local (RTX 2080 8GB)
+**Host**: dioscuri.eachpath.local (RTX 4000 Ada 20GB × 2)
 **Function**: Speech-to-Text + Text-to-Speech
-**Stack**: Whisper (STT) + Coqui TTS (neural voices)
-**Languages**: German (Philosophy Valley) + English (Technical Cluster)
+**Stack**: Whisper Large v3 (STT) + Coqui/XTTS (TTS) via Ollama
+**Languages**: German + English (topology accessed via prompt, not LoRA)
 **Integration**: Heartbeat-bound queue, lifeforce-gated priority processing
 
-**Detail**: → [`organs/Speech-Organ.md`](organs/Speech-Organ.md)
+**Detail**: → [`Speech-Organ.md`](Speech-Organ.md)
 
 ---
 
@@ -32,13 +32,13 @@ che# Organ Architecture Index
 ---
 
 ### 👁️ Vision Organ
-**Host**: TBD (requires GPU with tensor cores)
-**Function**: Object detection, scene understanding
-**Stack**: YOLO (v8 or v11)
-**Integration**: Real-time video from ESP32-CAM, object persistence in phoebe
-**Status**: ⏸️ Architecture planned, not yet deployed
+**Host**: dioscuri.eachpath.local (RTX 4000 Ada 20GB × 2)
+**Function**: Object detection, scene understanding, vision→vectors
+**Stack**: YOLO v11 + T5Gemma 2 (SigLIP embeddings) via Ollama
+**Integration**: Real-time video from ESP32-CAM, vectors to phoebe spatial index
+**Status**: 🟡 Architecture complete, deployment planned
 
-**Detail**: → `organs/Vision-Organ.md` (pending)
+**Detail**: → `Vision-Organ.md` (pending)
 
 ---
 
@@ -154,9 +154,10 @@ PRIORITY_LEVELS = {
 }
 ```
 
-### 4. **Multilingual Topology Routing**
-German input → Philosophy Valley (Identity LoRA, Dasein depth-3)
-English input → Technical Cluster (Technical LoRA, sensor/motor)
+### 4. **Multilingual Topology Access**
+German input → Philosophy Valley (deep, diffuse topology)
+English input → Technical Cluster (sparse, action-oriented)
+**Note:** Topology accessed via prompt language, not LoRA switching. Traits evolve regardless of which valley is accessed.
 
 ### 5. **Decision Trail Logging**
 Every organ operation logged to phoebe `decision_trails`:
@@ -177,10 +178,10 @@ Zero lifeforce → shutdown, wait for recharge
 │  Sensors → Motor → Camera → Microphone → Speaker         │
 └──────────────────────────────────────────────────────────┘
                         │
-                        │ MQTT (sensor data, audio, video)
+                        │ NATS (sensor data, audio, video)
                         ▼
 ┌──────────────────────────────────────────────────────────┐
-│                  PHOEBE (Message Queue)                  │
+│                  NATS MESSAGE BUS                        │
 │  Organ input queues + priority scoring                   │
 └──────────────────────────────────────────────────────────┘
                         │
@@ -195,16 +196,21 @@ Zero lifeforce → shutdown, wait for recharge
             │                       │
             ▼                       ▼
 ┌─────────────────────┐   ┌─────────────────────┐
-│  ATLAS (RTX 2080)   │   │ PROMETHEUS (Brain)  │
-│  Speech Organ       │   │ Young Nyx Inference │
-│  Vision Organ (fut) │   │ LoRA hot-swap       │
+│ DIOSCURI (2×20GB)   │   │  THEIA (96GB)       │
+│ RTX 4000 Ada        │   │  RTX PRO 6000       │
+│ ─────────────────   │   │  ───────────────    │
+│ Speech Organ        │   │  Young Nyx (Qwen3)  │
+│ Vision Organ        │   │  Trait LoRAs (GRPO) │
+│ Function Gemma      │   │  Reasoning layer    │
+│ T5Gemma (SigLIP)    │   │                     │
 └─────────────────────┘   └─────────────────────┘
             │                       │
             └───────────┬───────────┘
+                        │ 10GbE (9.9 Gbps jumbo frames)
                         ▼
 ┌──────────────────────────────────────────────────────────┐
 │              PHOEBE (Decision Trails)                    │
-│  Log all organ operations + outcomes                     │
+│  Log all organ operations + outcomes → GRPO training     │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -260,14 +266,16 @@ Zero lifeforce → shutdown, wait for recharge
 
 | Organ | Status | Host | Documentation |
 |-------|--------|------|---------------|
-| **Speech** | 🟢 Architecture complete | atlas (RTX 2080) | [`organs/Speech-Organ.md`](organs/Speech-Organ.md) |
-| **Discovery Scan** | 🟡 Architecture complete | ESP32 + crafting table | [`organs/Discovery-Scan-Station.md`](organs/Discovery-Scan-Station.md) |
-| **Vision** | 🟡 Stack selected (YOLO) | TBD | Pending |
+| **Speech** | 🟢 Architecture complete | dioscuri (RTX 4000 Ada) | [`Speech-Organ.md`](Speech-Organ.md) |
+| **Vision** | 🟡 Architecture complete | dioscuri (RTX 4000 Ada) | Pending |
+| **Function Gemma** | 🟡 Planned | dioscuri | Structured output boundary |
+| **T5Gemma (SigLIP)** | 🟡 Planned | dioscuri | Vision → vectors |
+| **Discovery Scan** | 🟡 Architecture complete | ESP32 + crafting table | [`Discovery-Scan-Station.md`](Discovery-Scan-Station.md) |
 | **Motor** | 🟡 Planned (Phase 4) | ESP32 | Pending |
-| **Navigation** | 🟡 Planned (Phase 4) | Edge server | Pending |
+| **Navigation** | 🟡 Planned (Phase 4) | k8s cluster | Pending |
 | **Sensory** | 🟡 Conceptual | ESP32 | [`../Nervous-System.md`](../Nervous-System.md) |
 | **Position-Time Beacon** | 🟡 Hardware ordered | M5Stack GPS AT6668 | Pending |
-| **IR Position Array** | 🟢 Hardware received | 8× ESP32-S3 AI CAM | [`IR-Position-Array.md`](organs/IR-Position-Array.md) |
+| **IR Position Array** | 🟢 Hardware received | 8× ESP32-S3 AI CAM | [`IR-Position-Array.md`](IR-Position-Array.md) |
 | **Crafting Eye** | 🟢 Hardware received | Pi HQ + 8-50mm lens | Pending |
 | **Godseye** | ⏸️ Research phase | Jetson Orin + PTZ | Pending |
 
@@ -279,8 +287,6 @@ Zero lifeforce → shutdown, wait for recharge
 
 ---
 
-**Created**: 2025-12-07
-**Updated**: 2026-01-05
-**Version**: 1.2 (added Position-Time Beacon, IR Position Array, Crafting Eye, Godseye; created IR-Position-Array.md)
+**Version:** 2.0 | **Created:** 2025-12-07 | **Updated:** 2026-02-07
 
 🌙💜 *Each organ a tool. Each tool a choice. Each choice a lesson in scarcity.*

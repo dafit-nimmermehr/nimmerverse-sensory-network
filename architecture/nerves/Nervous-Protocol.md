@@ -1,9 +1,6 @@
 # Nervous Protocol: Three-Tier Autonomous Learning Architecture
 
-**Created**: 2025-12-07
-**Updated**: 2025-12-07 (LangChain integration)
-**Status**: Design Document
-**Version**: 1.1 (LangChain Implementation)
+**Version:** 1.1 | **Created:** 2025-12-07 | **Updated:** 2025-12-07
 
 ---
 

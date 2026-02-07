@@ -748,14 +748,7 @@ The Grounded World Model is:
 
 ## Document Status
 
-**Version**: 2.0
-**Created**: 2025-12-29
-**Updated**: 2026-01-01 (Spatial Resolution Gradient, S2 cells, embedding enrichment, lifeforce-validated LOD)
-**Authors**: Chrysalis-Nyx & dafit (Partnership)
-
-**Formalizes**:
-- Organ-Index.md (vision progressive resolution)
-- Temporal-Ternary-Gradient.md (anti-plateau mechanism)
+**Version:** 2.0 | **Created:** 2025-12-29 | **Updated:** 2026-01-01
 - T5Gemma2 research (semantic vectors)
 - Lifeforce-Dynamics.md (reward economics)
 - **spatial-resolution-gradient.md** (L0-L5 LOD system) — NEW

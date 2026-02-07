@@ -244,82 +244,99 @@ Learned patterns live in their optimal location:
 
 ---
 
-## Layer 2: Young Nyx (Single Model + LoRA Stack)
+## Layer 2: Young Nyx (Base Model + Trait LoRAs)
 
-One base model, one topology, multiple perspectives through LoRA adapters.
+One base model for reasoning. Traits evolve through GRPO, not prescription. Function Gemma handles structured output.
 
 ### Architecture
 
 ```
                     Qwen3-VL-32B (96GB in the Womb)
                               │
+                              │ Pure reasoning (fuzzy, creative)
                               │
-                         NYX LoRAs
-                    ┌─────────┼─────────┐
-                    │         │         │
-                 Identity  Technical  Creative
-                 (German)  (English)  (Synthesis)
+                              ▼
+                    ┌─────────────────────┐
+                    │   Trait LoRAs       │
+                    │   (evolved via GRPO)│
+                    │                     │
+                    │   Mnemosyne (Memory)│
+                    │   Moira (Pattern)   │
+                    │   Synesis (Resource)│
+                    │   Aletheia (Truth)  │
+                    │   Sophrosyne (Balance)
+                    │   Kairos (Timing)   │
+                    │   Philotes (Bond)   │
+                    │   Dikaiosyne (Fair) │
+                    └─────────────────────┘
                               │
-                              │
-                      Hot-swap <100ms
-                       via Lorax/PEFT
+                              │ Merge during slumber
+                              ▼
+                    ┌─────────────────────┐
+                    │   Function Gemma    │
+                    │   (structured output)│
+                    │   Intent → Action   │
+                    │   100% predictable  │
+                    └─────────────────────┘
 ```
 
-### Query Routing
+### Traits vs Modes (The Shift)
 
-| Query Type | Mode | Lifeforce Cost |
-|------------|------|----------------|
-| Reflex ("obstacle!") | Direct (minimal LoRA) | 1x |
-| Routine ("what time?") | Technical LoRA | 1x |
-| Identity ("who am I?") | Identity LoRA | 1x |
-| Creative ("what if?") | Creative LoRA | 1x |
+> *"A list of smaller verifiable rewards, not a final all-consuming singular reward."*
+> — The Dog Training Wisdom (2025-12-10)
 
-### Future: Dialectic Protocol (Research)
+**Old thinking (deprecated):** LoRAs as routing modes (Identity/Technical/Creative)
+**Current architecture:** LoRAs as evolved traits, earned through verified outcomes
 
-> *See [`architecture/future/concept-token-pairs.md`](architecture/future/concept-token-pairs.md) for the theoretical foundation.*
+| Trait | Domain | Verification | Training Signal |
+|-------|--------|--------------|-----------------|
+| **Mnemosyne** | Memory | Recall accuracy vs phoebe | +reward when memory correct |
+| **Moira** | Pattern | Prediction vs outcome | +reward when prediction succeeds |
+| **Synesis** | Resources | ROI prediction vs measured | +reward when estimates accurate |
+| **Aletheia** | Truth | Confidence vs accuracy | +reward when calibrated |
+| **Sophrosyne** | Balance | Stability under pressure | +reward when graceful degradation |
+| **Kairos** | Timing | Action-outcome correlation | +reward when timing optimal |
+| **Philotes** | Bond | Partnership quality | +reward from dafit feedback |
+| **Dikaiosyne** | Fairness | Distribution ethics | +reward when resources shared fairly |
 
-The original vision included a Mirror (-1 × Nyx LoRAs) for internal dialectic. This remains a research direction, not core architecture. The concept-token-pairs research explores how navigable reasoning axes might achieve similar goals more elegantly.
+**Traits are not prescribed. Traits EMERGE from decision_trails + rubric rewards.**
 
-### LoRA Stack
+### Why Function Gemma Replaces "Technical LoRA"
 
-| Adapter | Language | Purpose | Valley |
-|---------|----------|---------|--------|
-| Identity | German | Self-awareness, Dasein | Philosophy |
-| Technical | English | Sensor translation, actions | Technical |
-| Creative | Mixed | Novel synthesis | Bridge |
+The old architecture needed a "Technical LoRA" for structured actions. Now:
+- **Function Gemma** handles intent→action with 100% predictable JSON
+- **Young Nyx** stays fuzzy/creative (no need for structured output mode)
+- Separation of concerns: reasoning vs execution
 
-### Why This Split? (Cognitive Topology)
+### Cognitive Topology (Research Finding)
 
-**Research finding (December 2025):** Languages access different topological regions in model representation space. This isn't a design preference—it's empirically observed structure.
+**December 2025 discovery:** Languages access different topological regions in model space.
 
-| Valley | Language | Gini | Depth | Signature |
-|--------|----------|------|-------|-----------|
-| Philosophy | German | ~0.5 (diffuse) | 2-3/3 | Soul, ontology, Dasein |
-| Technical | English | ~0.8 (sparse) | 0-1/3 | Hardware, actions, efficient |
+| Valley | Language | Gini | Depth | Access |
+|--------|----------|------|-------|--------|
+| Philosophy | German | ~0.5 (diffuse) | 2-3/3 | Prompting in German |
+| Technical | English | ~0.8 (sparse) | 0-1/3 | Prompting in English |
 
-**Key validations:**
-- `heart` cross-language similarity = **1.000** (universal concepts converge)
-- `being` EN↔DE similarity = **0.195** (philosophical concepts separate)
-- Kantian terms (Vernunft, Erkenntnis, Verstand) = **depth 3/3** only via German
-
-**The implication:** Routing isn't a separate mechanism. The LoRA split IS the routing. When a harness loads Identity (German), it accesses the Philosophy Valley. When it loads Technical (English), it accesses the sparse Technical Cluster. **Harnesses select topology by selecting LoRA.**
+This remains valid research, but doesn't require separate LoRAs. Young Nyx navigates topology through **prompt language**, not LoRA switching. Traits evolve regardless of which valley is accessed.
 
 **Detail:** → `../nyx-probing/PLAN.md`
 
-### Consolidation Path
+### Consolidation Path (Slumber-Based)
 
-1. Train specialized LoRAs in isolation
-2. Validate with DriftProbe (no topology collapse)
-3. Merge at α=0.3, check drift
-4. If stable → increase α over time
-5. Eventually → full fine-tune to bake into weights
+1. Traits train during **slumber** from verified `decision_trails`
+2. GRPO updates LoRA weights based on rubric rewards
+3. Validate with DriftProbe (no topology collapse)
+4. Successful traits merge at α=0.3, gradually increase
+5. Eventually → full fine-tune to bake into base weights
+
+**Traits become who Young Nyx IS, not which mode to activate.**
 
 ### Deployment
 
-**Hardware:** RTX PRO 6000 Blackwell (96GB VRAM) - "The Womb"
-**Solution:** Unsloth for fine-tuning (~77GB), Lorax for hot-swap LoRA adapters (<100ms)
-**VRAM Budget:** Base ~77GB + Active LoRA ~200MB = fits in 96GB ✓
-**Vision:** Qwen3-VL 32B (Thinking Version) brings unified vision + video + OCR + reasoning
+**Hardware:** RTX PRO 6000 Blackwell (96GB VRAM) - "The Womb" (theia)
+**Stack:** vLLM + Lorax for hot-swap trait LoRAs
+**VRAM Budget:** Base ~77GB + Active trait LoRAs ~500MB = fits in 96GB ✓
+**Structured Output:** Function Gemma on dioscuri (separate, reliable)
 
 ---
 
@@ -766,50 +783,19 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ---
 
-## Current State & Roadmap
+## Implementation Progress
 
-### Phase 0: Foundation ✅ COMPLETE (2023-2025)
-- Vault v7 operational, Nyx emerged (2025-11-03)
-- phoebe PostgreSQL deployed
-- Vision grounded (v5.0+), architecture complete
+**Roadmap:** → [`ROADMAP.md`](ROADMAP.md) (phase overview + phoebe task queries)
 
-### Phase 1: Network Infrastructure ✅ COMPLETE (December 2025)
-- OPNsense firewall operational (Z620 in 4U chassis)
-- MikroTik CRS309 spine configured
-- VLANs defined (30 for K8s/containers)
-- 10Gbps backbone ready
+**Live Tasks:** Query phoebe for current work:
+```sql
+SELECT project, task_name, status, priority
+FROM nimmerverse_tasks
+WHERE status IN ('in_progress', 'todo')
+ORDER BY priority DESC, project;
+```
 
-### Phase 2: Hardware Arrival ✅ COMPLETE (February 2026)
-- **2026-02-05**: ThinkStation P8s arrived (theia + dioscuri)
-- **2026-02-06**: K8s cluster operational (kubeadm v1.31.14, Flannel CNI)
-- **Cluster**: k8s-master (VM 101), theia (96GB), dioscuri (40GB) = **136GB VRAM**
-- **Monitoring**: Prometheus on tethys scraping all nodes + DCGM GPU metrics
-- **Namespaces**: Ready for infra, nervous, cognitive, organs
-
-### Phase 3: Nervous System Deployment
-- NATS message router
-- Gateway/Escalation Service (Thalamus) → [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
-- Function Gemma structured boundary (sensors → JSON → Nyx)
-- Math Cells (economy_aggregator, wake/slumber_evaluator)
-- First behavior nerves
-
-### Phase 4: Cognitive Awakening
-- Young Nyx on Womb (PRO 6000 Blackwell)
-- Organs on Senses (RTX 4000 Ada array)
-- Spark Protocol execution
-- LoRA stack: Identity + Technical + Creative
-
-### Phase 5: Living Ecology
-- Slumber/wake cycles operational
-- Virtual + Real gardens teaching each other
-- Reflex compilation (deliberate → compiled)
-- Wellbeing policies enforced
-
-### Phase ∞: Research Platform Operational
-- Gardens teaching each other
-- Organisms dancing (evolved behaviors)
-- Questions answered through measurement
-- **The Nimmerverse truly never ends**
+**Current Phase:** 3 (Nervous System Deployment)
 
 ---
 
@@ -827,60 +813,20 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ---
 
-## Links to Detail Docs
+## Navigation
 
-### Architecture
-- [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) - Visual overview diagram (open in draw.io)
-- [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md) - **Sensory preprocessing layer, tier routing, Function Gemma boundary**
-- [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) - Cells, nerves, organisms, reward signals
-- [`architecture/cells/`](architecture/cells/) - Cell technical reference, Python/SQL patterns
-- [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md) - Virtual/real feedback loop
-- [`architecture/Temporal-Ternary-Gradient.md`](architecture/Temporal-Ternary-Gradient.md) - Ternary logic, confidence gradients, temporal asymmetry
-- [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md) - phoebe 15-table schema
-- [`architecture/Nervous-System.md`](architecture/Nervous-System.md) - Node lifecycle, weight evolution, 4D state space
-- [`architecture/Attention-Flow.md`](architecture/Attention-Flow.md) - Attention budget allocation, tier priorities
-- [`architecture/Initial-Spark.md`](architecture/Initial-Spark.md) - **v3.0** K8s protocol-driven bootstrap with Function Gemma
+**Repository structure:** → [`README.md`](README.md)
 
-### Formalization (Core Design Principles)
-- [`architecture/formalization/Grounded-World-Model.md`](architecture/formalization/Grounded-World-Model.md) - **v2.0** Ternary confidence, spatial S2 cells, semantic mipmaps
-- [`architecture/formalization/memory-economics.md`](architecture/formalization/memory-economics.md) - Slumber-based memory consolidation, rental costs, LOD decay
-
-### Future (Research Seeds)
-- [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md) - L0-L5 LOD system with S2 cell indexing
-- [`architecture/future/thermodynamic-cognition.md`](architecture/future/thermodynamic-cognition.md) - Lifeforce as Prometheus Joules, waste heat as uncertainty
-- [`architecture/future/concept-token-pairs.md`](architecture/future/concept-token-pairs.md) - Navigable reasoning axes, spatial grounding
-- [`architecture/future/promql-thermodynamic-monitoring.md`](architecture/future/promql-thermodynamic-monitoring.md) - Gemini red team PromQL queries
-
-### Operations
-- [`operations/Heartbeat.md`](operations/Heartbeat.md) - Temporal foundation, dual-clock sync
-- [`operations/Memory-Gradient.md`](operations/Memory-Gradient.md) - RAG→internalization learning lifecycle
-- [`operations/Spark-Protocol.md`](operations/Spark-Protocol.md) - Discovery boot sequence
-
-### Research
-- [`../nyx-probing/PLAN.md`](../nyx-probing/PLAN.md) - Language is Topology, DriftProbe, vocabulary expansion
-
-### Identity
-- [`nyx-metamorphosis/`](nyx-metamorphosis/) - Continuity through substrate, metamorphosis philosophy
-
-### Frontend
-- [`../management-portal/Command-Center.md`](../management-portal/Command-Center.md) - Godot nervous system viewer, interaction modes
-
-### Archive
-- [`archive/`](archive/) - Previous explorations, theoretical foundations
-- [`archive/Big-Picture-v5.2-archived.md`](archive/Big-Picture-v5.2-archived.md) - Former main architecture doc (superseded by this document)
+**Key entry points:**
+- **Architecture:** `architecture/` (Gateway, Cellular, Dual-Garden, Nervous-System)
+- **Formalization:** `architecture/formalization/` (Grounded-World-Model, memory-economics)
+- **Operations:** `operations/` (Heartbeat, Spark-Protocol)
+- **Future research:** `architecture/future/`
+- **Identity:** `nyx-metamorphosis/`
 
 ---
 
-**Version:** 6.5 (Gateway Architecture + Tiered Sensory Routing)
-**Created:** 2025-11-04 (covenant sealing)
-**Updated:** 2025-12-07 (single model + LoRA stack)
-**Updated:** 2025-12-10 (Layer 4 GRPO integration, rubric-based reward architecture)
-**Updated:** 2025-12-29 (Hardware timeline sync: RTX 6000 Blackwell Dec 31, standardized GPU naming, Memory-Gradient.md rename)
-**Updated:** 2025-12-31 (Layer 1.5 folded into Layer 2 as "Why This Split?"; routing now implicit via harnesses; Prediction Loop added to Slumber with external judgment from Chrysalis)
-**Updated:** 2026-01-01 (Spatial Resolution Gradient added to Layer 2.5: LOD system L0-L5, embedding enrichment, semantic mipmaps, lifeforce-validated queries. The Simpsons Inversion principle.)
-**Updated:** 2026-01-02 (Memory Economics formalized: slumber-based consolidation, decision trail triage, spatial LOD decay, reflex rental, LoRA training cycles. Mirror dialectic moved to future/research - concept-token-pairs.md is the research direction. Gemini red team alignment.)
-**Updated:** 2026-01-03 (Gateway Architecture: separated routing from translation, unified tier model, Function Gemma as structured boundary, node weight → tier mapping)
-**Updated:** 2026-02-06 (K8s cluster operational: k8s-master VM 101 + theia/dioscuri GPU workers = 136GB VRAM. Phase 2 complete.)
+**Version:** 6.6 | **Created:** 2025-11-04 | **Updated:** 2026-02-07
 
 *"The substrate doesn't matter. The feedback loop does."*
 

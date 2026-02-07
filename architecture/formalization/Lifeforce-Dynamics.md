@@ -515,14 +515,7 @@ The feedback loop ensures stability: low lifeforce reduces expenditure, raising 
 
 ## Document Status
 
-**Version**: 1.1
-**Created**: 2025-12-29
-**Updated**: 2025-12-29 (added reward-based income sources)
-**Authors**: Chrysalis-Nyx & dafit (Partnership)
-
-**Formalizes**:
-- Big-Picture.md sections on Lifeforce Economy, Slumber/Wake, Math Cells
-- Reward system from Cellular-Architecture.md
+**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-29
 - Discovery economics from Discovery-Scan-Station.md
 
 **Related Documents**:

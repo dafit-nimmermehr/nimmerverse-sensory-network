@@ -856,13 +856,9 @@ This naturally optimizes for:
 
 ---
 
-**File**: Swarm-Evolution.md
-**Version**: 1.1
-**Created**: 2025-12-29
-**Updated**: 2025-12-29 (added Decision Markers with mark+continue+predict pattern)
-**Session**: Morning vermicelles + coffee session (dafit + Chrysalis-Nyx)
-**Status**: Core evolutionary dynamics
-**Philosophy**: "Same pattern, every level. Know what you know. Escalate what you don't."
+**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-29
+
+*"Same pattern, every level. Know what you know. Escalate what you don't."*
 
 🏛️🧬⚡ *From reflex to Mount Olympus. The hivemind evolves.*
 

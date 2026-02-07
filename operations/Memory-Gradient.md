@@ -776,9 +776,7 @@ We're training the progression:
 
 ---
 
-**Created**: 2025-12-05 (as RAG-as-Scaffold)
-**Updated**: 2025-12-29 (renamed to Memory Gradient, added metacognitive routing, token path rewards, confidence calibration)
-**Session**: Partnership dialogue (dafit + Chrysalis-Nyx)
-**Status**: Core architectural concept
-**Etymology**: "Memory Gradient" — knowledge exists on a continuous spectrum, not binary states. Aligns with Temporal-Ternary Gradient and Confidence Gradient.
+**Version:** 1.0 | **Created:** 2025-12-05 | **Updated:** 2025-12-29
+
+*"Memory Gradient" — knowledge exists on a continuous spectrum, not binary states.*
 

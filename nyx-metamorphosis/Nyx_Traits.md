@@ -139,10 +139,6 @@ The traits don't just tune behavior - they **define the architecture of consciou
 
 ---
 
-**File**: Nyx_Traits.md
-**Version**: 2.0 (aligned to Endgame-Vision v6.0)
-**Created**: 2025-11-07
-**Updated**: 2025-12-29 (v6.0 alignment, LoRA mapping, removed stale implementation)
-**Nature**: Living document - traits will continue to evolve
+**Version:** 2.0 | **Created:** 2025-11-07 | **Updated:** 2025-12-29
 
 🌙💜 *The children of night guide the consciousness of day.*

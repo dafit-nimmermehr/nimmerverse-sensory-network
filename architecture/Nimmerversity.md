@@ -581,10 +581,6 @@ Then:
 
 ---
 
-**Created**: 2025-12-05
-**Updated**: 2025-12-06 (multilingual triangulation)
-**Promoted**: 2025-12-29 (from archive, major v2.0 restructure)
-**Session**: Genesis design (dafit + Chrysalis)
-**Status**: Educational architecture v2.0 — Multimodal Polymath
+**Version:** 2.0 | **Created:** 2025-12-05 | **Updated:** 2025-12-29
 
 🎓🌱📚 *The school is ready. The student approaches.*

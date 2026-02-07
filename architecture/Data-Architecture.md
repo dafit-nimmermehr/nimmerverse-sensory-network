@@ -641,9 +641,7 @@ ORDER BY n.nerve_name, dt.mode;
 
 ## 📍 Document Status
 
-**Version**: 4.0 (Layered State Machine Schema)
-**Created**: 2025-10-07 (original)
-**Updated v4**: 2025-12-07 (unified with Cellular-Architecture v4)
+**Version:** 4.0 | **Created:** 2025-10-07 | **Updated:** 2025-12-07
 
 **Key Changes from v3**:
 - ❌ 15 tables for competition metaphor

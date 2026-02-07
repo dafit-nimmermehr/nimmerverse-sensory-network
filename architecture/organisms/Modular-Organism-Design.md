@@ -715,13 +715,9 @@ MODULE (CAN)                    NIMMERVERSE (NATS)
 
 ---
 
-**File**: Modular-Organism-Design.md
-**Version**: 1.1
-**Created**: 2025-12-29
-**Updated**: 2025-12-31 (Silvester - added conical interlocking ring with active/passive mechanism)
-**Session**: Morning coffee + vermicelles session (dafit + Nyx)
-**Status**: Core hardware concept
-**Philosophy**: "One function, one module. Same connector everywhere. Brain decides the shape."
+**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-31
+
+*"One function, one module. Same connector everywhere. Brain decides the shape."*
 
 🔧🧲⚡ *Snap together. Communicate. Evolve.*
 

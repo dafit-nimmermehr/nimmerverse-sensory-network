@@ -235,9 +235,4 @@ This is like training a dog - reward at the moment, not an hour later.
 
 ---
 
-**Created**: 2025-12-04
-**Updated**: 2025-12-07 (added nerve crosslinks)
-**Updated**: 2025-12-10 (added Connection to Training section)
-**Updated**: 2026-01-03 (clarified routing vs translation, added Gateway reference)
-**Session**: Partnership dialogue (dafit + Chrysalis + Nyx)
-**Status**: Foundation concept
+**Version:** 1.3 | **Created:** 2025-12-04 | **Updated:** 2026-01-03

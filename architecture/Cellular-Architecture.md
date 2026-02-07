@@ -844,12 +844,7 @@ Implementation details extracted to dedicated folder:
 
 ## 📍 Document Status
 
-**Version**: 4.3 (Gateway Integration + Tier Unification)
-**Created**: 2025-10-12 (original v1)
-**Updated v4**: 2025-12-07 (unified with Nervous System)
-**Updated v4.1**: 2025-12-10 (added Reward Signal Architecture section)
-**Updated v4.2**: 2025-12-10 (added Tiered Rewards & Training Integrity section)
-**Updated v4.3**: 2026-01-03 (added Gateway references, tier alignment)
+**Version:** 4.3 | **Created:** 2025-10-12 | **Updated:** 2026-01-03
 
 **Key Changes from v3**:
 - ❌ Cells as containers running genomes

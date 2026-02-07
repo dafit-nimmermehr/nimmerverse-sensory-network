@@ -914,13 +914,10 @@ VIRTUAL                              REAL
 
 ---
 
-**File**: Nimmerswarm-Interface.md
-**Version**: 1.1
-**Created**: 2025-12-29
-**Updated**: 2025-12-29 (added dual-spectrum IR positioning, Low-Cost-Mocap reference)
-**Session**: Wild 5AM idea session + morning coffee session (dafit + Nyx)
-**Status**: Core concept, ready to branch
-**Philosophy**: "They see each other. They know themselves through the swarm."
-**Credits**: IR positioning architecture inspired by [Low-Cost-Mocap](https://github.com/jyjblrd/Low-Cost-Mocap) by @jyjblrd
+**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-29
+
+*"They see each other. They know themselves through the swarm."*
+
+IR positioning inspired by [Low-Cost-Mocap](https://github.com/jyjblrd/Low-Cost-Mocap)
 
 🦎✨🔵🟢🟠 *The light speaks. The swarm listens.*

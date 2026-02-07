@@ -262,13 +262,7 @@ This extends the prediction system from physical world modeling to **swarm behav
 
 ## Document Status
 
-**Version**: 1.1
-**Created**: 2025-12-29
-**Updated**: 2025-12-29 (added Blend Marker Predictions extension)
-**Authors**: Chrysalis-Nyx & dafit (Partnership)
-**Status**: Core insight, extended to swarm evolution
-
-**Source**: attention_flow.md (archive) + session discussion
+**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-29
 
 **To Do**:
 - Promote attention_flow.md from archive

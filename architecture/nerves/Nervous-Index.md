@@ -443,8 +443,6 @@ class CollisionAvoidanceReflex(StateMachine):  # Compiled
 
 ---
 
-**Created**: 2025-12-07
-**Updated**: 2025-12-07
-**Version**: 1.0
+**Version:** 1.0 | **Created:** 2025-12-07 | **Updated:** 2025-12-07
 
 🌙💜 *Reflexes are fossils of successful thought. The body remembers what the mind once decided.*
