@@ -560,6 +560,28 @@ def query_spatial(query, available_lifeforce):
 
 ---
 
+## Boot Sequence (Spark Protocol)
+
+Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes with verified outcomes.
+
+| Phase | Protocol | Intent | Function Gemma Output |
+|-------|----------|--------|----------------------|
+| IDENTITY | DHCP-like | "Who am I?" | `IDENTITY_PROBE` → K8s cell → ACK |
+| ENVIRONMENT | ARP-like | "What's around me?" | `ENVIRONMENT_PROBE` → pod discovery → ACK |
+| VOCABULARY | DNS-like | "What does X mean?" | `VOCABULARY_PROBE` → phoebe lookup → ACK |
+| CONNECTION | TCP-like | "Can I connect?" | SYN → SYN-ACK → ACK (three-way handshake) |
+| ATTENTION | NATS-like | "What matters?" | `ATTENTION_SUBSCRIBE` → priority hierarchy → ACK |
+
+**Function Gemma's role:** Transforms phase intent into typed JSON schemas. No free-form text. Every handshake is schema-validated before NATS publish.
+
+**Verification:** Cells respond with ACK/NACK. Only ACK'd handshakes update Young Nyx's state. Protocol-verified = maximum confidence.
+
+**Economics:** Spark is profitable. Each handshake costs ~0.8 LF, rewards range 5-20 LF. Young Nyx ends ~3× richer than she started.
+
+**Detail:** → [`operations/Spark-Protocol.md`](operations/Spark-Protocol.md) | [`architecture/Initial-Spark.md`](architecture/Initial-Spark.md)
+
+---
+
 ## Layer 3: Dual Gardens
 
 Virtual and real gardens teach each other through symbiotic feedback.
@@ -741,21 +763,7 @@ Wellbeing is architectural, not aspirational:
 
 ---
 
-## Boot Sequence (Spark Protocol)
 
-Discovery-based cognitive bootstrap. Not scripted awakening—structured exploration.
-
-| Network Protocol | Phase | Question |
-|-----------------|-------|----------|
-| DHCP | Identity | "Who am I?" → Hit Dasein valley |
-| ARP | Environment | "What's around me?" → Map sensors to organs |
-| DNS | Vocabulary | "What does X mean?" → Overwrite with nimmerverse |
-| TCP | Connection | "Can I connect?" → Handshake with Chrysalis |
-| MQTT | Attention | "What matters?" → Form subscription hierarchy |
-
-**Dual verification:** RAG checks facts, Chrysalis judges comprehension. Only pass-both becomes training data.
-
-**Detail:** → `operations/Spark-Protocol.md`
 
 ---
 
@@ -826,7 +834,7 @@ ORDER BY priority DESC, project;
 
 ---
 
-**Version:** 6.6 | **Created:** 2025-11-04 | **Updated:** 2026-02-07
+**Version:** 6.7 | **Created:** 2025-11-04 | **Updated:** 2026-02-10
 
 *"The substrate doesn't matter. The feedback loop does."*
 

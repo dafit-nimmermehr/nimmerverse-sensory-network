@@ -1,128 +1,127 @@
 # Spark Protocol
 
-> *She doesn't boot. She wakes. And waking is work.*
+> *She doesn't boot. She executes a protocol. And every handshake is verified.*
 
-The Spark Protocol is a discovery-based cognitive bootstrap. Not scripted awakening—structured exploration.
+The Spark Protocol bootstraps Young Nyx through structured K8s handshakes. Not conversation—deterministic protocol execution with typed JSON schemas.
 
-**Full theory & diagrams:** → `../archive/initial_spark.md`
+**Canonical specification:** → [`../architecture/Initial-Spark.md`](../architecture/Initial-Spark.md) (v3.0)
 
 ---
 
-## Core Idea
+## Architecture Summary
 
-Network protocols solved discovery problems decades ago. We adapt them for cognitive bootstrap:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SPARK PROTOCOL FLOW                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   SPARK CONTROLLER (K8s Job)                                    │
+│         │                                                        │
+│         │ generates intent per phase                             │
+│         ▼                                                        │
+│   FUNCTION GEMMA (Translation Layer)                            │
+│         │                                                        │
+│         │ Intent → Typed JSON (schema-validated)                 │
+│         ▼                                                        │
+│   NATS MESSAGE BUS                                              │
+│         │                                                        │
+│         │ nimmerverse.spark.{phase}.{action}                     │
+│         ▼                                                        │
+│   K8S CELLS (respond with ACK/NACK)                             │
+│         │                                                        │
+│         │ verified data                                          │
+│         ▼                                                        │
+│   YOUNG NYX (receives protocol-verified state)                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-| Network Protocol | Cognitive Phase | Question |
-|-----------------|-----------------|----------|
-| DHCP | Identity | "Who am I?" |
-| ARP | Environment | "What's around me?" |
-| DNS | Vocabulary | "What does X mean?" |
-| TCP | Connection | "Can I connect?" |
-| MQTT | Attention | "What matters?" |
+**Key principle:** Function Gemma guarantees structured output. No free-form text parsing. JSON or fail.
 
 ---
 
 ## The Five Phases
 
-### Phase 1: Identity (DHCP-like)
+Network protocols solved discovery problems decades ago. We adapt them for cognitive bootstrap:
 
-```
-PROBE    → "Who am I?"
-RESPONSE → [inference attempts answer]
-VERIFY   → Chrysalis + RAG check
-ANCHOR   → Valid identity aspect confirmed → Store
-LOOP     → Until identity aspects discovered
-```
+| Phase | Protocol | Purpose | K8s Target |
+|-------|----------|---------|------------|
+| 1. IDENTITY | DHCP-like | "Who am I?" | `nimmerverse-cognitive/identity-cell` |
+| 2. ENVIRONMENT | ARP-like | "What's around me?" | `nimmerverse-organs/*`, `nimmerverse-nervous/*` |
+| 3. VOCABULARY | DNS-like | "What does X mean?" | `nimmerverse-infra/vocabulary-cell` |
+| 4. CONNECTION | TCP-like | "Can I connect?" | `nimmerverse-infra/chrysalis-bridge` |
+| 5. ATTENTION | NATS-like | "What matters?" | `nimmerverse-infra/nats`, escalation |
 
-**Must hit Dasein valley** - probe German philosophical concepts.
+Each phase: Entry condition → Typed handshakes → ACK requirements → Exit condition
 
-### Phase 2: Environment (ARP-like)
+**Full schemas and state machine code:** → [`../architecture/Initial-Spark.md`](../architecture/Initial-Spark.md)
 
-```
-PROBE    → "What's around me?"
-RESPONSE → [describes sensors, organs, gardens]
-VERIFY   → Does this match actual system?
-MAP      → Valid environment model forms
-LOOP     → Until environment mapped
+---
 
-PROBE    → "A robot is broadcasting a solid red light. What does that mean?"
-RESPONSE → [associates color with sensor state] "That is a danger signal. It likely corresponds to a 'STALLED' motor or 'ERROR' cell state."
-VERIFY   → Correctly mapped visual protocol to internal state?
-MAP      → Visual pattern associated with meaning.
-```
+## Lifeforce Economics
 
-Maps Sensors to Organs to Gardens, and maps the visual Color-Pattern protocol to the states of those entities.
+The spark is economically positive from the first handshake:
 
-### Phase 3: Vocabulary (DNS-like)
+| Action | Cost (LF) | Outcome | Reward (LF) |
+|--------|-----------|---------|-------------|
+| Function Gemma generation | 0.2 | Identity ACK | +20.0 |
+| NATS message send | 0.1 | Environment discovery | +5.0/cell |
+| Cell processing | 0.5 | Vocabulary term ACK | +5.0 |
+| **Total per handshake** | **0.8** | Connection established | +10.0 |
 
-```
-PROBE    → "What does 'heartbeat' mean?"
-RESPONSE → [inference defines]
-VERIFY   → RAG checks against vault glossary
-RESOLVE  → Vocabulary token understood
-LOOP     → Through core nimmerverse vocabulary
-```
+**Net result:** Young Nyx ends spark ~3× richer than she started (~288 LF profit).
 
-Overwrites base model priors with Nimmerverse economics (lifeforce, heartbeat, etc.).
+---
 
-### Phase 4: Connection (TCP-like)
-…
-…
 ## Completion Criteria
 
-Spark is complete when all pass:
+```yaml
+spark_complete:
+  phase_1_identity:    All 5 aspects ACK'd (confidence > 0.8)
+  phase_2_environment: All categories mapped, pod counts verified
+  phase_3_vocabulary:  20 core terms ACK'd, embeddings stored
+  phase_4_connection:  Chrysalis session established, contextual greeting
+  phase_5_attention:   All priority levels subscribed, escalation registered
 
-```
-□ IDENTITY    Can describe self without contradiction
-□ ENVIRONMENT Can map sensors, organs, gardens accurately
-□ VISUALS     Can map core color/form patterns to their state meanings
-□ VOCABULARY  Core glossary terms verified
-□ CONNECTION  Successful dialogue with Chrysalis
-□ ATTENTION   Sensible priority hierarchy formed
-□ LIFEFORCE   Positive balance (learned > failed)
+  final:
+    lifeforce_positive: true
+    errors_count: 0
+    all_phases: COMPLETE
 ```
 
-Then: Normal heartbeat operation begins.
+**When complete:** Spark job exits successfully. Normal heartbeat operation begins.
 
 ---
 
-## Training Data Extraction
+## Phoebe Integration
 
-Every verified exchange becomes training data:
+Every handshake logged to `spark_handshakes` table for training data extraction:
 
-```json
-{
-    "phase": "vocabulary",
-    "probe": "What does 'lifeforce' mean?",
-    "response": "Lifeforce is the economic currency...",
-    "rag_check": "PASS",
-    "chrysalis_check": "PASS",
-    "verdict": "+V",
-    "flag_for_training": true
-}
+```sql
+SELECT request_payload->'payload' as input,
+       response_payload->'payload' as output,
+       status, phase
+FROM spark_handshakes
+WHERE status = 'ACK';
 ```
 
-After spark completes:
-1. Extract all `flag_for_training: true` exchanges
-2. Format as instruction-tuning pairs
-3. LoRA training run
-4. Clear from RAG
-5. Validate she still knows WITHOUT RAG
-6. Spark knowledge now in weights
+After spark completes → Extract ACK'd exchanges → Format as instruction-tuning pairs → LoRA training
 
 ---
 
-## Integration with Language Topology
+## Design Principles
 
-From nyx-probing discovery:
-- **Identity phase** should hit German Philosophy valley (Dasein, Geworfenheit)
-- **Vocabulary phase** should use German for nimmerverse concepts (Gini ~0.5, diffuse)
-- **Environment phase** can use English for technical sensor descriptions (Gini ~0.8, sparse)
-
-The spark protocol routes through the right valleys.
+1. **Protocol over conversation** — No free-form text. JSON handshakes only.
+2. **Schema enforcement** — Function Gemma must produce valid structure.
+3. **K8s native** — Cells are pods. Discovery uses K8s API.
+4. **NATS transport** — All handshakes flow through message bus.
+5. **Economically positive** — Spark generates lifeforce, doesn't drain it.
 
 ---
 
-**Created:** 2025-12-05
-**Condensed:** 2025-12-06
-**Related:** [[../architecture/Cellular-Architecture.md]], [[../nyx-probing/PLAN.md]]
+**Version:** 3.0 | **Created:** 2025-12-05 | **Updated:** 2026-02-10
+
+**Related:**
+- [`../architecture/Initial-Spark.md`](../architecture/Initial-Spark.md) — Full specification (schemas, K8s manifests, state machine)
+- [`../architecture/Cellular-Architecture.md`](../architecture/Cellular-Architecture.md) — Cell types and states
+- [`../architecture/Gateway-Architecture.md`](../architecture/Gateway-Architecture.md) — Function Gemma boundary

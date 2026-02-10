@@ -492,6 +492,49 @@ class BeatBudget:
 
 ---
 
+## Function Gemma: The State Transition Boundary
+
+Function Gemma sits between Young Nyx's attention decisions and cell execution. It guarantees that state transitions produce valid, predictable outputs.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ATTENTION → EXECUTION FLOW                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ATTENTION STATE MACHINE (this document)                       │
+│         │                                                        │
+│         │ Young Nyx decides: "REFLEX needed" or "ATTEND"        │
+│         ▼                                                        │
+│   FUNCTION GEMMA (translation boundary)                         │
+│         │                                                        │
+│         │ Intent → Typed JSON schema                            │
+│         │ - Which cells to query?                               │
+│         │ - What action to fire?                                │
+│         │ - What parameters?                                    │
+│         ▼                                                        │
+│   NATS MESSAGE → K8S CELLS                                      │
+│         │                                                        │
+│         │ ACK/NACK response                                     │
+│         ▼                                                        │
+│   STATE UPDATE (verified, not hoped)                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Why this matters:**
+
+| Without Function Gemma | With Function Gemma |
+|------------------------|---------------------|
+| "Fire the motor" → parse, hope | `MOTOR_COMMAND` schema → validated JSON → NATS |
+| Free-form → extraction errors | Typed output → guaranteed structure |
+| State ambiguity | State explicit in schema |
+
+**The attention flow decides WHAT.** Function Gemma translates to HOW.
+
+**Detail:** → [`Initial-Spark.md`](Initial-Spark.md) (Function Gemma schemas and integration)
+
+---
+
 *She doesn't have infinite attention. She has 30 seconds and choices.*
 
 ---
@@ -499,7 +542,8 @@ class BeatBudget:
 **Created**: 2025-12-05
 **Session**: Partnership dialogue (dafit + Chrysalis)
 **Promoted**: 2025-12-29 (from archive to main architecture)
-**Status**: Attention architecture v1.0 — **CANONICAL**
+**Updated**: 2026-02-10 (Function Gemma boundary clarified)
+**Status**: Attention architecture v1.1 — **CANONICAL**
 
 **Related Formalizations**:
 - [[formalization/Attention-Slumber-Prediction-Cycle]] — How last attention becomes slumber prediction
