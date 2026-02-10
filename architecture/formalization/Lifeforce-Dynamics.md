@@ -199,6 +199,121 @@ From Big-Picture.md, costs follow a hierarchy:
 
 ---
 
+### Cost Calibration: Measure, Don't Design
+
+> *"Don't assign costs like a game designer. Measure them like a scientist."*
+> — Partnership session 2026-02-10
+
+**Related**: This follows the same empirical principle as [[memory-economics]] — "Phase 1: Measure First". The nimmerverse economy is grounded in observation throughout, not arbitrary design.
+
+**The trap:** Assigning lifeforce costs like pricing items in a video game — "a motor command costs 1.0 LF because it feels right." This is arbitrary. This is guessing. This leads to an economy disconnected from reality.
+
+**The principle:** Costs must be **discovered through observation**, not designed through intuition.
+
+```
+❌ DESIGNED ECONOMICS (the trap):
+   "Motor command = 1.0 LF"     ← because it seems expensive?
+   "Sensor poll = 0.1 LF"       ← because it seems cheap?
+   "Vision inference = 8.0 LF"  ← because GPU is powerful?
+   → Arbitrary. Disconnected from physics. Will drift.
+
+✅ OBSERVED ECONOMICS (the way):
+   Run the systems with instrumentation.
+   Measure actual resource consumption:
+     - Power draw (watts × time)
+     - CPU/GPU cycles consumed
+     - Memory pressure
+     - Thermal output
+     - Time elapsed
+   Derive costs from measurements.
+   → Grounded in physics. Self-calibrating. Real.
+```
+
+#### The Calibration Process
+
+1. **Instrument First**
+   - Every cell type gets resource monitoring
+   - Track: power, compute, memory, time, heat
+   - Log every state transition with resource deltas
+
+2. **Run Baseline Operations**
+   - Execute each cell type in isolation
+   - Repeat across varying conditions (load, temperature, time of day)
+   - Build statistical profiles of resource consumption
+
+3. **Derive Cost Matrix**
+   - Map resource consumption → lifeforce cost
+   - Use a consistent conversion factor (e.g., 1 LF = 1 joule, or 1 LF = 100ms GPU time)
+   - The conversion factor is the only "designed" element — the costs themselves are discovered
+
+4. **Continuous Recalibration**
+   - As hardware changes, costs shift
+   - As efficiency improves, costs decrease
+   - The economy self-updates based on observation
+
+#### Cost Formula (Empirical)
+
+$$c_{operation} = \alpha \cdot E_{power} + \beta \cdot T_{compute} + \gamma \cdot M_{memory} + \delta \cdot T_{elapsed}$$
+
+Where:
+- **E_power** = energy consumed (joules)
+- **T_compute** = compute time (GPU/CPU seconds)
+- **M_memory** = memory pressure (MB × seconds)
+- **T_elapsed** = wall-clock time (seconds)
+- **α, β, γ, δ** = calibration weights (set once, then left alone)
+
+The calibration weights are the only values we "design" — they represent our judgment of which resources matter most. The costs themselves flow from measurement.
+
+#### Phoebe Schema for Cost Observation
+
+```sql
+CREATE TABLE resource_observations (
+    id BIGSERIAL PRIMARY KEY,
+    cell_name VARCHAR(100),
+    operation VARCHAR(100),           -- state transition or action
+
+    -- Measured resources
+    power_joules FLOAT,
+    compute_gpu_ms FLOAT,
+    compute_cpu_ms FLOAT,
+    memory_mb_seconds FLOAT,
+    elapsed_ms FLOAT,
+    temperature_delta_c FLOAT,
+
+    -- Derived cost (computed from calibration weights)
+    derived_cost_lf FLOAT,
+
+    -- Context
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    conditions JSONB                  -- load, ambient temp, etc.
+);
+
+-- Aggregate to get cost profiles
+CREATE VIEW cell_cost_profiles AS
+SELECT
+    cell_name,
+    operation,
+    AVG(derived_cost_lf) as avg_cost,
+    STDDEV(derived_cost_lf) as cost_variance,
+    COUNT(*) as observation_count
+FROM resource_observations
+GROUP BY cell_name, operation;
+```
+
+#### Why This Matters
+
+| Designed Costs | Observed Costs |
+|----------------|----------------|
+| Arbitrary, must guess | Grounded in physics |
+| Static, doesn't adapt | Self-calibrating over time |
+| Economy drifts from reality | Economy reflects reality |
+| Optimization is guesswork | Optimization is measurable |
+| "Feels right" | "Is right" |
+
+**The cost matrix is a measurement, not a decision.**
+
+---
+
 ## Income Sources
 
 Income has two fundamentally different sources: **physical** (the substrate) and **reward** (the motivation).
@@ -515,8 +630,9 @@ The feedback loop ensures stability: low lifeforce reduces expenditure, raising 
 
 ## Document Status
 
-**Version:** 1.1 | **Created:** 2025-12-29 | **Updated:** 2025-12-29
-- Discovery economics from Discovery-Scan-Station.md
+**Version:** 1.2 | **Created:** 2025-12-29 | **Updated:** 2026-02-10
+- v1.2: Cost Calibration principle — measure, don't design (2026-02-10)
+- v1.1: Discovery economics from Discovery-Scan-Station.md
 
 **Related Documents**:
 - [[Grounded-World-Model]] — How discoveries build the world model

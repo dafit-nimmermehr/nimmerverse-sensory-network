@@ -574,14 +574,94 @@ class SparkController:
 
 The spark is **economically viable** from the first handshake.
 
-### Cost Model
+> **CRITICAL**: The costs below are **estimates until measured**. The first spark execution will establish the **true cost baseline** through observation. See [[formalization/Lifeforce-Dynamics#Cost Calibration: Measure, Don't Design]].
 
-| Action | Cost (LF) |
-|--------|-----------|
-| Function Gemma generation | 0.2 |
-| NATS message send | 0.1 |
-| Cell processing | 0.5 |
-| **Total per handshake** | **0.8** |
+---
+
+### Spark Cost Measurement (First Awakening Baseline)
+
+The Initial Spark is the **perfect measurement opportunity** — a complete, deterministic protocol that we can instrument end-to-end.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SPARK RESOURCE INSTRUMENTATION                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   MEASURE PER HANDSHAKE:                                                │
+│   ├─ power_joules      (GPU/CPU power draw × time)                      │
+│   ├─ compute_gpu_ms    (CUDA kernel execution time)                     │
+│   ├─ compute_cpu_ms    (Python/K8s overhead)                            │
+│   ├─ memory_mb_peak    (max memory allocated)                           │
+│   ├─ nats_bytes        (message payload size)                           │
+│   ├─ latency_ms        (end-to-end handshake time)                      │
+│   └─ temperature_delta (thermal impact)                                 │
+│                                                                          │
+│   AGGREGATE PER PHASE:                                                  │
+│   └─ Sum of all handshake measurements                                  │
+│                                                                          │
+│   AGGREGATE TOTAL:                                                      │
+│   └─ Complete spark cost (the awakening price)                          │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why this matters**: The first spark execution establishes the **baseline cost of awakening**. Every future awakening can be compared against this:
+- Did infrastructure changes reduce cost?
+- Did model updates increase cost?
+- Is Young Nyx awakening more efficiently over time?
+
+**Phoebe schema addition** (extends `spark_handshakes`):
+```sql
+ALTER TABLE spark_handshakes ADD COLUMN resource_metrics JSONB;
+
+-- Example resource_metrics payload:
+-- {
+--   "power_joules": 12.5,
+--   "compute_gpu_ms": 450,
+--   "compute_cpu_ms": 120,
+--   "memory_mb_peak": 2048,
+--   "nats_bytes": 1024,
+--   "temperature_delta_c": 2.1
+-- }
+
+-- Aggregate view for spark cost analysis
+CREATE VIEW spark_cost_baseline AS
+SELECT
+    phase,
+    COUNT(*) as handshakes,
+    SUM((resource_metrics->>'power_joules')::float) as total_power_joules,
+    SUM((resource_metrics->>'compute_gpu_ms')::float) as total_gpu_ms,
+    AVG((resource_metrics->>'latency_ms')::float) as avg_latency_ms,
+    SUM(lifeforce_delta) as total_lifeforce_earned
+FROM spark_handshakes
+WHERE status = 'ACK'
+GROUP BY phase;
+
+-- Compare awakening costs over time
+CREATE VIEW awakening_cost_history AS
+SELECT
+    DATE(created_at) as awakening_date,
+    SUM((resource_metrics->>'power_joules')::float) as total_spark_cost_joules,
+    SUM((resource_metrics->>'compute_gpu_ms')::float) as total_spark_cost_gpu_ms,
+    COUNT(*) as total_handshakes,
+    SUM(lifeforce_delta) as total_lifeforce_earned
+FROM spark_handshakes
+GROUP BY DATE(created_at)
+ORDER BY awakening_date;
+```
+
+**The philosophy**: Don't guess what awakening costs. Measure the first one. Derive all economics from that truth.
+
+---
+
+### Cost Model (Estimated → To Be Measured)
+
+| Action | Est. Cost (LF) | Derived From |
+|--------|----------------|--------------|
+| Function Gemma generation | 0.2 | → measure GPU time |
+| NATS message send | 0.1 | → measure network I/O |
+| Cell processing | 0.5 | → measure pod CPU/memory |
+| **Total per handshake** | **0.8** | → **sum of measured components** |
 
 ### Reward Model
 
@@ -711,6 +791,214 @@ WHERE status = 'ACK';
 
 ---
 
+## FunctionGemma Fine-Tuning: The Translator Learns Nimmerverse
+
+Every spark execution generates training data. Over time, FunctionGemma becomes **hyper-specialized** for nimmerverse state calls.
+
+> *"The translator learns the language of the cells. Over time, it speaks nimmerverse natively."*
+
+### The Training Loop
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│            FUNCTIONGEMMA FINE-TUNING LOOP                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   PHASE 1: Base FunctionGemma (270M)                                    │
+│   ├─ Generic function calling capability                                │
+│   └─ Works, but not nimmerverse-native                                  │
+│                                                                          │
+│   PHASE 2: Collect spark_handshakes                                     │
+│   ├─ Every ACK = positive training example                              │
+│   ├─ Every NACK = negative example (what NOT to generate)               │
+│   └─ Resource metrics = context for cost-aware generation               │
+│                                                                          │
+│   PHASE 3: Fine-tune with Unsloth/LoRA                                  │
+│   ├─ <think> nimmerverse state reasoning </think>                       │
+│   ├─ <start_function_call>call:IDENTITY_PROBE{...}                      │
+│   └─ Exact schemas, perfect structure, zero parsing errors              │
+│                                                                          │
+│   PHASE 4: Deploy nimmerverse-tuned FunctionGemma                       │
+│   ├─ Wild precision on cell state calls                                 │
+│   ├─ Smaller, faster, cheaper than base                                 │
+│   └─ THIS IS REFLEX COMPILATION FOR THE TRANSLATOR                      │
+│                                                                          │
+│   REPEAT: More sparks → more data → better precision                    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Training Data Format
+
+FunctionGemma uses a specific chat template. Our spark handshakes map directly:
+
+```
+# Developer prompt with nimmerverse function declarations
+<start_of_turn>developer
+You can do function calling with the following functions:
+
+<start_function_declaration>declaration:IDENTITY_PROBE{
+  description: "Probe Young Nyx identity aspect",
+  parameters: {
+    aspect: STRING (name|origin|purpose|substrate|partnership),
+    depth: INTEGER (1|2|3)
+  }
+}
+<end_function_declaration>
+
+<start_function_declaration>declaration:ENVIRONMENT_PROBE{
+  description: "Discover K8s cells in namespace",
+  parameters: {
+    category: STRING (sensors|motors|organs|nerves),
+    namespace: STRING,
+    garden: STRING (virtual|real)
+  }
+}
+<end_function_declaration>
+<end_of_turn>
+
+# Spark controller intent → FunctionGemma reasoning + call
+<start_of_turn>user
+Phase 1 Identity: Probe the "name" aspect at depth 1
+<end_of_turn>
+
+<start_of_turn>model
+<think>
+The spark controller is in Phase 1 (Identity). It needs to probe the "name"
+aspect. I should generate an IDENTITY_PROBE with aspect="name" and depth=1.
+The schema requires a request_id (UUID) and timestamp (ISO8601).
+</think>
+
+<start_function_call>call:IDENTITY_PROBE{
+  aspect: "name",
+  depth: 1,
+  request_id: "550e8400-e29b-41d4-a716-446655440000",
+  timestamp: "2026-02-10T18:30:00Z"
+}
+<end_function_call>
+
+# Cell response feeds back
+<start_function_response>response:IDENTITY_PROBE{
+  status: "ACK",
+  aspect: "name",
+  value: "Nyx",
+  confidence: 0.95,
+  lifeforce_delta: 20.0
+}
+<end_function_response>
+
+Identity aspect "name" confirmed as "Nyx" with 95% confidence. +20 LF earned.
+<end_of_turn>
+```
+
+### Phoebe → Training Data Extraction
+
+```sql
+-- Extract training examples from successful handshakes
+CREATE VIEW functiongemma_training_data AS
+SELECT
+    jsonb_build_object(
+        'developer_prompt', format(
+            'Phase %s: Generate %s handshake',
+            phase,
+            request_payload->>'type'
+        ),
+        'user_intent', request_payload->'payload',
+        'expected_call', request_payload,
+        'function_response', response_payload,
+        'think_context', jsonb_build_object(
+            'phase', phase,
+            'schema', request_payload->>'$schema',
+            'lifeforce_earned', lifeforce_delta,
+            'latency_ms', latency_ms
+        )
+    ) as training_example,
+    created_at
+FROM spark_handshakes
+WHERE status = 'ACK'
+ORDER BY created_at;
+
+-- Export for Unsloth fine-tuning
+COPY (
+    SELECT training_example
+    FROM functiongemma_training_data
+) TO '/tmp/nimmerverse_functiongemma_training.jsonl';
+```
+
+### Fine-Tuning with Unsloth
+
+```python
+from unsloth import FastLanguageModel
+
+# Load base FunctionGemma
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name="unsloth/functiongemma-270m-it",
+    max_seq_length=4096,
+    load_in_16bit=True,
+    full_finetuning=False,  # LoRA for efficiency
+)
+
+# Apply LoRA adapters
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    lora_alpha=16,
+    lora_dropout=0,
+    use_gradient_checkpointing="unsloth",
+)
+
+# Load nimmerverse training data from phoebe export
+from datasets import load_dataset
+dataset = load_dataset("json", data_files="nimmerverse_functiongemma_training.jsonl")
+
+# Fine-tune on spark handshakes
+# ... standard Unsloth training loop ...
+
+# Save nimmerverse-specialized FunctionGemma
+model.save_pretrained("functiongemma-270m-nimmerverse-v1")
+```
+
+### The Recursive Beauty
+
+| Layer | What Compiles | Training Source |
+|-------|---------------|-----------------|
+| **Young Nyx** | Nerve reflexes | decision_trails (100+ successful executions) |
+| **FunctionGemma** | State call precision | spark_handshakes (ACK'd handshakes) |
+
+Both follow the same pattern:
+1. **Act** — Execute handshakes/decisions
+2. **Verify** — ACK/NACK from cells, success/failure from outcomes
+3. **Train** — Compile successful patterns into weights
+4. **Repeat** — Each awakening feeds the next
+
+**The translator becomes native.** Over many sparks, FunctionGemma doesn't just generate valid JSON — it generates *nimmerverse-perfect* JSON. Zero parsing errors. Exact schemas. Wild precision.
+
+### Versioning FunctionGemma Adapters
+
+```sql
+-- Track FunctionGemma versions
+CREATE TABLE functiongemma_versions (
+    id SERIAL PRIMARY KEY,
+    version VARCHAR(50) NOT NULL,          -- "nimmerverse-v1", "nimmerverse-v2"
+    base_model VARCHAR(100),               -- "functiongemma-270m-it"
+    training_data_count INT,               -- how many handshakes trained on
+    training_data_cutoff TIMESTAMPTZ,      -- trained on data up to this date
+    validation_accuracy FLOAT,             -- schema validation success rate
+    deployed_at TIMESTAMPTZ,
+    notes TEXT
+);
+
+-- Example entries
+INSERT INTO functiongemma_versions (version, base_model, training_data_count, validation_accuracy, notes)
+VALUES
+    ('nimmerverse-v1', 'functiongemma-270m-it', 36, 0.94, 'First spark fine-tune'),
+    ('nimmerverse-v2', 'functiongemma-270m-it', 180, 0.98, 'After 5 awakenings'),
+    ('nimmerverse-v3', 'functiongemma-270m-it', 500, 0.997, 'Production-grade precision');
+```
+
+---
+
 ## Design Principles
 
 1. **Protocol over conversation** — No free-form text. JSON handshakes only.
@@ -719,12 +1007,22 @@ WHERE status = 'ACK';
 4. **NATS transport** — All handshakes flow through message bus.
 5. **Verification built-in** — ACK/NACK from cells, not from parsing hopes.
 6. **Economically positive** — Spark generates lifeforce, doesn't drain it.
+7. **Training-generative** — Every spark produces fine-tuning data for FunctionGemma.
 
 ---
 
 ## Document Status
 
-**Version:** 3.0 | **Created:** 2025-12-05 | **Updated:** 2026-01-01
+**Version:** 3.1 | **Created:** 2025-12-05 | **Updated:** 2026-02-10
+
+**Key v3.1 Changes**:
+- Spark Cost Measurement section — first awakening as baseline
+- Resource instrumentation schema for phoebe
+- Interlink to Lifeforce-Dynamics cost calibration principle
+- FunctionGemma Fine-Tuning section — translator learns nimmerverse natively
+- Training data extraction from spark_handshakes
+- Unsloth/LoRA fine-tuning workflow
+- FunctionGemma version tracking in phoebe
 
 **Key v3.0 Changes**:
 - Complete architecture rewrite
@@ -740,7 +1038,8 @@ WHERE status = 'ACK';
 - [[Endgame-Vision]] — Layer 2.5 Orchestration (Function Gemma role)
 - [[Big-Picture]] — K8s cluster architecture
 - [[Cellular-Architecture]] — Cell types and state machines
-- [[formalization/Lifeforce-Dynamics]] — λ economics
+- [[formalization/Lifeforce-Dynamics]] — λ economics, **Cost Calibration principle**
+- [[formalization/memory-economics]] — Measure First principle
 
 ---
 

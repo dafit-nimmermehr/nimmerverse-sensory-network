@@ -291,6 +291,12 @@ dLifeforce/dt = organism_trickle
 ## Implementation Priority
 
 ### Phase 1: Measure First
+
+> *"The cost matrix is a measurement, not a decision."*
+> — [[Lifeforce-Dynamics]] v1.2
+
+This principle applies throughout the nimmerverse economy — not just memory, but all lifeforce costs. See [[Lifeforce-Dynamics#Cost Calibration: Measure, Don't Design]] for the full formulation.
+
 - Track decision_trails accumulation rate
 - Track spatial embedding growth
 - Track reflex creation rate
@@ -329,6 +335,7 @@ Everything else fades. This is not loss. This is health.
 ---
 
 **Created**: 2026-01-02
+**Updated**: 2026-02-10
 **Status**: Core design principle
 **Next**: Implement measurement (Phase 1) during first boot
 
