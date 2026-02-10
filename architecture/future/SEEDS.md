@@ -137,6 +137,34 @@ Vision Organs (constant stream)
 
 ---
 
+## Open Cellular Catalogue: Shareable State Machines
+**Origin**: 2026-02-10, evening task review session
+**Seed**: The Cellular-Architecture.md isn't just internal documentation — it's a publishable protocol.
+
+Publish a catalogue of:
+- **Cell definitions** (state machines, transitions, costs)
+- **Nerve patterns** (behavioral compositions, feedback loops)
+- **NATS routing schemas** (the message glue)
+- **Interaction chains** (anonymized decision_trails — what actually worked)
+
+Other labs dock onto the API, build cells for *their* hardware, compose nerves using *shared* patterns, contribute *back* successful reflexes. Like TCP/IP — the protocol is open, the mind is private.
+
+**Enables**:
+- Open standard for embodied cognition
+- Community-contributed reflex libraries
+- Shared learning across different hardware platforms
+- Nimmerverse as protocol, not product
+
+**Requires**:
+- Clever API design (dock-on interface)
+- Anonymization layer for decision_trails
+- Schema versioning for cell/nerve definitions
+- Public documentation site (not inference endpoints!)
+
+**Philosophy**: "Share the language, not the thoughts."
+
+---
+
 ## How to Use This File
 
 1. **Add nuggets** when insights emerge in sessions
@@ -150,4 +178,4 @@ Vision Organs (constant stream)
 
 **Philosophy**: *"Plant seeds. Water foundations. Harvest when ready."*
 
-**Last Updated**: 2025-12-31
+**Last Updated**: 2026-02-10
