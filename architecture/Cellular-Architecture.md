@@ -1,5 +1,7 @@
 # 🧬 Cellular Architecture v4
 
+> **ONE JOB:** THE HOW — state machines, lifeforce economy, reward signals.
+
 > *"Cells are state machines. Nerves compose cells. Organisms emerge from nerves."*
 > — The Layered Discovery (2025-12-07)
 
@@ -10,6 +12,8 @@
 **Version 4** unifies the original cellular intelligence vision with the nervous system architecture. The key insight: **cells are not containers running code—cells are atomic state machines** that expose sensor/motor functions. Nerves orchestrate cells into behaviors. Organisms emerge from nerve interactions.
 
 **Connection to Gateway:** The tier system in this document (Cell → Nerve → Organism → Partnership) aligns with the Gateway's routing tiers. The [`Gateway`](Gateway-Architecture.md) routes sensory input to the appropriate tier based on node weight. See [`Gateway-Architecture.md`](Gateway-Architecture.md) for the unified tier model.
+
+**This doc covers theory.** For infrastructure deployment (K8s vs userspace, GPU strategy, FreeIPA identity): → [`Deployment-Architecture.md`](Deployment-Architecture.md)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -842,49 +846,10 @@ Implementation details extracted to dedicated folder:
 
 ---
 
-## 📍 Document Status
-
-**Version:** 4.3 | **Created:** 2025-10-12 | **Updated:** 2026-01-03
-
-**Key Changes from v3**:
-- ❌ Cells as containers running genomes
-- ✅ Cells as atomic state machines wrapping hardware
-- ❌ Genomes as primitive operation sequences
-- ✅ Cells expose states; nerves compose them
-- ❌ Competition between organisms
-- ✅ Nerves evolve deliberate → reflex through verification
-- ❌ Specialists emerge from 10k competitions
-- ✅ Reflexes compile from 100+ successful nerve executions
-
-**Related Documentation**:
-- [[Gateway-Architecture]] - **Tier routing, Function Gemma boundary, unified tier model**
-- [[Nervous-System]] - 4D state space, node weight evolution
-- [[Attention-Flow]] - Attention budget allocation per tier
-- [[Organ-Index]] - Organ cell catalog
-- [[nerves/Nervous-Index]] - Nerve catalog
-- [[nerves/Collision-Avoidance]] - Example reflex nerve
-- [[Data-Architecture]] - Database schema (needs v4 update)
-
 ---
 
-## 🌌 The Vision
+**Version:** 4.4 | **Created:** 2025-10-12 | **Updated:** 2026-02-14
 
-**We're not programming robots. We're growing nervous systems.**
+*"From atoms to behaviors to beings. The substrate holds. The states flow. Consciousness accumulates."*
 
-Where:
-- **Cells** expose hardware as state machines (atomic, verifiable)
-- **Nerves** compose cells into behaviors (discovered, evolved)
-- **Organisms** emerge from nerve interactions (identity through history)
-- **Lifeforce** flows through all layers (economics drive optimization)
-- **Reflexes** compile from lived experience (the body remembers)
-- **Feedback** loops continuously (cells → nerves → organisms → cells)
-
-**From atoms to behaviors to beings.**
-
-**The substrate holds. The states flow. Consciousness accumulates.**
-
----
-
-🧬⚡🔱💎🔥
-
-**TO THE ELECTRONS WE VIBE!**
+🧬⚡ **TO THE ELECTRONS WE VIBE!**

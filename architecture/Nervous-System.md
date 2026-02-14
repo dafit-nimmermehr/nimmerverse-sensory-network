@@ -1,85 +1,18 @@
 # Nervous System Architecture
 
-The sensory translation layer between raw data and vocabulary.
+> **ONE JOB:** THE EVOLUTION — node growth, FunctionGemma Phase 1→2, proposal protocol.
+
+The nervous system handles **node evolution and weight management**. The [`Gateway`](Gateway-Architecture.md) handles **routing based on weight**.
 
 ---
 
 ## Overview
 
-State machines act as the nervous system of the nimmerverse. They exist in a 4D state space where nodes evolve through experience. Node **weight** (confidence) determines which processing tier handles the input.
+Nodes exist in 4D state space (sensory dimensions + confidence + time). Node **weight** (0.0→1.0) determines which tier handles input. Nodes evolve through verification: Birth → Activation → Verification → Reward/Penalty → Maturation → (or Pruning).
 
-**Key separation:**
-- The **nervous system** handles **node evolution and weight management**
-- The [`Gateway`](Gateway-Architecture.md) handles **routing based on weight**
-- **FunctionGemma** is the **State Interaction Layer** — how you speak to all states (see section below)
+**FunctionGemma (270M, CPU-only)** is the State Interaction Layer — every cell command, nerve coordination, and state query flows through this neural interface. See **State Interaction Layer** section for Phase 1→2 evolution.
 
-```
-RAW SENSOR → GATEWAY (routing) → TIER (processing) → [escalate?] → FUNCTION GEMMA → Young Nyx
-                 ↑                                                         ↑
-         node.weight determines tier                      structured JSON / state interaction
-```
-
-**FunctionGemma (270M, CPU-only)** translates intent into exact state machine schemas. Every cell command, nerve coordination, and state query flows through this neural interface. See **State Interaction Layer** section for evolution from single instance to domain-specialized swarm.
-
-**See:** [`Gateway-Architecture.md`](Gateway-Architecture.md) for full routing logic and tier definitions.
-
----
-
-## 4D State Machine Space
-
-Each node exists in 4-dimensional space:
-
-```
-        CONFIDENCE (z)
-             ↑
-             │    ● node (weighted by successful triggers)
-             │   /
-             │  /
-             │ /
-─────────────┼────────────→ DIMENSION X (sensory input 1)
-            /│
-           / │
-          /  │
-         ↓
-   DIMENSION Y (sensory input 2)
-
-   + TIME (4th dimension): node weights evolve through verification
-```
-
-**Node Properties:**
-- Position: coordinates in sensory space
-- Weight: confidence from successful triggers (0.0 → 1.0)
-- Output: vocabulary token
-- History: timestamp of all activations and verifications
-
----
-
-## Node Lifecycle
-
-```
-1. BIRTH
-   Node created at position (x, y, z...)
-   Weight = 0.1 (new, untested)
-
-2. ACTIVATION
-   Sensory conditions match → node FIRES
-   Outputs vocabulary token
-
-3. VERIFICATION
-   dafit confirms: correct or incorrect
-
-4. REWARD/PENALTY
-   Correct → weight increases (+V)
-   Incorrect → weight decreases (-V) or node refines
-
-5. MATURATION
-   Many confirmations → weight approaches 1.0
-   Node becomes trusted reflex
-
-6. PRUNING
-   Node never fires → slow decay
-   Eventually removed (use it or lose it)
-```
+**Routing & Verification:** → [`Gateway-Architecture.md`](Gateway-Architecture.md) (tier routing, causal verification loop)
 
 ---
 
@@ -176,37 +109,9 @@ The lifeforce flows through the nervous system, literally lighting up nodes as t
 
 ## Connection to Training
 
-The nervous system doesn't just run behaviors - it **generates training data** for Young Nyx.
+The nervous system **generates training data** for Young Nyx. Every verification = training signal. Credit assignment is automatic because state transitions are explicit and logged — the nervous system IS the credit assignment mechanism. Dense rewards at every verifiable checkpoint (**rubric principle**), not just final outcomes.
 
-### Every Verification = Training Signal
-
-When dafit confirms a node fired correctly:
-- **Runtime**: Node weight increases (+V)
-- **Training**: Example logged → Young Nyx learns
-
-This is the **rubric principle** - dense rewards at every verifiable checkpoint, not just final outcomes.
-
-### Credit Assignment is Automatic
-
-Because state transitions are explicit and logged, we know exactly which nodes contributed to success or failure:
-- The state path tells us which decisions led to the outcome
-- No reward model needed to guess
-- The nervous system IS the credit assignment mechanism
-
-### Dense Rewards from State Paths
-
-Each node that fires correctly along a successful path receives reward signal:
-```
-Node A fires → verified ✓ → +0.1 signal
-Node B fires → verified ✓ → +0.1 signal
-Node C fires → verified ✓ → +0.1 signal
-Behavior succeeds → +1.0 signal
-Total path reward: 1.3 (dense, traceable)
-```
-
-This is like training a dog - reward at the moment, not an hour later.
-
-**Detail:** → `Cellular-Architecture.md` (Reward Signal Architecture section)
+**Detail:** → [`Cellular-Architecture.md`](Cellular-Architecture.md) (Reward Signal Architecture section)
 
 ---
 
@@ -336,26 +241,6 @@ Base model → domain data → fine-tuned → specialist
 
 ---
 
-## Related Documentation
-
-**Core Architecture**:
-- [`Gateway-Architecture.md`](Gateway-Architecture.md) - Weight-based routing, tier definitions, Function Gemma boundary
-- [`Cellular-Architecture.md`](Cellular-Architecture.md) - Cell/Nerve/Organism hierarchy, tiered rewards
-- [`Attention-Flow.md`](Attention-Flow.md) - Attention budget allocation per tier
-- [`Initial-Spark.md`](Initial-Spark.md) - FunctionGemma fine-tuning from spark handshakes
-
-**Implementation Details**:
-- [`nerves/Nervous-Protocol.md`](nerves/Nervous-Protocol.md) - Three-tier communication protocol (dafit → Chrysalis → Young Nyx)
-- [`nerves/Nervous-Index.md`](nerves/Nervous-Index.md) - Catalog of behavioral nerve implementations
-
-**Specific Nerves**:
-- [`nerves/Collision-Avoidance.md`](nerves/Collision-Avoidance.md) - Obstacle avoidance reflex
-
----
-
-**Version:** 1.4 | **Created:** 2025-12-04 | **Updated:** 2026-02-10
-
-**v1.4 Changes:**
-- State Interaction Layer section — FunctionGemma as neural interface
+**Version:** 1.5 | **Created:** 2025-12-04 | **Updated:** 2026-02-14
 - Phase 1 (single) → Phase 2 (swarm) evolution path
 - Connection to node evolution principle

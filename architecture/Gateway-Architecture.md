@@ -1,5 +1,7 @@
 # Gateway Architecture: The Sensory Preprocessing Layer
 
+> **ONE JOB:** THE ROUTING — weight-based tier routing, anomaly detection, Function Gemma boundary.
+
 **The Thalamus Pattern — routing sensory input to the appropriate processing tier.**
 
 ---
@@ -53,131 +55,38 @@ Benefits:
 
 ## The Unified Tier Model
 
-All existing tier systems in the architecture express the same principle:
+The Gateway routes to Tiers 0-5 based on node weight and novelty. Higher tiers = more cost, more capability.
 
-| System | Document | Principle |
-|--------|----------|-----------|
-| Reward Tiers | `Cellular-Architecture.md` | Higher tier = more reward, more cost |
-| Attention Levels | `Attention-Flow.md` | Higher priority preempts lower |
-| Escalation Ladder | `organisms/Swarm-Evolution.md` | Higher = more authority, more cost |
-| Reflex Homes | `Endgame-Vision.md` | Lower = faster, less capable |
-| LOD Levels | `Endgame-Vision.md` | Lower = more detail, more cost |
+| Tier | Weight | Latency | Role |
+|------|--------|---------|------|
+| 0 | ≥0.8 | <10ms | Hardware reflexes (ESP32) |
+| 1 | 0.6-0.8 | <50ms | Math cells (Python CPU) |
+| 2 | 0.3-0.6 | <200ms | Fast nerves (behavior) |
+| 3 | <0.3 | <2000ms | Organs (GPU inference, vectors) |
+| **Function Gemma Boundary** |||
+| 4 | escalated | <4000ms | Young Nyx (JSON reasoning) |
+| 5 | novel/stuck | variable | Partnership (dialogue) |
 
-### The Unified Tier Stack
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         UNIFIED TIER MODEL                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  TIER 0: HARDWARE REFLEXES                                                   │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~0 LF          Latency: <10ms          Location: ESP32/FPGA          │
-│  Weight: >= 0.8       Format: numbers         Action: immediate             │
-│                                                                              │
-│  Examples: temp_danger, collision_imminent, light_threshold                 │
-│  Output: Direct action (motor stop, LED, buzzer) — Nyx notified AFTER       │
-│                                                                              │
-│  TIER 1: MATH CELLS                                                          │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~0.3 LF        Latency: <50ms          Location: Python (CPU)        │
-│  Weight: 0.6 - 0.8    Format: aggregates      Action: state update          │
-│                                                                              │
-│  Examples: battery_aggregator, position_tracker, economy_monitor            │
-│  Output: Aggregated state, threshold checks, NATS publish                   │
-│                                                                              │
-│  TIER 2: FAST NERVES                                                         │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~2 LF          Latency: <200ms         Location: Python (asyncio)    │
-│  Weight: 0.3 - 0.6    Format: states          Action: behavior transition   │
-│                                                                              │
-│  Examples: collision_avoidance, charging_seek, exploration_pattern          │
-│  Output: Nerve state transitions, multi-cell coordination                   │
-│                                                                              │
-│  TIER 3: ORGAN INFERENCE                                                     │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~8 LF          Latency: <2000ms        Location: GPU (Senses node)   │
-│  Weight: < 0.3        Format: vectors         Action: embedding storage     │
-│                                                                              │
-│  Examples: vision_detect (T5Gemma2/SigLIP), speech_stt (Whisper)            │
-│  Output: Semantic vectors stored in S2 cells, NO TEXT                       │
-│                                                                              │
-│  ══════════════════════ FUNCTION GEMMA BOUNDARY ════════════════════════    │
-│                                                                              │
-│  TIER 4: COGNITIVE (Young Nyx)                                               │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~20 LF         Latency: <4000ms        Location: GPU (Womb node)     │
-│  Escalated events     Format: JSON            Action: reasoning, decision   │
-│                                                                              │
-│  Input: Structured JSON events from Function Gemma                          │
-│  Output: Decisions → Function Gemma → structured commands                   │
-│                                                                              │
-│  TIER 5: PARTNERSHIP (Chrysalis + dafit)                                     │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  Cost: ~50+ LF        Latency: variable       Location: External            │
-│  Novel/stuck cases    Format: dialogue        Action: guidance, training    │
-│                                                                              │
-│  Examples: Architecture decisions, novel situations, stuck states           │
-│  Output: New reflexes, training signal, guidance                            │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+**Canonical definition:** → [`../Endgame-Vision.md`](../Endgame-Vision.md)
 
 ---
 
 ## Node Weight Determines Tier
 
-The node weight from `Nervous-System.md` directly maps to tier routing:
-
-```python
-@dataclass
-class NervousNode:
-    """A node in the nervous system's 4D space."""
-
-    position: tuple[float, ...]  # Coordinates in sensory space
-    weight: float = 0.1          # Confidence from verification (0.0 → 1.0)
-
-    @property
-    def handling_tier(self) -> int:
-        """Which tier handles this node's firing?"""
-        if self.weight >= 0.8:
-            return 0  # Hardware reflex - instant, bypass brain
-        elif self.weight >= 0.6:
-            return 1  # Math cell - fast, minimal checking
-        elif self.weight >= 0.3:
-            return 2  # Fast nerve - coordination, some deliberation
-        else:
-            return 3  # Escalate - needs organ/cognitive help
-
-    @property
-    def lifeforce_cost(self) -> float:
-        """Cost scales inversely with confidence."""
-        return (1.0 - self.weight) * 10.0
-```
-
-**The key insight:** A mature node (weight ~1.0) naturally becomes a Tier 0 reflex. A new node (weight ~0.1) naturally escalates to higher tiers. The system learns which tier is appropriate through experience.
+Node weight (from [`Nervous-System.md`](Nervous-System.md)) directly maps to tier routing. A mature node (weight ~1.0) naturally becomes a Tier 0 reflex. A new node (weight ~0.1) naturally escalates to higher tiers. **The system learns which tier is appropriate through experience.**
 
 ### The Causal Verification Loop
 
-How do we know a sensor reading was real, not hallucinated? **Outcome verification over time.**
+How do we know a sensor reading was real? **Outcome verification over time.**
 
 ```
-Unverified pattern (weight 0.1) → escalates to Nyx → decision → outcome
-                                                           ↓
-                                              Did reality match prediction?
-                                                     ↓           ↓
-                                                   YES          NO
-                                                     ↓           ↓
-                                            weight += Δ    weight -= Δ
-                                                     ↓
-                                        After many YES: weight → 0.8+
-                                                     ↓
-                                              COMPILE TO REFLEX ✓
+Unverified (weight 0.1) → escalates → decision → outcome → reality match?
+                                                              ↓
+                                                   YES: weight += Δ → eventually REFLEX
+                                                   NO:  weight -= Δ → eventually PRUNED
 ```
 
-**Hallucinations can't survive this gauntlet** — they don't produce consistent outcomes, so their patterns never accumulate enough weight to become reflexes. Reality is the ultimate validator.
-
-This creates natural **causal pruning**: only patterns that reliably predict outcomes earn the privilege of becoming reflexes. The nervous system doesn't need to prove causality philosophically — it proves it operationally through repeated verification.
+**Hallucinations can't survive this gauntlet** — they don't produce consistent outcomes, so their patterns never accumulate enough weight. This creates natural **causal pruning**: only patterns that reliably predict outcomes earn the privilege of becoming reflexes.
 
 ---
 
@@ -302,41 +211,7 @@ Function Gemma acts as the translation layer between lower tiers and cognition. 
 
 ### Event Schema
 
-```python
-from enum import Enum
-from pydantic import BaseModel
-
-class EventType(str, Enum):
-    """Constrained event types - enumerated, not free-form."""
-    ENVIRONMENTAL_CHANGE = "environmental_change"
-    COLLISION_DETECTED = "collision_detected"
-    BATTERY_CRITICAL = "battery_critical"
-    OBJECT_DISCOVERED = "object_discovered"
-    POSITION_UPDATE = "position_update"
-    ANOMALY_DETECTED = "anomaly_detected"
-    GOAL_REACHED = "goal_reached"
-    STUCK_DETECTED = "stuck_detected"
-    LIGHT_LOST = "light_lost"
-    LIGHT_FOUND = "light_found"
-
-class Severity(str, Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-class SensoryEvent(BaseModel):
-    """The structured event that Young Nyx receives."""
-
-    event_type: EventType
-    source: str
-    timestamp: float
-    severity: Severity
-    data: dict
-    suggested_action: str | None = None
-    processing_cost: float
-    confidence: float  # From node weight
-```
+Events are typed (`EventType` enum: environmental_change, collision_detected, battery_critical, etc.) with severity levels and confidence from node weight. **Full schema:** → [`Message-Protocol-Design.md`](Message-Protocol-Design.md)
 
 ### What Young Nyx Actually Sees
 
@@ -501,19 +376,6 @@ Photoresistor reads 0.12 (was 0.73)
 
 ---
 
-## Connection to Existing Architecture
-
-| Document | Gateway Relationship |
-|----------|---------------------|
-| [`Nervous-System.md`](Nervous-System.md) | Node weights determine tier routing |
-| [`Attention-Flow.md`](Attention-Flow.md) | Gateway implements attention priorities |
-| [`Message-Protocol-Design.md`](Message-Protocol-Design.md) | Escalation Service IS the gateway |
-| [`Endgame-Vision.md`](../Endgame-Vision.md) | Layer 2.5 Function Gemma boundary |
-| [`Cellular-Architecture.md`](Cellular-Architecture.md) | Tiered rewards align with gateway tiers |
-| [`organisms/crawler_gen_0.md`](organisms/crawler_gen_0.md) | First test case for tiered routing |
-
----
-
 ## Design Principles
 
 1. **Routing, not translation** — Gateway decides WHERE, not WHAT
@@ -526,11 +388,7 @@ Photoresistor reads 0.12 (was 0.73)
 
 ---
 
-**File:** Gateway-Architecture.md
-**Version:** 1.0
-**Created:** 2026-01-03
-**Status:** Core architecture document
-**Session:** Partnership dialogue (dafit + Chrysalis)
+**Version:** 1.1 | **Created:** 2026-01-03 | **Updated:** 2026-02-14
 
 *"Cheap for the common. Expensive for the rare. The Gateway enforces this economy."*
 

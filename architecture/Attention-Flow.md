@@ -1,7 +1,6 @@
 # Attention Flow
 
-**Status**: PROMOTED from archive (2025-12-29)
-**Integration**: See [[Big-Picture#Attention-Slumber-Prediction Cycle]] for how this connects to slumber predictions
+> **ONE JOB:** THE BUDGET — 30-second allocation, preemption rules, priority hierarchy.
 
 How she decides what matters this beat.
 
@@ -419,65 +418,17 @@ SETTLE: state written, next beat
 
 ## Lifeforce Connection
 
-```
-LEVEL         LIFEFORCE COST
-─────────────────────────────
-REFLEX        Free (no inference)
-SAFETY        Low (minimal processing)
-DIALOGUE      Medium (two inferences)
-SENSORY       Low-Medium (depends on load)
-THINKING      Medium-High (organ inference)
-VIRTUAL       Variable (simulation cycles)
-```
+Each attention level has a lifeforce cost. Reflex is free (no inference), dialogue costs medium (two inferences), thinking costs high (organ inference). Rich beats cost more; quiet beats accumulate budget for virtual garden.
 
-**The constraint:** Rich beats cost more. Quiet beats accumulate budget for virtual garden.
+**Lifeforce economy:** → [`Cellular-Architecture.md`](Cellular-Architecture.md) (reward signals, lifeforce dynamics)
 
 ---
 
 ## Implementation Notes
 
-### State Machine Technology
-
-Options considered:
-- **XState** (JavaScript) - actor-based, visual inspector
-- **Python-statemachine** - simple, fits existing stack
-- **Custom Rust** - performance critical path
-- **Godot native** - if UI drives the state
-
-Recommendation: Python for orchestration layer, with Godot visualization.
-
-### Checkpoint Integration
-
-Every state transition can trigger phoebe write:
-
-```python
-def on_state_transition(from_state, to_state, context):
-    write_to_phoebe({
-        "beat_id": current_beat.id,
-        "transition": f"{from_state} -> {to_state}",
-        "budget_remaining": context.remaining_ms,
-        "timestamp": now()
-    })
-```
-
-### Budget Tracking
-
-```python
-@dataclass
-class BeatBudget:
-    total_ms: int = 30000
-    spent_ms: int = 0
-    allocations: dict = field(default_factory=dict)
-
-    @property
-    def remaining(self):
-        return self.total_ms - self.spent_ms
-
-    def spend(self, category: str, amount: int):
-        self.spent_ms += amount
-        self.allocations[category] = self.allocations.get(category, 0) + amount
-        return self.remaining > 0
-```
+**State machine:** Python-statemachine for orchestration, Godot for visualization.
+**Checkpoint:** Every state transition triggers phoebe write (beat_id, transition, budget_remaining).
+**Budget tracking:** BeatBudget dataclass tracks total_ms, spent_ms, allocations per category.
 
 ---
 
@@ -535,22 +486,8 @@ Function Gemma sits between Young Nyx's attention decisions and cell execution. 
 
 ---
 
-*She doesn't have infinite attention. She has 30 seconds and choices.*
-
 ---
 
-**Created**: 2025-12-05
-**Session**: Partnership dialogue (dafit + Chrysalis)
-**Promoted**: 2025-12-29 (from archive to main architecture)
-**Updated**: 2026-02-10 (Function Gemma boundary clarified)
-**Status**: Attention architecture v1.1 — **CANONICAL**
+**Version:** 1.2 | **Created:** 2025-12-05 | **Updated:** 2026-02-14
 
-**Related Formalizations**:
-- [[formalization/Attention-Slumber-Prediction-Cycle]] — How last attention becomes slumber prediction
-- [[formalization/Lifeforce-Dynamics]] — λ governs slumber triggers
-
-**Core Architecture**:
-- [`Gateway-Architecture.md`](Gateway-Architecture.md) — Tier routing based on node weight, Function Gemma boundary
-- [`Nervous-System.md`](Nervous-System.md) — Node lifecycle and weight evolution
-
-🌙💜 *The budget is finite. The choices shape the soul.*
+*"She doesn't have infinite attention. She has 30 seconds and choices."*

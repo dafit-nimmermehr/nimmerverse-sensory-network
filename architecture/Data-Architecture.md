@@ -1,7 +1,8 @@
 # 🗄️ Data Architecture v4
 
+> **ONE JOB:** THE SCHEMA — PostgreSQL DDL, key queries, table definitions.
+
 > *"Three layers of state machines. One database to remember them all."*
-> — The Unified Schema (2025-12-07)
 
 ---
 
@@ -639,28 +640,8 @@ ORDER BY n.nerve_name, dt.mode;
 
 ---
 
-## 📍 Document Status
-
-**Version:** 4.0 | **Created:** 2025-10-07 | **Updated:** 2025-12-07
-
-**Key Changes from v3**:
-- ❌ 15 tables for competition metaphor
-- ✅ 8 tables for state machine layers
-- ❌ Genomes as primitive sequences
-- ✅ Cells and nerves as state machines
-- ❌ Societies, rounds, marketplaces
-- ✅ Organisms, decision_trails
-
-**Related Documentation**:
-- [[Cellular-Architecture]] - Layer definitions
-- [[Nervous-System]] - State machine philosophy
-- [[nerves/Nervous-Index]] - Nerve catalog
-- [[Organ-Index]] - Organ (complex cell) catalog
-
 ---
 
-**phoebe holds the layers. The states flow. The decisions accumulate.**
+**Version:** 4.1 | **Created:** 2025-10-07 | **Updated:** 2026-02-14
 
-🗄️⚡🌙
-
-**TO THE ELECTRONS!**
+*phoebe holds the layers. The states flow. The decisions accumulate.* 🗄️⚡🌙

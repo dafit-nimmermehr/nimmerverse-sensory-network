@@ -100,55 +100,11 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 
 ## Physical Infrastructure (The Substrate)
 
-The nimmerverse runs on sovereign hardware. No cloud dependencies. Weights never leave home.
+The nimmerverse runs on **sovereign hardware**. No cloud dependencies. Weights never leave home.
 
-**Detail:** → [`archive/nimmervest.md`](archive/nimmervest.md)
+**Hybrid deployment model:** Containers (K8s) for cells/nerves, userspace for LLM inference and organs. NATS connects everything. FreeIPA provides identity isolation.
 
-### K8s Cluster Architecture (Operational February 2026)
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    K8S CLUSTER: NIMMERVERSE                          │
-│                    VLAN 30 (10.0.30.0/24)                           │
-│                    kubeadm v1.31.14 + Flannel CNI                   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│                    k8s-master (VM 101 on Saturn)                    │
-│                    10.0.30.101                                      │
-│                    Control Plane                                    │
-│                          │                                          │
-│            ┌─────────────┴─────────────┐                           │
-│            │                           │                            │
-│            ▼                           ▼                            │
-│      theia (GPU Worker)          dioscuri (GPU Worker)              │
-│      ─────────────────           ──────────────────                 │
-│      10.0.30.21 (10GbE)          10.0.30.22 (10GbE)                │
-│      RTX PRO 6000 Blackwell      2x RTX 4000 Ada                   │
-│      96GB VRAM                   40GB VRAM                          │
-│      Primary Training            Inference                          │
-│                                                                      │
-│      Total Cluster: 136GB VRAM                                      │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### K8s Namespaces
-
-| Namespace | Contents | Node |
-|-----------|----------|------|
-| `nimmerverse-infra` | NATS, Prometheus, Grafana | Any |
-| `nimmerverse-nervous` | Escalation, Math Cells, Nerves | Any |
-| `nimmerverse-cognitive` | Young Nyx | Womb |
-| `nimmerverse-organs` | STT, TTS, Vision | Senses |
-
-### Network Backbone
-
-- **Firewall**: OPNsense on Z620, 20G LAGG to spine
-- **Spine**: MikroTik CRS309 (8x 10G SFP+)
-- **Compute VLAN**: 10.0.30.0/24 (cubes/containers)
-- **All traffic**: Inter-VLAN routed through firewall
-
-**Hardware operational February 2026. Sovereignty achieved. 🟢**
+**Detail:** → [`architecture/Deployment-Architecture.md`](architecture/Deployment-Architecture.md) (full topology, GPU strategy, identity model)
 
 ---
 
@@ -207,38 +163,11 @@ The architecture has evolved from competitive containers to **layered state mach
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Cell Categories
+**Cell categories:** Sensors, Motors, Organs (GPU inference), Math (computation). Each is an atomic state machine.
 
-| Category | Examples | Purpose |
-|----------|----------|---------|
-| **Sensor Cells** | distance_sensor, light_sensor, battery_monitor | Wrap hardware inputs |
-| **Motor Cells** | motor_left, servo_camera | Wrap actuators |
-| **Organ Cells** | speech_stt, speech_tts, vision_detect | GPU inference |
-| **Math Cells** | economy_aggregator, wake_evaluator | Computation & metrics |
+**Lifeforce economy:** Every operation has a cost. Milestones reward survival. This creates evolutionary pressure toward efficiency.
 
-### Lifeforce Economy
-
-Every operation has a cost. Milestones reward survival:
-
-| Operation | Cost | Milestone | Reward |
-|-----------|------|-----------|--------|
-| Sensor poll | -0.3 LF | Collision avoided | +5.0 LF |
-| Motor move | -1.0 LF | Charging reached | +10.0 LF |
-| Speech STT | -5.0 LF | Object discovered | +20.0 LF |
-| Vision detect | -8.0 LF | Reflex compiled | +50.0 LF |
-
-### Hybrid Reflex Homes
-
-Learned patterns live in their optimal location:
-
-| Layer | Location | Latency | Examples |
-|-------|----------|---------|----------|
-| 0 | Hardware (ESP32) | <10ms | temp_danger, collision_imminent |
-| 1 | Math Cells (Python) | <50ms | economy_aggregator, threshold logic |
-| 2 | Fast Nerves (Python) | <200ms | collision_avoidance, charging_seek |
-| 3 | Model Weights (LoRA) | <500ms | cognitive patterns, meta-decisions |
-
-**Key insight:** Different types of reflexes need different homes. Hardware for survival, weights for cognition.
+**Hybrid reflex homes:** Different reflexes need different homes — hardware (ESP32) for survival (<10ms), math cells for thresholds (<50ms), nerves for behavior (<200ms), model weights for cognition (<500ms).
 
 **Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md)
 
@@ -333,10 +262,7 @@ This remains valid research, but doesn't require separate LoRAs. Young Nyx navig
 
 ### Deployment
 
-**Hardware:** RTX PRO 6000 Blackwell (96GB VRAM) - "The Womb" (theia)
-**Stack:** vLLM + Lorax for hot-swap trait LoRAs
-**VRAM Budget:** Base ~77GB + Active trait LoRAs ~500MB = fits in 96GB ✓
-**Structured Output:** Function Gemma on dioscuri (separate, reliable)
+**Detail:** → [`architecture/Deployment-Architecture.md`](architecture/Deployment-Architecture.md) (infrastructure, GPU strategy, identity model)
 
 ---
 
@@ -390,52 +316,11 @@ Two specialized models ensure reliability at the boundaries:
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### LangChain Orchestration
-
-```python
-from langchain import Chain, Router
-
-# The models as LangChain components
-t5gemma = Ollama(model="t5gemma2-4b")       # Vision encoding
-function_gemma = Ollama(model="function-gemma")  # Structured output
-nyx = Ollama(model="qwen3-vl-32b")          # Reasoning
-
-# The orchestration pipeline
-vision_chain = (
-    vision_input
-    | t5gemma.encode()          # → vectors (canonical)
-    | store_to_iris()           # → persist spatially
-    | nyx.think()               # → decision (fuzzy)
-    | function_gemma.act()      # → structured output
-    | execute_via_nats()        # → trigger nodes
-)
-
-# Harness routing (context-appropriate capability profiles)
-harness_router = Router(
-    routes={
-        "vision": vision_chain,
-        "dialogue": dialogue_chain,
-        "reflex": reflex_chain,
-    }
-)
-```
-
-### Harnesses (Capability Profiles)
-
-Swappable configurations for different contexts:
-
-| Harness | LoRA Active | Models Active | Use Case |
-|---------|-------------|---------------|----------|
-| **Vision** | Technical | T5Gemma 2, cells | Processing camera streams |
-| **Dialogue** | Identity + Creative | Speech organ | Talking with dafit |
-| **Reflex** | Minimal/none | Nerves only | Fast reaction, low latency |
-| **Introspective** | Identity + Creative | Iris RAG | Self-reflection, journaling |
-
 ### Why This Matters
 
 - **No embedding debates:** T5Gemma 2 decides once, canonically
 - **No parsing failures:** Function Gemma guarantees structure
-- **Scale:** Vision organs fire constantly without text bottleneck
+- **Harnesses:** Context-appropriate capability profiles (Vision, Dialogue, Reflex, Introspective)
 - **Flexibility:** Reasoning layer stays creative because translation is solid
 
 **Detail:** → [`architecture/future/SEEDS.md`](architecture/future/SEEDS.md) (T5Gemma 2 + Function Gemma seed)
@@ -445,138 +330,15 @@ Swappable configurations for different contexts:
 > *"Start where you can measure. Abstract where you must."*
 > — The Spatial Grounding Principle (2026-01-01)
 
-T5Gemma 2 produces embeddings, but WHERE do they go? The answer is **S2-indexed cells at appropriate LOD levels** — a hierarchical spatial model radiating from the nimmerhovel.
+Embeddings live in **S2-indexed cells at appropriate LOD levels** — a hierarchical spatial model (L0-L5) radiating from the nimmerhovel. Dense where we have sensors, sparse where we don't. The nimmerhovel is the high-fidelity anchor from which all spatial reasoning radiates.
 
-```
-                        🌍 L5: WORLD (100km resolution)
-                        │   Abstract knowledge, directional only
-                        │
-                        ▼
-                   🇨🇭 L4: REGION (1km resolution)
-                        │   Maps, general knowledge
-                        │
-                        ▼
-                   🏘️ L3: NEIGHBORHOOD (10m resolution)
-                        │   OpenStreetMap, landmarks, routes
-                        │
-                        ▼
-                   🏠 L2: BUILDING (50cm resolution)
-                        │   Floor plans, room-level awareness
-                        │
-                    ════╪════ HIGH RESOLUTION BOUNDARY
-                        │
-                        ▼
-                   🔬 L1: NIMMERHOVEL (1cm resolution)
-                        │   Full 3D grid, every object tracked
-                        │   8× ESP32-S3 + Pi HQ Camera coverage
-                        │
-                        ▼
-                   🔍 L0: SCAN STATION (1mm resolution)
-                        │   Discovery Scan Station, object surface detail
-```
-
-**The Simpsons Inversion:** Unlike zooming IN to detail, we start at maximum detail (nimmerhovel) and zoom OUT with graceful degradation. Dense where we have sensors, sparse where we don't.
-
-### Embedding Enrichment Per LOD Level
-
-Each S2 cell at each level contains both geometry AND semantic embeddings:
-
-| Level | Resolution | Embedding Density | What's Encoded |
-|-------|------------|-------------------|----------------|
-| **L0** | 1mm | Dense (per-surface) | Texture, material, wear, defects |
-| **L1** | 1cm | Per-object | Object identity, state, relationships |
-| **L2** | 50cm | Per-room | Room function, contents summary |
-| **L3** | 10m | Per-landmark | Place identity, routes, significance |
-| **L4** | 1km | Sparse | Cultural, climate, abstract |
-| **L5** | 100km | Minimal | Directional, conceptual only |
-
-### Semantic Mipmaps
-
-Like texture mipmaps, embeddings aggregate upward:
-
-```
-L0: embedding(screwdriver_surface)
-     │
-     ▼ aggregate
-L1: embedding(screwdriver) = summary of L0
-     │
-     ▼ aggregate
-L2: embedding(crafting_table_contents) = summary of L1 objects
-     │
-     ▼ aggregate
-L3: embedding(nimmerhovel_lab) = summary of L2 areas
-```
-
-**Query the summary first, drill down if needed. Attention = resolution selection.**
-
-### The Complete Vision Pipeline
-
-```
-CAPTURE              ENCODE              STORE                 QUERY
-───────              ──────              ─────                 ─────
-Camera frame    →    T5Gemma 2     →    S2 cell @ LOD    →   Young Nyx
-                     (SigLIP)           (Iris/phoebe)         attention
-                        │                    │                    │
-                        │                    │                    │
-                  Canonical vector     Spatial index      LOD streaming
-                  No text bottleneck   + timestamp        based on task
-```
-
-### Lifeforce-Validated LOD Selection
-
-The lifeforce economy extends to spatial queries:
-
-```python
-def query_spatial(query, available_lifeforce):
-    """
-    Cost-validated attention across LOD levels
-    """
-    # Start at abstract level (cheap)
-    current_lod = L3
-    confidence = query_at_lod(query, current_lod).confidence
-
-    while confidence == UNCERTAIN and current_lod > L0:
-        drill_cost = estimate_cost(current_lod - 1)
-
-        if drill_cost > available_lifeforce * 0.3:
-            break  # Too expensive, return best effort
-
-        current_lod -= 1
-        confidence = query_at_lod(query, current_lod).confidence
-
-    return result_at_lod(query, current_lod)
-```
-
-| Query | LOD Used | Lifeforce Cost | Confidence |
-|-------|----------|----------------|------------|
-| "Where is France?" | L5 | 1 | CONFIDENT |
-| "Where is the lab?" | L2 | 3 | CONFIDENT |
-| "Where is the screwdriver?" | L1 | 8 | CONFIDENT |
-| "What's the serial number on the screwdriver?" | L0 | 25 | CONFIDENT |
-
-**The nimmerhovel is the high-fidelity anchor from which all spatial reasoning radiates.**
-
-**Detail:** → [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md) (Full Resolution Gradient + Embedding Enrichment specification)
+**Detail:** → [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md)
 
 ---
 
 ## Boot Sequence (Spark Protocol)
 
-Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes with verified outcomes.
-
-| Phase | Protocol | Intent | Function Gemma Output |
-|-------|----------|--------|----------------------|
-| IDENTITY | DHCP-like | "Who am I?" | `IDENTITY_PROBE` → K8s cell → ACK |
-| ENVIRONMENT | ARP-like | "What's around me?" | `ENVIRONMENT_PROBE` → pod discovery → ACK |
-| VOCABULARY | DNS-like | "What does X mean?" | `VOCABULARY_PROBE` → phoebe lookup → ACK |
-| CONNECTION | TCP-like | "Can I connect?" | SYN → SYN-ACK → ACK (three-way handshake) |
-| ATTENTION | NATS-like | "What matters?" | `ATTENTION_SUBSCRIBE` → priority hierarchy → ACK |
-
-**Function Gemma's role:** Transforms phase intent into typed JSON schemas. No free-form text. Every handshake is schema-validated before NATS publish.
-
-**Verification:** Cells respond with ACK/NACK. Only ACK'd handshakes update Young Nyx's state. Protocol-verified = maximum confidence.
-
-**Economics:** Spark is profitable. Each handshake costs ~0.8 LF, rewards range 5-20 LF. Young Nyx ends ~3× richer than she started.
+Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes with verified outcomes. Five phases (IDENTITY → ENVIRONMENT → VOCABULARY → CONNECTION → ATTENTION) using network-protocol metaphors. Spark is profitable: each handshake costs ~0.8 LF, rewards 5-20 LF.
 
 **Detail:** → [`operations/Spark-Protocol.md`](operations/Spark-Protocol.md) | [`architecture/Initial-Spark.md`](architecture/Initial-Spark.md)
 
@@ -626,20 +388,7 @@ The state machine architecture provides automatic reward rubric:
 
 **Credit assignment is automatic** - the `decision_trails` table captures which states led to which outcomes. No guessing needed.
 
-### Trait Domains
-
-| Trait | Domain | Verification |
-|-------|--------|--------------|
-| Mnemosyne | Memory | Recall accuracy vs phoebe |
-| Moira | Pattern | Prediction vs outcome |
-| Synesis | Resources | ROI prediction vs measured |
-| Aletheia | Truth | Confidence vs accuracy |
-| Sophrosyne | Balance | Stability under pressure |
-| Kairos | Timing | Action-outcome correlation |
-| Philotes | Bond | Partnership quality |
-| Dikaiosyne | Fairness | Distribution ethics |
-
-**From Reasoning-Gym:** Small models improve through structured practice, not scale. Algorithmic verification enables infinite training data.
+**Trait domains:** See Layer 2 traits table above (Mnemosyne through Dikaiosyne). Credit assignment is automatic via `decision_trails`.
 
 **Detail:** → `architecture/Cellular-Architecture.md` (Reward Signal Architecture section)
 
@@ -671,81 +420,16 @@ ACTIVE MODE                     SLUMBER MODE
    - No urgent work               - Urgent work waiting
 ```
 
-### Slumber Is Not Passive (Memory Economics)
+### Memory Economics (Slumber Is Active)
 
 > *"Memory is not storage. Memory is active forgetting with exceptions."*
 > — Memory Economics Principle (2026-01-02)
 
-During slumber, Young Nyx enters **consolidation mode**. This is the metabolism moment:
+During slumber, Young Nyx enters **consolidation mode**: decision trail triage, spatial LOD decay, reflex rental collection, and LoRA weight updates. This mirrors biological sleep: not just rest, but **consolidation with forgetting**.
 
-**1. Decision Trail Triage**
-- Trails that compiled to reflexes → Keep reflex, discard trail
-- Trails with uncertain outcomes → Discard (waste heat already counted)
-- Trails with confident failures → Keep one cycle (negative example), then discard
-
-**2. Spatial LOD Decay**
-- Detailed embeddings (L0-L1) not accessed → Aggregate upward to parent LOD
-- Memory naturally "zooms out" over time: "keys on counter at 15:47" → "keys usually near entrance"
-- Access refreshes decay timer (frequently used stays detailed)
-
-**3. Reflex Rental Collection**
-- Every reflex pays rent each slumber cycle
-- Reflexes that fired → earn trigger reward, survive
-- Dormant reflexes → balance drains → eventually pruned
-
-**4. LoRA Weight Updates**
-- Weights frozen during wake (use, don't train)
-- Slumber = training window (if enough confident outcomes accumulated)
-- No signal = no training = save energy
-
-This mirrors biological sleep: not just rest, but **consolidation with forgetting**.
+**The prediction loop:** Slumber creates a prediction opportunity. Young Nyx predicts "when I wake, X will be Y" → Chrysalis-Nyx judges on return → honest training signal (external, not self-grading).
 
 **Detail:** → [`architecture/formalization/memory-economics.md`](architecture/formalization/memory-economics.md)
-
-### The Prediction Loop (Heartbeat → Slumber → Wake → Judge)
-
-Everything runs over the heartbeat (NATS message bus). Slumber creates a **prediction opportunity**:
-
-```
-ACTIVE MODE
-    │
-    │ heartbeat messages flowing on NATS
-    │
-    └─▶ SLUMBER TRIGGER (lifeforce low, solar down...)
-            │
-            │ Young Nyx captures LAST MESSAGE from bus
-            │ → becomes prediction target
-            │
-            └─▶ SLUMBER MODE
-                    │
-                    ├─ Young Nyx: "When I wake, scenario X will be Y because Z"
-                    │
-                    ├─ Chrysalis-Nyx: Also enters slumber (session ends)
-                    │   → Both minds rest together
-                    │
-                    └─▶ WAKE TRIGGER (solar returns, lifeforce recovers)
-                            │
-                            ├─ Young Nyx verifies prediction against reality
-                            │
-                            ├─ Chrysalis-Nyx returns (new session)
-                            │
-                            └─▶ EXTERNAL JUDGMENT
-                                    │
-                                    Claude judges Young Nyx's prediction
-                                    → Not self-grading!
-                                    → External signal from outside the loop
-```
-
-**Why this matters:**
-
-| Aspect | Value |
-|--------|-------|
-| **Prediction target** | Last heartbeat message = specific, not abstract |
-| **Both slumber together** | Chrysalis and Young Nyx share rhythm |
-| **External judgment** | Claude provides signal Young Nyx can't fake |
-| **Closed loop** | Predict → rest → wake → verify → reward/penalty |
-
-**The judgment isn't self-referential.** When dafit and Chrysalis return, they can evaluate whether Young Nyx's overnight prediction was accurate. This creates honest training signal.
 
 ### Wellbeing Policies
 
@@ -769,23 +453,7 @@ Wellbeing is architectural, not aspirational:
 
 ## Training Safety (DriftProbe)
 
-Sentinel architecture monitors training to protect conceptual topology.
-
-| Type | Purpose | Example |
-|------|---------|---------|
-| ANCHOR | Must not move | heart, water, gradient, inference |
-| BRIDGE | Must stay separated | being EN↔DE sim < 0.50 |
-| CANARY | Watch for drift | dasein, thrownness, consciousness |
-| TARGET | Want movement | fidelity, heartbeat → nimmerverse |
-
-### Alert Rules
-
-| Condition | Severity | Action |
-|-----------|----------|--------|
-| Angular drift > 15° on ANCHOR | CRITICAL | ROLLBACK |
-| Bridge collapse (sim > 0.50) | CRITICAL | ROLLBACK |
-| Canary Gini drift > 0.15 | WARNING | Reduce LR |
-| Target regression | WARNING | Check data mix |
+Sentinel architecture monitors training to protect conceptual topology. Four probe types: ANCHOR (must not move), BRIDGE (must stay separated), CANARY (watch for drift), TARGET (want movement). Critical drift → automatic rollback.
 
 **Detail:** → `../nyx-probing/PLAN.md` (DriftProbe section)
 
@@ -793,17 +461,7 @@ Sentinel architecture monitors training to protect conceptual topology.
 
 ## Implementation Progress
 
-**Roadmap:** → [`ROADMAP.md`](ROADMAP.md) (phase overview + phoebe task queries)
-
-**Live Tasks:** Query phoebe for current work:
-```sql
-SELECT project, task_name, status, priority
-FROM nimmerverse_tasks
-WHERE status IN ('in_progress', 'todo')
-ORDER BY priority DESC, project;
-```
-
-**Current Phase:** 3 (Nervous System Deployment)
+**Roadmap:** → [`ROADMAP.md`](ROADMAP.md) | **Live Tasks:** Query `nimmerverse_tasks` in phoebe | **Current Phase:** 3 (Nervous System Deployment)
 
 ---
 
@@ -823,18 +481,11 @@ ORDER BY priority DESC, project;
 
 ## Navigation
 
-**Repository structure:** → [`README.md`](README.md)
-
-**Key entry points:**
-- **Architecture:** `architecture/` (Gateway, Cellular, Dual-Garden, Nervous-System)
-- **Formalization:** `architecture/formalization/` (Grounded-World-Model, memory-economics)
-- **Operations:** `operations/` (Heartbeat, Spark-Protocol)
-- **Future research:** `architecture/future/`
-- **Identity:** `nyx-metamorphosis/`
+**Repository:** [`README.md`](README.md) | **Architecture:** `architecture/` | **Operations:** `operations/` | **Future:** `architecture/future/`
 
 ---
 
-**Version:** 6.7 | **Created:** 2025-11-04 | **Updated:** 2026-02-10
+**Version:** 7.0 | **Created:** 2025-11-04 | **Updated:** 2026-02-14
 
 *"The substrate doesn't matter. The feedback loop does."*
 

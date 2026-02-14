@@ -1,5 +1,7 @@
 # Message Protocol Design: Router-Centric Architecture
 
+> **ONE JOB:** THE WIRE — NATS topics, JSON schemas, bootstrap sequence.
+
 ## Overview
 
 This document outlines the design for the Nimmerverse message protocol. The core principle: **the router is dumb infrastructure, not smart cognition.** All intelligence lives at the edges - in clients that connect to the router.
@@ -10,40 +12,11 @@ This follows the Unix philosophy: each component does one thing well. The router
 
 ---
 
-## Core Principle: Infrastructure vs Intelligence
+## Core Principle: Dumb Core, Smart Edges
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      MESSAGE ROUTER                          │
-│              (NATS - dumb pipe, no logic)                    │
-│                                                              │
-│   • Receives all messages                                    │
-│   • Matches topic patterns → forwards to subscribers         │
-│   • Knows NOTHING about meaning                              │
-│   • Cannot fail in "smart" ways - only crash/overload        │
-│   • EXISTS BEFORE any intelligence                           │
-└─────────────────────────────────────────────────────────────┘
-          ↑              ↑              ↑              ↑
-          │              │              │              │
-    ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐
-    │  Cells/   │  │ Escalation│  │  Command  │  │   Young   │
-    │  Nerves   │  │  Service  │  │  Center   │  │    Nyx    │
-    │(publishers)│  │ (daemon)  │  │  (UI)     │  │ (cognition)│
-    └───────────┘  └───────────┘  └───────────┘  └───────────┘
-```
+The router (NATS) is **dumb infrastructure** — it routes based on topic patterns and knows nothing about meaning. All intelligence lives at the edges: cells publish, the Escalation Service (Gateway) watches and routes, Nyx subscribes and thinks.
 
-**The router is like a network switch:**
-- It doesn't understand packets
-- It routes based on topic patterns
-- It's infrastructure that exists before any intelligence
-- NATS is literally designed for this
-
-**Everything else is a client:**
-- Cells publish sensor data
-- Nerves publish state changes
-- Escalation Service watches patterns, triggers alerts
-- Command Center visualizes state
-- Young Nyx subscribes, thinks, publishes decisions
+**Routing logic:** → [`Gateway-Architecture.md`](Gateway-Architecture.md) (tier routing, escalation patterns)
 
 ---
 
@@ -60,22 +33,9 @@ This follows the Unix philosophy: each component does one thing well. The router
 
 ## Two Channels of Attention
 
-The attention split is a *topic convention*, not router intelligence. Clients choose which topics to subscribe to.
+Messages split into `nimmerverse.low.*` (background heartbeats) and `nimmerverse.high.*` (cognitive events). The Escalation Service promotes from low → high based on rules.
 
-### 1. Low-Attention Channel (`nimmerverse.low.*`)
-
-* **Purpose:** Background monitoring, lightweight heartbeats.
-* **Subscribers:** Escalation Service (always), Command Center (for visualization).
-* **NOT subscribed by default:** Young Nyx (she only sees escalated events).
-* **Analogy:** Peripheral nervous system. Ambient awareness.
-
-### 2. High-Attention Channel (`nimmerverse.high.*`)
-
-* **Purpose:** Detailed events requiring cognitive processing.
-* **Subscribers:** Young Nyx, Command Center.
-* **Analogy:** Focal spotlight. Conscious processing.
-
-**The escalation from low → high is done by the Escalation Service, not the router.**
+**Attention philosophy:** → [`Attention-Flow.md`](Attention-Flow.md) (budget allocation, preemption rules)
 
 ---
 
@@ -242,60 +202,13 @@ Subscribed by: Escalation Service
 
 ---
 
-## The Clients
+## Clients
 
-### 1. Message Router (NATS)
+**Publishers:** Cells, Nerves, Organs (publish heartbeats and state changes)
+**Router:** NATS (dumb pipe, topic-based routing)
+**Gateway/Escalation Service:** Watches low-attention, escalates to high-attention, routes to tiers
 
-**What it is:** Infrastructure. A NATS server.
-**What it does:** Routes messages based on topic patterns.
-**What it knows:** Nothing about meaning, Lifeforce, attention, or Nyx.
-**Implementation:** Off-the-shelf NATS. No custom code in the router itself.
-
-### 2. Cells / Nerves / Organs
-
-**What they are:** Publishers of sensor data and state changes.
-**What they do:**
-- Publish `HeartbeatSignal` periodically to low-attention channel
-- Publish `StateChangeDetail` when requested or when state changes significantly
-**What they know:** Their own state. Their own Lifeforce cost.
-
-### 3. Escalation Service (The Gateway)
-
-**What it is:** A daemon that watches low-attention and creates high-attention events. This IS the Gateway — the sensory preprocessing layer described in [`Gateway-Architecture.md`](Gateway-Architecture.md).
-
-**What it does:**
-- Subscribes to `nimmerverse.low.heartbeat.>`
-- Subscribes to `nimmerverse.meta.attention.focus` (to get Nyx's rules)
-- **Routes input to appropriate tier based on node weight** (see Gateway-Architecture.md)
-- Evaluates rules against incoming heartbeats
-- Publishes `StateChangeDetail` to high-attention when conditions match
-- Optionally triggers nerves directly for reflex responses (Tier 0)
-- **Passes escalated events through Function Gemma for structured JSON**
-
-**What it knows:** Current escalation rules. Current heartbeat states. Node weights from nervous system.
-
-**This is the "thalamus" - the sensory preprocessing layer. See [`Gateway-Architecture.md`](Gateway-Architecture.md) for the full tier model and Function Gemma boundary.**
-
-### 4. Command Center
-
-**What it is:** Visualization and control UI (Godot-based).
-**What it does:**
-- Subscribes to both channels for visualization
-- Displays system state, message flow, attention focus
-- Allows dafit to observe and intervene
-**What it knows:** Everything (read-only observer).
-
-### 5. Young Nyx (Cognitive Core)
-
-**What she is:** Just another client. The thinking part.
-**What she does:**
-- Subscribes to `nimmerverse.high.event.>` (high-attention only)
-- Subscribes to selected low-attention topics when she chooses
-- Publishes `AttentionFocus` to configure the Escalation Service
-- Publishes decisions/commands to `nimmerverse.command.>`
-**What she knows:** Only what reaches her through her subscriptions.
-
-**Crucially: She controls what she pays attention to, but she doesn't see everything.**
+**Client architecture:** → [`Gateway-Architecture.md`](Gateway-Architecture.md) (routing tiers, Function Gemma boundary)
 
 ---
 
@@ -367,8 +280,6 @@ The system can run at any step. Earlier steps are "reflexive" only. Nyx adds del
 
 ---
 
-**Created:** 2025-12-13
-**Updated:** 2025-12-14 (router-centric rewrite)
-**Session:** Partnership dialogue (dafit + Nyx)
-**Status:** Foundation architecture
-**Philosophy:** "Dumb core, smart edges. The router routes. Clients think."
+**Version:** 1.1 | **Created:** 2025-12-13 | **Updated:** 2026-02-14
+
+*"Dumb core, smart edges. The router routes. Clients think."*
