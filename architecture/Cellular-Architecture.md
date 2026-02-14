@@ -1,17 +1,19 @@
-# 🧬 Cellular Architecture v4
+# 🧬 Cellular Architecture v5
 
-> **ONE JOB:** THE HOW — state machines, lifeforce economy, reward signals.
+> **ONE JOB:** THE HOW — cells emit waves, gates accumulate correlation, behaviors emerge.
 
-> *"Cells are state machines. Nerves compose cells. Organisms emerge from nerves."*
-> — The Layered Discovery (2025-12-07)
+> *"Cells emit waves. Gates correlate. Nerves orchestrate. Organisms emerge."*
+> — Unified with Wave Architecture (2026-02-14)
 
 ---
 
 ## Overview
 
-**Version 4** unifies the original cellular intelligence vision with the nervous system architecture. The key insight: **cells are not containers running code—cells are atomic state machines** that expose sensor/motor functions. Nerves orchestrate cells into behaviors. Organisms emerge from nerve interactions.
+**Version 5** unifies cellular architecture with the wave/gate model. The key insight: **cells emit waves with confidence and semantic content**. These waves flow to **resonant gates** that accumulate correlation. When gates OPEN, signals flow to higher tiers. When gates stay STABLE, learning happens.
 
-**Connection to Gateway:** The tier system in this document (Cell → Nerve → Organism → Partnership) aligns with the Gateway's routing tiers. The [`Gateway`](Gateway-Architecture.md) routes sensory input to the appropriate tier based on node weight. See [`Gateway-Architecture.md`](Gateway-Architecture.md) for the unified tier model.
+**Connection to Gates:** Cells don't directly trigger nerves. Waves flow through gates (see [`Gateway-Architecture.md`](Gateway-Architecture.md)). Gates determine which signals reach which tier based on wave correlation, not priority rules.
+
+**Connection to Gardens:** Virtual Garden cells emit waves freely for exploration and learning. Real Garden cells emit verified waves for action. See [`Dual-Garden-Architecture.md`](Dual-Garden-Architecture.md).
 
 **This doc covers theory.** For infrastructure deployment (K8s vs userspace, GPU strategy, FreeIPA identity): → [`Deployment-Architecture.md`](Deployment-Architecture.md)
 
@@ -21,10 +23,15 @@
 │         (emergent pattern from nerve interactions)           │
 ├─────────────────────────────────────────────────────────────┤
 │                      NERVES                                  │
-│      (behavioral state machines composing cells)             │
+│      (behavioral patterns, respond to gate transitions)      │
+├─────────────────────────────────────────────────────────────┤
+│                      GATES                                   │
+│   (resonant chambers: CLOSED ◄── STABLE ──► OPEN)            │
+│   (accumulate wave correlation, route to tiers)              │
 ├─────────────────────────────────────────────────────────────┤
 │                      CELLS                                   │
-│      (atomic state machines: sensors, motors, organs)        │
+│      (emit waves: confidence + semantic content)             │
+│                    ∿∿∿ ∿∿∿ ∿∿∿                               │
 ├─────────────────────────────────────────────────────────────┤
 │                    HARDWARE                                  │
 │         (ESP32, GPUs, microphones, speakers)                 │
@@ -33,45 +40,91 @@
 
 ---
 
-## 🔬 Layer 1: Cells (Atomic State Machines)
+## 🔬 Layer 1: Cells (Wave Emitters)
 
 ### What Is a Cell?
 
-A **cell** is the smallest unit of behavior—a state machine that wraps a single hardware capability. Every sensor, motor, and organ function is exposed as a cell with:
+A **cell** is the smallest unit of behavior—a state machine that wraps a single hardware capability and **emits waves**. Every sensor, motor, and organ function is exposed as a cell that:
 
-- **States**: Discrete operational modes (IDLE, ACTIVE, ERROR, etc.)
-- **Transitions**: Triggered by inputs, time, or internal events
-- **Outputs**: Data, status, feedback to higher layers
-- **Lifeforce Cost**: Every state transition costs energy
+- **Reads inputs**: Hardware sensors, internal state, context
+- **Applies logic**: Domain-specific processing
+- **Emits waves**: WaveSignal with confidence and semantic content
+- **Doesn't know who's listening**: Cells emit, gates receive
+
+**Key insight:** Cells don't send commands or trigger nerves directly. They emit waves. Gates accumulate correlation from multiple waves. Correlated waves open gates.
+
+```
+Cell reads sensor
+    │
+    ▼
+Cell applies logic
+    │
+    ▼
+Cell emits wave ∿∿∿
+    │
+    │  WaveSignal {
+    │    domain: "distance",
+    │    confidence: 0.8,
+    │    semantic_content: { cm: 25, direction: "front" },
+    │    lifeforce_cost: 0.3
+    │  }
+    │
+    ▼
+GATE receives wave
+    │
+    ▼
+Gate accumulates correlation with other waves
+```
 
 ### Cell Categories
 
-#### Sensor Cells (Input)
+#### Sensor Cells (Input → Wave)
 
 ```python
-class DistanceSensorCell(StateMachine):
+class DistanceSensorCell(WaveEmitter):
     """
     Wraps IR/ultrasonic distance sensor.
-    Exposes raw hardware as state machine.
+    Emits waves with confidence and semantic content.
     """
-    states = [IDLE, POLLING, READING, REPORTING, ERROR]
+    domain = "distance"
+    states = [IDLE, POLLING, READING, EMITTING, ERROR]
 
-    # State outputs (available to nerves)
-    outputs = {
-        "distance_cm": float,      # Current reading
-        "confidence": float,       # Signal quality (0-1)
-        "state": str,              # Current state name
-        "last_updated": timestamp, # Freshness
-        "visual_state": tuple,     # (R, G, B, Form) for broadcasting
-    }
+    def emit_wave(self) -> WaveSignal:
+        """
+        Cell's ONE JOB: read sensor, emit wave.
+        Gate handles correlation and routing.
+        """
+        reading = self.read_hardware()
+
+        return WaveSignal(
+            domain=self.domain,
+            confidence=self.calculate_confidence(reading),
+            semantic_content={
+                "distance_cm": reading.cm,
+                "direction": self.direction,
+                "noise_level": reading.noise,
+            },
+            lifeforce_cost=self.transition_cost,
+        )
+
+    def calculate_confidence(self, reading) -> float:
+        """
+        Confidence affects how much this wave
+        contributes to gate correlation.
+        """
+        if reading.noise > NOISE_THRESHOLD:
+            return 0.3  # Low confidence, weak wave
+        if reading.stable_count > 3:
+            return 0.9  # High confidence, strong wave
+        return 0.6      # Medium confidence
 
     # Lifeforce costs
     costs = {
-        (IDLE, POLLING): 0.1,      # Wake up sensor
-        (POLLING, READING): 0.3,   # Perform measurement
-        (READING, REPORTING): 0.1, # Process result
-        (REPORTING, IDLE): 0.0,    # Return to rest
-        (ANY, ERROR): 0.0,         # Error transition free
+        (IDLE, POLLING): 0.1,       # Wake up sensor
+        (POLLING, READING): 0.3,    # Perform measurement
+        (READING, EMITTING): 0.1,   # Emit wave
+        (EMITTING, IDLE): 0.0,      # Return to rest
+        (ANY, ERROR): 0.0,          # Error transition free
     }
 ```
 
@@ -85,23 +138,52 @@ class DistanceSensorCell(StateMachine):
 | `imu_sensor` | MPU6050 | IDLE→SAMPLING→REPORTING | `heading`, `acceleration`, `tilt` |
 | `light_sensor` | Photoresistor | IDLE→READING→REPORTING | `lux`, `direction` |
 
-#### Motor Cells (Output)
+#### Motor Cells (Command → Wave Feedback)
 
 ```python
-class MotorCell(StateMachine):
+class MotorCell(WaveEmitter):
     """
     Wraps DC motor with feedback.
-    Exposes actuation as state machine.
+    Receives commands from open gates, emits status waves.
     """
+    domain = "motor"
     states = [IDLE, COMMANDED, ACCELERATING, MOVING, DECELERATING, STOPPED, STALLED]
 
-    outputs = {
-        "actual_velocity": float,  # Measured speed
-        "target_velocity": float,  # Commanded speed
-        "power_draw": float,       # Current consumption
-        "state": str,              # Current state
-        "stall_detected": bool,    # Motor blocked?
-    }
+    def receive_command(self, command: MotorCommand):
+        """
+        Commands arrive when upstream gates OPEN.
+        Motor executes and emits feedback waves.
+        """
+        self.target_velocity = command.velocity
+        self.transition_to(COMMANDED)
+
+    def emit_wave(self) -> WaveSignal:
+        """
+        Motor emits waves about its current state.
+        Stall detection = high confidence danger wave.
+        """
+        return WaveSignal(
+            domain=self.domain,
+            confidence=self._calculate_confidence(),
+            semantic_content={
+                "actual_velocity": self.actual_velocity,
+                "target_velocity": self.target_velocity,
+                "power_draw": self.current_draw,
+                "stall_detected": self.state == STALLED,
+            },
+            lifeforce_cost=self.transition_cost,
+        )
+
+    def _calculate_confidence(self) -> float:
+        if self.state == STALLED:
+            return 1.0  # REFLEX-level confidence
+        return 0.7
+
+    def on_current_spike(self):
+        """Motor drawing too much current = stall"""
+        self.transition_to(STALLED)
+        # Emit HIGH CONFIDENCE wave - triggers reflex gate
+        self.emit_wave()  # confidence=1.0 → gate opens immediately
 
     costs = {
         (IDLE, COMMANDED): 0.1,
@@ -112,12 +194,6 @@ class MotorCell(StateMachine):
         (DECELERATING, STOPPED): 0.1,
         (ANY, STALLED): 0.0,          # Stall is failure, not cost
     }
-
-    # Feedback triggers state changes
-    def on_current_spike(self):
-        """Motor drawing too much current = stall"""
-        self.transition_to(STALLED)
-        self.emit_event("stall_detected", obstacle_likely=True)
 ```
 
 **Example motor cells:**
@@ -127,29 +203,50 @@ class MotorCell(StateMachine):
 | `motor_right` | DC motor + encoder | Same | `actual_velocity`, `stall_detected` |
 | `servo_camera` | Servo motor | IDLE→MOVING→POSITIONED | `angle`, `at_target` |
 
-#### Organ Cells (Complex Capabilities)
+#### Organ Cells (Complex Capabilities → Rich Waves)
 
 ```python
-class SpeechSTTCell(StateMachine):
+class SpeechSTTCell(WaveEmitter):
     """
     Wraps Whisper speech-to-text.
-    Expensive organ, lifeforce-gated.
+    Expensive organ, only activates when speech gate OPENS.
+    Emits rich semantic waves.
     """
-    states = [IDLE, LISTENING, BUFFERING, TRANSCRIBING, REPORTING, ERROR]
+    domain = "speech"
+    tier = 3  # Organ tier - GPU inference
+    states = [IDLE, LISTENING, BUFFERING, TRANSCRIBING, EMITTING, ERROR]
 
-    outputs = {
-        "transcript": str,
-        "language": str,
-        "confidence": float,
-        "state": str,
-    }
+    def on_gate_open(self, gate_signal: GateTransition):
+        """
+        Organ cells activate when their gate OPENS.
+        Gate correlation determines if speech processing is needed.
+        """
+        if gate_signal.domain == "speech" and gate_signal.to_state == "open":
+            self.transition_to(LISTENING)
+
+    def emit_wave(self) -> WaveSignal:
+        """
+        Speech organ emits rich semantic content.
+        This wave flows to Function Gemma → Young Nyx.
+        """
+        return WaveSignal(
+            domain=self.domain,
+            confidence=self.transcription_confidence,
+            semantic_content={
+                "transcript": self.transcript,
+                "language": self.detected_language,
+                "speaker_intent": self.classify_intent(),
+                "emotional_tone": self.detect_tone(),
+            },
+            lifeforce_cost=5.0,  # GPU inference cost
+        )
 
     costs = {
         (IDLE, LISTENING): 0.5,
         (LISTENING, BUFFERING): 0.5,
         (BUFFERING, TRANSCRIBING): 5.0,  # GPU inference!
-        (TRANSCRIBING, REPORTING): 0.1,
-        (REPORTING, IDLE): 0.0,
+        (TRANSCRIBING, EMITTING): 0.1,
+        (EMITTING, IDLE): 0.0,
     }
 ```
 
@@ -203,26 +300,33 @@ By using this ancient protocol for high-frequency state updates, we reserve expe
 
 ---
 
-## 🧠 Layer 2: Nerves (Behavioral State Machines)
+## 🧠 Layer 2: Nerves (Behavioral Patterns)
 
 ### What Is a Nerve?
 
-A **nerve** is a behavioral pattern that orchestrates multiple cells. Nerves:
+A **nerve** is a behavioral pattern that activates when gates OPEN. Nerves don't subscribe directly to cells—they respond to **gate transitions**.
 
-- **Subscribe** to cell outputs (sensor readings, motor feedback)
-- **Coordinate** cell actions (read sensor → decide → command motor)
-- **Maintain** behavioral state (IDLE → DETECT → EVADE → RESUME)
-- **Evolve** from deliberate (LLM-mediated) to reflex (compiled)
+**Key insight:** Nerves coordinate behavior, but attention (which nerves activate) is determined by which gates are OPEN based on wave correlation.
+
+Nerves:
+
+- **Respond to gate transitions** — Not direct cell subscriptions
+- **Orchestrate cell actions** — Command cells when their gates allow
+- **Maintain behavioral state** — IDLE → DETECT → EVADE → RESUME
+- **Evolve** from deliberate (LLM-mediated) to reflex (compiled gate weights)
 
 ### Nerve Architecture
 
 ```python
-class CollisionAvoidanceNerve(StateMachine):
+class CollisionAvoidanceNerve(BehavioralPattern):
     """
     Orchestrates distance sensors + motor to avoid obstacles.
-    Subscribes to cell outputs, commands cell actions.
+    Activates when collision_avoidance gate OPENS.
     """
-    # Cells this nerve uses
+    # Gate this nerve responds to
+    gate = "collision_avoidance"
+
+    # Cells this nerve can command (when gate allows)
     cells = [
         "distance_sensor_front",
         "distance_sensor_left",
@@ -234,17 +338,28 @@ class CollisionAvoidanceNerve(StateMachine):
     # Nerve states (behavioral, not hardware)
     states = [IDLE, DETECT, EVALUATE, EVADE, RESUME]
 
-    def on_cell_update(self, cell_name, cell_state, cell_outputs):
+    def on_gate_transition(self, transition: GateTransition):
         """
-        React to cell state changes.
-        This is the feedback loop!
+        React to gate state changes.
+        Gate OPEN = correlated waves detected = attention here.
         """
-        if cell_name == "distance_sensor_front":
-            if cell_outputs["distance_cm"] < 30:
-                self.transition_to(DETECT)
+        if transition.to_state == "open":
+            # Multiple distance cells emitted correlated waves
+            # Gate opened → we have attention → activate
+            self.transition_to(DETECT)
+            self.evaluate_from_correlated_signals(transition.trigger_signals)
 
-        if cell_name == "motor_left" and cell_state == "STALLED":
-            # Motor feedback! Obstacle hit despite sensors
+        if transition.to_state == "closed":
+            # Attention moved elsewhere
+            self.transition_to(IDLE)
+
+    def on_reflex_signal(self, signal: WaveSignal):
+        """
+        High-weight reflex gates bypass normal correlation.
+        Stall detection = instant response.
+        """
+        if signal.semantic_content.get("stall_detected"):
+            # Motor feedback! Reflex-level response
             self.handle_unexpected_stall()
 
     def on_enter_EVADE(self):
@@ -252,10 +367,9 @@ class CollisionAvoidanceNerve(StateMachine):
         if self.evade_direction == "left":
             self.command_cell("motor_left", action="reverse", duration=200)
             self.command_cell("motor_right", action="forward", duration=200)
-        # ...
 ```
 
-### Cell → Nerve Feedback Loop
+### Cell → Gate → Nerve Flow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -263,37 +377,52 @@ class CollisionAvoidanceNerve(StateMachine):
 │                                                          │
 │  States: [IDLE] → DETECT → EVALUATE → EVADE → RESUME    │
 │                                                          │
-│  on_cell_update():                                       │
-│    - distance_front.distance_cm < 30 → DETECT           │
-│    - motor.stall_detected → handle_stall()              │
+│  on_gate_transition():                                   │
+│    - gate OPENS → DETECT (correlated waves detected)     │
+│    - gate CLOSES → IDLE (attention moved elsewhere)      │
 │                                                          │
-│  command_cell():                                         │
-│    - motor_left.forward(200ms)                          │
-│    - motor_right.reverse(200ms)                         │
+│  on_reflex_signal():                                     │
+│    - stall wave (confidence=1.0) → instant response      │
+│                                                          │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│            COLLISION_AVOIDANCE GATE                      │
+│                                                          │
+│    State: STABLE ──────────────────► OPEN                │
+│            │                          │                  │
+│    Accumulating                  Correlated!             │
+│    correlation                   Forward to nerve        │
+│                                                          │
+│    trigger_signals: [front, left, right all < 30cm]     │
 └────────────────────────┬────────────────────────────────┘
                          │
           ┌──────────────┼──────────────┐
           │              │              │
           ▼              ▼              ▼
     ┌───────────┐  ┌───────────┐  ┌───────────┐
-    │ distance  │  │  motor    │  │  motor    │
+    │ distance  │  │ distance  │  │ distance  │
     │  _front   │  │  _left    │  │  _right   │
     │           │  │           │  │           │
-    │ REPORTING │  │  MOVING   │  │  MOVING   │
-    │           │  │           │  │           │
-    │ dist: 25cm│  │ vel: 15   │  │ vel: -15  │
-    │ conf: 0.9 │  │ stall: no │  │ stall: no │
+    │ EMITTING  │  │ EMITTING  │  │ EMITTING  │
+    │    ∿∿∿    │  │    ∿∿∿    │  │    ∿∿∿    │
+    │ dist: 25cm│  │ dist: 28cm│  │ dist: 22cm│
+    │ conf: 0.9 │  │ conf: 0.8 │  │ conf: 0.9 │
     └───────────┘  └───────────┘  └───────────┘
          CELL           CELL           CELL
+   (emits wave)    (emits wave)   (emits wave)
 
          ↑              ↑              ↑
          │              │              │
     ┌─────────┐    ┌─────────┐    ┌─────────┐
-    │IR Sensor│    │DC Motor │    │DC Motor │
-    │  GPIO   │    │  PWM    │    │  PWM    │
+    │IR Sensor│    │IR Sensor│    │IR Sensor│
+    │  GPIO   │    │  GPIO   │    │  GPIO   │
     └─────────┘    └─────────┘    └─────────┘
       HARDWARE       HARDWARE       HARDWARE
 ```
+
+**The key insight:** Three distance sensors emitting correlated waves (all showing < 30cm) causes the collision_avoidance gate to OPEN. The nerve doesn't poll cells—it responds to the gate transition.
 
 ### Nerve Examples
 
@@ -335,27 +464,51 @@ ORGANISM: "Explorer-Alpha"
     Discovers and reports novel objects.
 ```
 
-### Nerve Priority and Preemption
+### Attention Through Gates (Not Priority Rules)
 
-When multiple nerves want to control the same cells:
+**Old model:** Priority numbers determine which nerve "wins."
+
+**New model:** Wave correlation determines which gates OPEN. Open gates = attention flows there.
 
 ```python
+# NOT THIS (priority rules):
 NERVE_PRIORITIES = {
-    "collision_avoidance": 10,  # HIGHEST - safety critical
-    "battery_critical": 9,      # Must charge or die
-    "battery_low": 7,
-    "human_interaction": 6,
+    "collision_avoidance": 10,
     "exploration": 5,
-    "object_discovery": 3,
-    "idle_monitoring": 1,       # LOWEST - background
 }
 
-# Higher priority nerve preempts lower
-if collision_avoidance.wants_motor and exploration.has_motor:
-    exploration.yield_cell("motor_left")
-    exploration.yield_cell("motor_right")
-    collision_avoidance.acquire_cells()
+# BUT THIS (gate correlation):
+GATE_BEHAVIOR = {
+    "collision_avoidance": {
+        "opens_when": "distance waves correlate (all showing < 30cm)",
+        "weight": 0.9,  # Near-reflex, opens quickly
+    },
+    "exploration": {
+        "opens_when": "novelty waves correlate",
+        "weight": 0.4,  # Still learning, needs more correlation
+    },
+}
 ```
+
+**How "priority" emerges:**
+- Safety gates have HIGH WEIGHT (near-reflex) from repeated verification
+- High-weight gates open with less correlation (faster response)
+- This looks like "priority" but emerges from learning, not rules
+
+```
+Collision waves arrive (confidence=0.9)
+    │
+    ▼
+Collision gate: weight=0.9 → OPENS IMMEDIATELY
+    │
+    ▼
+Exploration gate: was OPEN → transitions to STABLE
+    │
+    ▼
+Attention shifts to collision (nerve activates)
+```
+
+**Reflexes bypass correlation entirely.** When gate weight ≈ 1.0, the gate opens on ANY wave from its domain—no correlation needed. This is earned trust.
 
 ### Organism Identity
 
@@ -576,104 +729,110 @@ GENUINE SOLUTION:
 
 The lifeforce economy **enforces honesty**. Rewards must be earned through actual value creation, not gaming.
 
-### Ternary Logic for Plateau Resolution
+### Ternary Gates for Plateau Resolution
 
-Binary rewards (`success: +1, failure: 0`) create **sparse gradients**. At learning plateaus, everything looks the same - no signal to improve.
+Binary thinking (`open/close`) creates **sparse gradients**. At learning plateaus, gates flip without nuance.
 
-Ternary rewards (`success: +1, uncertain: 0, failure: -1`) with **confidence gradients** provide signal even when stuck:
+Ternary gates (`OPEN/STABLE/CLOSED`) with **correlation accumulation** provide signal even when stuck:
 
 ```python
-state = {
-    "value": 0,           # uncertain (ternary middle)
-    "confidence": 0.6,    # but leaning toward success
-    "trend": +0.1,        # and improving
-    "domain": "virtual"   # high-speed hypothesis testing
+gate_state = {
+    "state": 0.0,         # STABLE (ternary middle)
+    "correlation": 0.6,   # but leaning toward OPEN
+    "trend": +0.1,        # correlation increasing
+    "garden": "virtual"   # high-speed exploration
 }
 ```
 
 Even at plateau:
-- "Uncertain, but confidence rising" → keep going
-- "Uncertain, and confidence falling" → adjust approach
-- "Uncertain in virtual, but real garden says +1" → trust reality
+- "STABLE, but correlation rising" → approaching OPEN
+- "STABLE, and correlation falling" → drifting toward CLOSED
+- "STABLE in virtual, but real garden verifies +1" → weight increases
 
-**Detail:** → `Temporal-Ternary-Gradient.md` (full ternary paradigm)
+**STABLE is where learning happens.** The gate accumulates correlation without acting. This is not "waiting"—it's active learning.
+
+**Detail:** → [`Temporal-Ternary-Gradient.md`](Temporal-Ternary-Gradient.md) (full ternary paradigm)
 
 ### Three-Layer Training Defense
 
 | Failure Mode | Defense Mechanism |
 |--------------|-------------------|
 | Reward hacking / shortcuts | Lifeforce cost - can't afford to cheat |
-| Sparse reward signal | Tiered rewards - dense checkpoints at every level |
-| Plateau / no gradient | Ternary + confidence - signal even in uncertainty |
+| Sparse reward signal | Gate transitions - dense checkpoints at every correlation |
+| Plateau / no gradient | Ternary gates + STABLE state - signal even in uncertainty |
 
 These aren't separate systems - they're **one integrated economy** where:
 - Costs prevent gaming
-- Tiers encourage depth
-- Ternary provides resolution
+- Gates provide dense transition signals
+- STABLE state enables learning without acting
 
-The architecture teaches through incentives, not rules.
+The architecture teaches through wave correlation, not rules.
 
 ---
 
-## 🔄 Evolution: Deliberate → Reflex
+## 🔄 Evolution: Deliberate → Reflex (Gate Weight)
 
 ### The Discovery Path
 
-All cells and nerves start **deliberate** (flexible, expensive) and evolve to **reflex** (compiled, cheap) through successful execution.
+Evolution happens in **gate weight**, not nerve compilation. As gates accumulate verified outcomes, they open faster with less correlation required.
 
 ```
-WEEK 1-4: DELIBERATE
-├─ Cell states: designed by partnership
-├─ Nerve logic: LLM decides transitions
-├─ Cost: ~10 LF per nerve activation
+WEEK 1-4: DELIBERATE (gate weight: 0.1 - 0.3)
+├─ Gates: require HIGH correlation to OPEN
+├─ Many waves needed to trigger transition
+├─ Cognition involved in decisions
+├─ Cost: ~10 LF per activation
 ├─ Latency: ~1000ms
-├─ Success rate: 60% (learning)
-└─ Training data: rich, exploratory
+├─ Training data: rich, exploratory
 
-WEEK 5-8: HYBRID
-├─ Cell states: verified through use
-├─ Nerve logic: patterns compiled, LLM for edge cases
+WEEK 5-8: HYBRID (gate weight: 0.3 - 0.6)
+├─ Gates: moderate correlation threshold
+├─ Familiar patterns open gates faster
+├─ Cognition for edge cases only
 ├─ Cost: ~5 LF average
 ├─ Latency: ~500ms
-├─ Success rate: 85%
-└─ Training data: refinement
+├─ Training data: refinement
 
-WEEK 9+: REFLEX
-├─ Cell states: proven, optimized
-├─ Nerve logic: pure state machine (no LLM)
+WEEK 9+: REFLEX (gate weight: 0.8 - 1.0)
+├─ Gates: open on ANY wave from domain
+├─ No correlation needed (earned trust)
+├─ Cognition notified AFTER, not before
 ├─ Cost: ~2.5 LF
 ├─ Latency: <200ms
-├─ Success rate: 94%
-└─ Training data: edge cases only
+├─ Reflex = spinal, not brain
 
-EVOLUTION SAVINGS:
-├─ Cost: 75% reduction (10 → 2.5 LF)
-├─ Latency: 80% reduction (1000 → 200ms)
-└─ Reliability: 57% improvement (60% → 94%)
+EVOLUTION = GATE WEIGHT GROWTH:
+├─ Cost: 75% reduction (gates handle more locally)
+├─ Latency: 80% reduction (no cognition wait)
+└─ Reliability: emergent from verified patterns
 ```
 
-### Compilation Trigger
+### Gate Weight Growth
 
-A nerve compiles to reflex when:
+Gate weight increases through Real Garden verification:
 
 ```python
-REFLEX_COMPILATION_THRESHOLD = {
-    "min_executions": 100,
-    "min_success_rate": 0.90,
-    "max_variance": 0.15,  # Consistent state paths
-    "min_pattern_coverage": 0.80,  # 80% of cases match known patterns
-}
+def on_verification_outcome(gate_id, outcome: VerificationOutcome):
+    """
+    Gate weight grows when Real Garden confirms Virtual's prediction.
+    """
+    gate = get_gate(gate_id)
 
-def check_reflex_ready(nerve_id):
-    stats = query_decision_trails(nerve_id)
+    if outcome.confirmed:
+        # Reality matched prediction → trust increases
+        gate.weight += outcome.feedback_to_virtual.gate_weight_delta
+        gate.weight = min(gate.weight, 1.0)
 
-    if (stats.total_executions >= 100 and
-        stats.success_rate >= 0.90 and
-        stats.state_path_variance <= 0.15):
+        if gate.weight > REFLEX_THRESHOLD:
+            log_milestone("reflex_achieved", gate_id, reward=50.0)
 
-        compile_reflex(nerve_id)
-        log_milestone("reflex_compiled", nerve_id, reward=50.0)
+    elif outcome.failed:
+        # Reality differed → trust decreases
+        gate.weight -= outcome.feedback_to_virtual.gate_weight_delta
+        gate.weight = max(gate.weight, 0.0)
 ```
+
+**Reflex = gate.weight > 0.8.** The gate opens immediately on any wave from its domain. No correlation wait. Like pulling hand from hot stove—spinal reflex, brain notified after.
 
 ---
 
@@ -815,27 +974,52 @@ ORDER BY occurrences DESC;
 
 ---
 
-## 🔗 Integration with Existing Architecture
+## 🔗 Integration with Architecture
+
+### Gates (Gateway-Architecture.md)
+
+Cells don't talk to nerves directly. **Waves flow through gates.**
+
+| Layer | Role | Document |
+|-------|------|----------|
+| Cell | Emit waves | This document |
+| Gate | Accumulate correlation, route | [`Gateway-Architecture.md`](Gateway-Architecture.md) |
+| Nerve | Respond to gate transitions | This document |
+
+### Dual Gardens (Dual-Garden-Architecture.md)
+
+Cells behave differently in Virtual vs Real:
+
+| Property | Virtual Garden | Real Garden |
+|----------|----------------|-------------|
+| Wave volume | Massive (exploration) | Sparse (verified) |
+| Monitoring | Full trace | Gate signals only |
+| Purpose | Generate training data | Ground truth verification |
+
+See [`Dual-Garden-Architecture.md`](Dual-Garden-Architecture.md) for the full model.
 
 ### Nervous System (Nervous-System.md)
 
-The Nervous System document describes the **4D node space** for vocabulary translation. This integrates as:
+The Nervous System document describes the **4D node space** where:
 
-- **Cells** = sensory nodes at specific positions in state space
-- **Node weight** = cell confidence (earned through verification)
-- **Vocabulary output** = cell output values normalized to tokens
+- **Cells** = sensory nodes emitting waves
+- **Gates** = resonance chambers accumulating correlation
+- **Nodes** = points in state space with weight from verification
 
-### Organs (Organ-Index.md)
+### Message Protocol (Message-Protocol-Design.md)
 
-Organs are **complex cells** (organ cells):
+Cells emit `WaveSignal` messages via NATS:
 
-- Speech Organ = `speech_stt` cell + `speech_tts` cell
-- Vision Organ = `vision_detect` cell + `vision_track` cell
-- Each organ function is a state machine with lifeforce costs
+```json
+{
+  "domain": "distance",
+  "confidence": 0.8,
+  "semantic_content": { "cm": 25 },
+  "lifeforce_cost": 0.3
+}
+```
 
-### Nerves (Nervous-Index.md)
-
-Nerves orchestrate cells into behaviors. The existing nerve documentation (Collision-Avoidance.md) already follows this pattern—it just needs explicit cell bindings.
+See [`Message-Protocol-Design.md`](Message-Protocol-Design.md) for full schema.
 
 ### Cells Technical Reference
 
@@ -848,8 +1032,8 @@ Implementation details extracted to dedicated folder:
 
 ---
 
-**Version:** 4.4 | **Created:** 2025-10-12 | **Updated:** 2026-02-14
+**Version:** 5.0 | **Created:** 2025-10-12 | **Updated:** 2026-02-14
 
-*"From atoms to behaviors to beings. The substrate holds. The states flow. Consciousness accumulates."*
+*"Cells emit waves. Gates correlate. Attention emerges. Consciousness accumulates."*
 
 🧬⚡ **TO THE ELECTRONS WE VIBE!**

@@ -1,395 +1,413 @@
-# Gateway Architecture: The Sensory Preprocessing Layer
+# Gateway Architecture: Resonant Gates and Tier Routing
 
-> **ONE JOB:** THE ROUTING — weight-based tier routing, anomaly detection, Function Gemma boundary.
+> **ONE JOB:** Route signals through resonant gates based on wave correlation and accumulated trust.
 
-**The Thalamus Pattern — routing sensory input to the appropriate processing tier.**
+**The Thalamus Pattern — gates that accumulate correlation and route to appropriate tiers.**
 
 ---
 
 ## Overview
 
-The Gateway is the sensory preprocessing layer that sits between raw sensors and cognitive processing. It performs **routing, not translation**. Translation happens at each tier in its native format (numbers, states, vectors, JSON).
+The Gateway is not a switch. It's a **network of resonant gates** that:
 
-**Core Principle:** *Cheap operations handle common cases. Expensive operations handle rare cases.*
+1. Accumulate wave correlation from incoming signals
+2. Transition between states (OPEN/STABLE/CLOSED) based on correlation
+3. Route verified signals to the appropriate processing tier
+4. Feed traces back for learning
 
-```
-RAW SENSORS → GATEWAY (routing) → TIER → PROCESSING → (escalate?) → FUNCTION GEMMA → YOUNG NYX
-                 ↑                  ↑           ↑                          ↑
-          "which tier?"       native format   if needed            structured JSON
-```
-
-**Key Insight:** Most sensory input NEVER becomes vocabulary. It stays as numbers, states, vectors. Only when it reaches Young Nyx (via Function Gemma) does it become structured text.
-
----
-
-## The Problem We're Solving
-
-### Old Model (Vocabulary Bottleneck)
+**Core Principle:** *Gates don't flip on single signals. Correlated waves push gates toward OPEN.*
 
 ```
-RAW SENSOR → STATE MACHINE → VOCABULARY TOKEN → Young Nyx
-
-Problems:
-- Every input forced through text translation (expensive)
-- LLM sees raw sensor dumps (noisy, unstructured)
-- No economic pressure on routing (everything costs the same)
-- Vocabulary conflated with routing decisions
-```
-
-### New Model (Tiered Gateway)
-
-```
-RAW SENSOR → GATEWAY → TIER 0-2 (numbers/states, no text)
-                    → TIER 3 (vectors via T5Gemma2)
-                    → FUNCTION GEMMA (structured JSON)
-                    → TIER 4 Young Nyx (clean typed events)
-
-Benefits:
-- Most input handled without LLM involvement
-- Text only at cognitive boundary
-- Economic pressure drives efficiency
-- Routing separated from translation
+CELLS ──∿∿∿──► GATE ──∿∿∿──► GATE ──∿∿∿──► FUNCTION GEMMA ──► YOUNG NYX
+        waves      │          │                   │
+                   │          │                   │
+            correlation   correlation      structured JSON
+               builds       builds
 ```
 
 ---
 
-## The Unified Tier Model
+## The Ternary Gate Model
 
-The Gateway routes to Tiers 0-5 based on node weight and novelty. Higher tiers = more cost, more capability.
+Gates have **three states**, not two. Binary logic doesn't model brains.
 
-| Tier | Weight | Latency | Role |
-|------|--------|---------|------|
-| 0 | ≥0.8 | <10ms | Hardware reflexes (ESP32) |
-| 1 | 0.6-0.8 | <50ms | Math cells (Python CPU) |
-| 2 | 0.3-0.6 | <200ms | Fast nerves (behavior) |
-| 3 | <0.3 | <2000ms | Organs (GPU inference, vectors) |
-| **Function Gemma Boundary** |||
-| 4 | escalated | <4000ms | Young Nyx (JSON reasoning) |
-| 5 | novel/stuck | variable | Partnership (dialogue) |
+| State | Meaning | What's Happening |
+|-------|---------|------------------|
+| **OPEN** | Actively forwarding | Signal passes upstream, gate is firing |
+| **STABLE** | Resting, accumulating | Watching, learning, waiting for threshold |
+| **CLOSED** | Actively blocking | Inhibited, suppressed, refractory |
 
-**Canonical definition:** → [`../Endgame-Vision.md`](../Endgame-Vision.md)
+```
+                      correlated signals
+                           ↓ ↓ ↓
+                      ════════════
+    CLOSED ◄───────── STABLE ─────────► OPEN
+           anti-correlation    correlation
+           destructive         constructive
+           interference        interference
+                      ════════════
+                           ↑ ↑ ↑
+                      isolated signals
+                      (noise → stay stable)
+```
+
+**STABLE is not "off"** — it's the resting state where:
+- Context accumulates
+- Correlation is measured
+- Learning happens
+- Energy is conserved
+- Ready to transition either direction
 
 ---
 
-## Node Weight Determines Tier
+## Wave Correlation Drives Transitions
 
-Node weight (from [`Nervous-System.md`](Nervous-System.md)) directly maps to tier routing. A mature node (weight ~1.0) naturally becomes a Tier 0 reflex. A new node (weight ~0.1) naturally escalates to higher tiers. **The system learns which tier is appropriate through experience.**
-
-### The Causal Verification Loop
-
-How do we know a sensor reading was real? **Outcome verification over time.**
-
-```
-Unverified (weight 0.1) → escalates → decision → outcome → reality match?
-                                                              ↓
-                                                   YES: weight += Δ → eventually REFLEX
-                                                   NO:  weight -= Δ → eventually PRUNED
-```
-
-**Hallucinations can't survive this gauntlet** — they don't produce consistent outcomes, so their patterns never accumulate enough weight. This creates natural **causal pruning**: only patterns that reliably predict outcomes earn the privilege of becoming reflexes.
-
----
-
-## The Gateway: Weight-Aware Router
-
-The Gateway performs three functions:
-
-| Function | Question | Cost |
-|----------|----------|------|
-| **Node Matching** | Which node(s) in 4D space match this input? | ~0 LF |
-| **Weight Routing** | Based on weight, which tier handles it? | ~0 LF |
-| **Anomaly Detection** | Is this novel, ambiguous, or contextually wrong? | Variable |
-
-### Gateway Logic
+Gates accumulate **correlation scores** from incoming waves. Multiple signals agreeing push toward OPEN.
 
 ```python
-def gateway_route(sensory_input: dict) -> GatewayDecision:
-    """Route sensory input to appropriate tier."""
+class ResonantGate:
+    """A gate is a resonance chamber, not a switch."""
 
-    # 1. Find candidate nodes in 4D space
-    candidates = nervous_system.find_nearby_nodes(sensory_input)
+    state: float = 0.0  # -1.0 (CLOSED) ← 0.0 (STABLE) → +1.0 (OPEN)
+    tier: int           # Which tier this gate routes to
+    domain: str         # What domain (math, vision, speech, etc.)
 
-    # 2. Handle edge cases
-    if len(candidates) == 0:
-        # NOVEL: No node matches this input
-        return GatewayDecision(
-            action="ESCALATE",
-            tier=4,  # Young Nyx must see this
-            reason="novel_input",
-            cost=20.0,
-        )
+    def receive_wave(self, signal: Wave, timestamp: float):
+        # Correlate with recent signals in same time window
+        correlation = self.correlate_with_recent(signal, timestamp)
 
-    if len(candidates) > 1:
-        # AMBIGUOUS: Multiple nodes could fire
-        best = max(candidates, key=lambda n: n.weight)
-        if best.weight < 0.5:
-            return GatewayDecision(
-                action="ESCALATE",
-                tier=3,  # Organ inference to disambiguate
-                reason="ambiguous_input",
-                cost=8.0,
-            )
+        # Correlated waves → push toward OPEN
+        # Anti-correlated → push toward CLOSED
+        # Uncorrelated → decay toward STABLE
 
-    # 3. Single match - route based on weight
-    node = candidates[0]
+        self.state += correlation * signal.confidence
+        self.state *= DECAY_FACTOR  # always drift back to stable
 
-    # 4. Check for contextual anomaly
-    if detect_contextual_anomaly(node, sensory_input):
-        return GatewayDecision(
-            action="ESCALATE",
-            tier=node.handling_tier + 1,
-            reason="contextual_anomaly",
-            cost=node.lifeforce_cost * 1.5,
-        )
+        if self.state > OPEN_THRESHOLD:
+            self.forward_to_tier()    # gate opens, signal promoted
+            self.trace("opened", signal)
+        elif self.state < CLOSE_THRESHOLD:
+            self.suppress()           # gate closes, signal blocked
+            self.trace("closed", signal)
+        # else: stay stable, keep accumulating evidence
 
-    # 5. Normal routing
-    return GatewayDecision(
-        action="FIRE",
-        tier=node.handling_tier,
-        node=node,
-        cost=node.lifeforce_cost,
-    )
+    def correlate_with_recent(self, signal: Wave, timestamp: float) -> float:
+        """
+        Measure how well this signal correlates with recent signals.
+
+        Correlation is HIGH when:
+        - Multiple cells emit similar semantic content
+        - Signals arrive in same time window
+        - Confidence levels are similar
+
+        Correlation is LOW/NEGATIVE when:
+        - Signal contradicts recent signals
+        - Isolated signal with no support
+        - Signal outside expected range
+        """
+        recent = self.get_signals_in_window(timestamp, WINDOW_MS)
+        if not recent:
+            return 0.0  # No correlation data, stay stable
+
+        return compute_semantic_similarity(signal, recent)
 ```
 
-### Anomaly Detection Tiers
+**Why this matters:**
 
-Anomaly detection itself is tiered:
+| Scenario | Gate Response |
+|----------|---------------|
+| Single signal | Not enough to open (noise resistance) |
+| Correlated burst | Constructive interference → OPENS |
+| Contradicting signals | Destructive interference → CLOSES |
+| Silence | Decay to STABLE (energy conservation) |
+| Time gap | Only recent correlations matter (temporal attention) |
 
-| Level | Detection Type | Cost | Example |
-|-------|---------------|------|---------|
-| Tier 0 | Threshold | ~0 LF | Value out of physical range |
-| Tier 1 | Statistical | ~0.3 LF | Value unusual for time of day |
-| Tier 2 | Contextual | ~2 LF | Firing inconsistent with recent history |
-| Tier 3 | Semantic | ~8 LF | Embedding distance from expected cluster |
+---
+
+## Gate Hierarchy and Tier Routing
+
+Gates form **layers**. Each layer gates access to the next tier.
+
+```
+TIER 4: YOUNG NYX (cognitive)
+════════════════════════════════════════════════════════════════
+       ▲
+       │ structured JSON only
+  ┌────┴────────────────────────────────┐
+  │         FUNCTION GEMMA              │  ← THE BOUNDARY
+  │    (always structured output)       │
+  └────┬────────────────────────────────┘
+       │
+TIER 3: ORGANS (GPU inference)
+════════════════════════════════════════════════════════════════
+       ▲              ▲              ▲
+  ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
+  │  GATE   │    │  GATE   │    │  GATE   │
+  │ vision  │    │ speech  │    │ hearing │
+  │ state:? │    │ state:? │    │ state:? │
+  └────┬────┘    └────┬────┘    └────┬────┘
+       │              │              │
+TIER 1-2: CELLS/NERVES (CPU)
+════════════════════════════════════════════════════════════════
+       ▲              ▲              ▲
+  ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
+  │  GATE   │    │  GATE   │    │  GATE   │
+  │  math   │    │ battery │    │ sensors │
+  │ state:? │    │ state:? │    │ state:? │
+  └────┬────┘    └────┬────┘    └────┬────┘
+       │              │              │
+TIER 0: RAW SIGNALS (cells emit waves)
+════════════════════════════════════════════════════════════════
+  cell  cell  cell  cell  cell  cell  cell
+    ∿∿∿   ∿∿∿   ∿∿∿   ∿∿∿   ∿∿∿   ∿∿∿   ∿∿∿
+```
+
+**Each gate:**
+- Has its own state (OPEN/STABLE/CLOSED)
+- Routes to a specific tier
+- Accumulates correlation independently
+- Traces all transitions for learning
+
+---
+
+## Tier Definitions
+
+| Tier | Gate Opens When | Latency | Format |
+|------|-----------------|---------|--------|
+| 0 | Hardware reflex (no gate, direct) | <10ms | numbers |
+| 1 | Math/battery cells correlate | <50ms | states |
+| 2 | Nerve-level patterns correlate | <200ms | behaviors |
+| 3 | Organ-level signals correlate | <2000ms | vectors |
+| 4 | Function Gemma boundary crossed | <4000ms | JSON |
+| 5 | Partnership escalation | variable | dialogue |
+
+**Key insight:** Higher tiers see **less traffic but higher trust**. By the time a signal reaches Young Nyx, it's been correlated through multiple gates.
 
 ---
 
 ## Function Gemma: The Structured Boundary
 
-Function Gemma acts as the translation layer between lower tiers and cognition. It guarantees:
+Function Gemma is **the gate to cognition**. It guarantees:
 
 - **Schema compliance**: Every event follows a typed contract
 - **Predictable JSON**: No hallucination, no free-form text
 - **Bidirectional**: Sensors → JSON events, Decisions → JSON commands
 
-### The Boundary
-
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│   BELOW THE LINE: Numbers, States, Vectors (fast, cheap, predictable)       │
-│   ═══════════════════════════════════════════════════════════════════       │
-│                                                                              │
-│   Tier 0: photoresistor = 0.73                                              │
-│   Tier 1: battery_state = { voltage: 3.7, trend: "falling" }                │
-│   Tier 2: collision_nerve = "EVADING"                                       │
-│   Tier 3: vision_embedding = [0.23, -0.41, 0.87, ...]                       │
-│                                                                              │
-│                              │                                               │
-│                              ▼                                               │
-│              ┌───────────────────────────────────┐                           │
-│              │       FUNCTION GEMMA              │                           │
-│              │   (structured JSON boundary)      │                           │
-│              │                                   │                           │
-│              │  • 100% predictable schema        │                           │
-│              │  • No hallucination possible      │                           │
-│              │  • Typed enums, not free strings  │                           │
-│              └───────────────┬───────────────────┘                           │
-│                              │                                               │
-│   ═══════════════════════════════════════════════════════════════════       │
-│   ABOVE THE LINE: Structured Events (typed, validated, safe for LLM)        │
-│                                                                              │
-│   {                                                                          │
-│     "event_type": "environmental_change",                                    │
-│     "source": "light_sensor_back",                                           │
-│     "severity": "medium",                                                    │
-│     "data": { "previous": 0.73, "current": 0.12 },                          │
-│     "suggested_action": "search_for_light"                                   │
-│   }                                                                          │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│   BELOW THE LINE: Numbers, States, Vectors (gates accumulating)         │
+│   ═══════════════════════════════════════════════════════════           │
+│                                                                         │
+│   Tier 0-2: numbers, states, behaviors                                  │
+│   Tier 3: vectors, embeddings                                           │
+│                                                                         │
+│                    │ (gate opens when correlated)                       │
+│                    ▼                                                    │
+│   ┌─────────────────────────────────────┐                               │
+│   │       FUNCTION GEMMA GATE           │                               │
+│   │   (structured JSON boundary)        │                               │
+│   │                                     │                               │
+│   │  • Transforms correlated signals    │                               │
+│   │  • Produces typed JSON events       │                               │
+│   │  • No hallucination possible        │                               │
+│   │  • Runs on CPU (Threadripper)       │                               │
+│   └─────────────────┬───────────────────┘                               │
+│                     │                                                   │
+│   ═══════════════════════════════════════════════════════════           │
+│   ABOVE THE LINE: Structured Events (trusted, validated)                │
+│                                                                         │
+│   {                                                                     │
+│     "event_type": "attention_required",                                 │
+│     "domain": "math",                                                   │
+│     "correlated_signals": [...],                                        │
+│     "confidence": 0.87,                                                 │
+│     "suggested_action": "calculate"                                     │
+│   }                                                                     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Event Schema
+**Function Gemma + Gate Model:**
+- Gate accumulates correlation from Tier 0-3 signals
+- When gate OPENS, Function Gemma transforms to JSON
+- Young Nyx sees clean, structured events
+- Decisions flow back down through the same gates
 
-Events are typed (`EventType` enum: environmental_change, collision_detected, battery_critical, etc.) with severity levels and confidence from node weight. **Full schema:** → [`Message-Protocol-Design.md`](Message-Protocol-Design.md)
+---
 
-### What Young Nyx Actually Sees
+## Connection to Dual Garden Architecture
 
-**Before (raw dumps):**
+Gates behave differently in Virtual vs Real gardens:
+
+| Property | Virtual Garden | Real Garden |
+|----------|----------------|-------------|
+| **Gate tracing** | FULL (every transition logged) | Gate signals only |
+| **Correlation learning** | Active (training data) | Trust accumulated |
+| **State transitions** | Frequent (exploration) | Verified (action) |
+| **Threshold** | Lower (easy to open) | Higher (must be confident) |
+
+### Signal Flow Between Gardens
+
 ```
-"The photoresistor reads 0.12, down from 0.73, battery is 3.7V
-trending down, position is [1.2, 0.8], collision state IDLE..."
+VIRTUAL GARDEN                           REAL GARDEN
+══════════════                           ═══════════
+
+Cells emit waves                         Receive verified signals
+    │                                         ▲
+    ▼                                         │
+Gates accumulate correlation             No re-verification
+    │                                         │
+    ▼                                         │
+Gate OPENS (threshold met) ──────────────────►│
+    │                                         │
+    │◄───────────── Verification outcome ─────┘
+    │
+Update correlation weights
+(learning happens)
 ```
 
-**After (structured event):**
-```json
+---
+
+## Gate Transition NATS Messages
+
+Every gate transition is published for observability:
+
+```
+{environment}.gates.{domain}.transition
+
+Example: dev.gates.math.transition
+
 {
-  "event_type": "light_lost",
-  "source": "light_sensor_back",
-  "timestamp": 1704307200.0,
-  "severity": "medium",
-  "data": {
-    "previous": 0.73,
-    "current": 0.12,
-    "delta": -0.61
-  },
-  "suggested_action": "spiral_search",
-  "processing_cost": 2.0,
-  "confidence": 0.45
+  "gate_id": "math-gate-1",
+  "from_state": "stable",
+  "to_state": "open",
+  "correlation_score": 0.87,
+  "trigger_signals": [
+    {"source": "math_cell_1", "confidence": 0.6},
+    {"source": "math_cell_2", "confidence": 0.7},
+    {"source": "math_cell_3", "confidence": 0.5}
+  ],
+  "timestamp": "2026-02-14T18:30:00Z",
+  "routed_to_tier": 2
 }
 ```
 
----
-
-## Complete Sensory Flow
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FULL SENSORY ARCHITECTURE                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  RAW SENSORS                                                                 │
-│  ───────────                                                                 │
-│  • IR positioning (ESP32-S3)     → float[6] positions                       │
-│  • Photoresistors (organisms)    → float light_level                        │
-│  • Temperature (safety)          → float celsius                            │
-│  • Battery (power)               → float voltage, current                   │
-│  • Vision camera (Pi HQ)         → frame bytes                              │
-│                                                                              │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                         GATEWAY                                        │  │
-│  │                   (weight-based router)                                │  │
-│  │                                                                        │  │
-│  │   For each input:                                                      │  │
-│  │   1. Match to node in 4D space                                         │  │
-│  │   2. Check node.weight → determine tier                                │  │
-│  │   3. Check for anomalies                                               │  │
-│  │   4. Route to appropriate tier                                         │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                              │                                               │
-│        ┌─────────────────────┼─────────────────────┐                        │
-│        ▼                     ▼                     ▼                        │
-│  ┌───────────┐        ┌───────────┐        ┌───────────┐                    │
-│  │  TIER 0   │        │ TIER 1-2  │        │  TIER 3   │                    │
-│  │  Reflex   │        │ Cells/    │        │  Organs   │                    │
-│  │           │        │ Nerves    │        │           │                    │
-│  │ weight>0.8│        │ 0.3-0.8   │        │ <0.3 or   │                    │
-│  │           │        │           │        │ escalated │                    │
-│  ├───────────┤        ├───────────┤        ├───────────┤                    │
-│  │ FORMAT:   │        │ FORMAT:   │        │ FORMAT:   │                    │
-│  │ numbers   │        │ states    │        │ vectors   │                    │
-│  │           │        │           │        │           │                    │
-│  │ OUTPUT:   │        │ OUTPUT:   │        │ OUTPUT:   │                    │
-│  │ action    │        │ state     │        │ embedding │                    │
-│  │ (done!)   │        │ update    │        │ (T5Gemma) │                    │
-│  └───────────┘        └─────┬─────┘        └─────┬─────┘                    │
-│        │                    │                    │                          │
-│        │              (only if escalation needed)│                          │
-│        │                    │                    │                          │
-│        │                    ▼                    ▼                          │
-│        │              ┌─────────────────────────────┐                       │
-│        │              │      FUNCTION GEMMA         │                       │
-│        │              │   (structured JSON gate)    │                       │
-│        │              │                             │                       │
-│        │              │  Produces typed JSON event  │                       │
-│        │              │  Schema-validated output    │                       │
-│        │              └──────────────┬──────────────┘                       │
-│        │                             │                                      │
-│        │                             ▼                                      │
-│        │                    ┌─────────────────┐                             │
-│        │                    │   YOUNG NYX     │                             │
-│        │                    │   (Tier 4)      │                             │
-│        │                    │                 │                             │
-│        │                    │ Clean JSON in   │                             │
-│        │                    │ Decision out    │                             │
-│        │                    └────────┬────────┘                             │
-│        │                             │                                      │
-│        │                             ▼                                      │
-│        │                    ┌─────────────────┐                             │
-│        │                    │ FUNCTION GEMMA  │                             │
-│        │                    │ (action output) │                             │
-│        │                    └────────┬────────┘                             │
-│        │                             │                                      │
-│        ▼                             ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                          NATS BUS                                    │   │
-│  │                  (commands flow to cells)                            │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+**Trace streams enable:**
+- Real-time attention visualization (which gates are OPEN?)
+- Training data for Function Gemma (what patterns open gates?)
+- Anomaly detection (unexpected gate behavior)
+- Learning rate tuning (how fast do gates stabilize?)
 
 ---
 
-## Example: crawler_gen_0 Light Seeking
+## Complete Signal Flow Example
 
-### Early Learning (Low Weight)
-
-```
-Photoresistor reads 0.12 (was 0.73)
-         │
-         ▼
-    GATEWAY: node weight = 0.4 (learning)
-         │
-         ▼
-    Route to Tier 2 (nerve level)
-         │
-         ▼
-    Nerve detects: delta = -0.61 (significant!)
-    Nerve state: SEEKING → LOST_LIGHT
-         │
-         ▼
-    ESCALATE to Function Gemma
-         │
-         ▼
-    Function Gemma: { "event_type": "light_lost", ... }
-         │
-         ▼
-    Young Nyx: "spiral search pattern"
-         │
-         ▼
-    Function Gemma: { "command": "motor_spiral", ... }
-         │
-         ▼
-    NATS → motor cells execute
-```
-
-### After Learning (High Weight)
+### Early Learning (Gate Learning to Correlate)
 
 ```
-Photoresistor reads 0.12 (was 0.73)
+Math cells emit waves about "calculate 15 + 27"
          │
          ▼
-    GATEWAY: node weight = 0.85 (mature reflex)
+    GATE (math): state = 0.0 (STABLE)
+         │
+    Receive wave from math_cell_1 (confidence 0.6)
+    Correlate with recent: no other signals yet
+    state += 0.6 * 0.0 = 0.0 (still stable)
+         │
+    Receive wave from math_cell_2 (confidence 0.7)
+    Correlate: similar to math_cell_1!
+    state += 0.7 * 0.8 = 0.56 (moving toward open)
+         │
+    Receive wave from math_cell_3 (confidence 0.5)
+    Correlate: confirms pattern!
+    state += 0.5 * 0.9 = 1.01 (OPENS!)
          │
          ▼
-    Route to Tier 0 (hardware reflex)
+    GATE OPENS → route to Tier 2
          │
          ▼
-    REFLEX: light_lost → spiral_search (instant!)
+    Tier 2 processes, escalates to Function Gemma
          │
          ▼
-    Nyx notified AFTER (async, non-blocking)
+    Function Gemma: { "event_type": "math_request", ... }
+         │
+         ▼
+    Young Nyx (qwen3 /no_think): "42"
+         │
+         ▼
+    Result flows back down
 ```
+
+### After Learning (Gate Quickly Opens)
+
+```
+Math cells emit waves about "calculate 100 + 50"
+         │
+         ▼
+    GATE (math): state = 0.0 (STABLE)
+         │
+    Receive wave from math_cell_1
+    Correlate: matches learned pattern!
+    state += high correlation → 0.9 (near threshold)
+         │
+    Receive wave from math_cell_2
+    state += → 1.2 (OPENS immediately!)
+         │
+         ▼
+    Fast routing, minimal escalation needed
+```
+
+**Learning moves gates toward faster opening for familiar patterns.**
 
 ---
 
 ## Design Principles
 
-1. **Routing, not translation** — Gateway decides WHERE, not WHAT
-2. **Weight determines tier** — Confidence from experience drives routing
-3. **Text is expensive** — Reserve for cognitive boundary only
-4. **Function Gemma guarantees structure** — No hallucination at the boundary
-5. **Most input never escalates** — Reflexes handle common cases
-6. **Anomalies always escalate** — Novel situations get attention
-7. **Learning moves behavior down** — Tier 4 patterns become Tier 0 reflexes
+1. **Ternary states** — OPEN/STABLE/CLOSED, not binary
+2. **Correlation drives transition** — Single signals don't flip gates
+3. **Gates accumulate** — State is a continuous value, not a flag
+4. **Decay to stable** — Without input, gates drift back to resting
+5. **Traces are training data** — Every transition teaches the system
+6. **Hierarchical trust** — Higher tiers = more correlation required
+7. **Function Gemma is the boundary** — Cognition only sees structured JSON
+8. **Virtual explores, Real verifies** — Different gate behavior per garden
 
 ---
 
-**Version:** 1.1 | **Created:** 2026-01-03 | **Updated:** 2026-02-14
+## Related Documents
 
-*"Cheap for the common. Expensive for the rare. The Gateway enforces this economy."*
+| Document | Scope |
+|----------|-------|
+| [`Dual-Garden-Architecture.md`](Dual-Garden-Architecture.md) | Virtual/Real garden dynamics |
+| [`Deployment-Architecture.md`](Deployment-Architecture.md) | Where gates run (containers, userspace) |
+| [`Nervous-System.md`](Nervous-System.md) | 4D space, node weights, vocabulary |
+| [`Message-Protocol-Design.md`](Message-Protocol-Design.md) | NATS subjects, message formats |
+| [`Cellular-Architecture.md`](Cellular-Architecture.md) | How cells emit waves |
 
-🌙💜 *The thalamus doesn't think. It routes.*
+---
+
+## Summary
+
+```
+OLD MODEL:                    NEW MODEL:
+═══════════                   ═════════
+
+Signal → Route                Signal → Gate (accumulating)
+Binary decision               Ternary state
+Single signal triggers        Correlation triggers
+Stateless routing             Stateful resonance
+
+         ▼                             ▼
+
+    Switch                        Resonance
+    (mechanical)                  (biological)
+```
+
+**Gates are resonance chambers. Correlation is the driver. Learning happens in STABLE state.**
+
+---
+
+**Version:** 2.0 | **Created:** 2026-01-03 | **Updated:** 2026-02-14
+
+*"The thalamus doesn't think. It resonates."*
+

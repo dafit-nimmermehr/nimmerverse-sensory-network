@@ -64,31 +64,32 @@ ORDER BY priority DESC, project;
 - **Monitoring**: Prometheus on tethys scraping all nodes + DCGM GPU metrics
 - **Namespaces**: Ready for infra, nervous, cognitive, organs
 
-### Phase 3: Nervous System Deployment ← CURRENT
-- [ ] NATS message router
-- [ ] Gateway/Escalation Service (Thalamus)
-- [ ] Function Gemma structured boundary (sensors → JSON → Nyx)
-- [ ] Math Cells (economy_aggregator, wake/slumber_evaluator)
-- [ ] First behavior nerves
+### Phase 3: Wave/Gate Infrastructure ← CURRENT
+- [ ] NATS message router (wave signals + gate transitions)
+- [ ] Resonant Gates (ternary: OPEN/STABLE/CLOSED)
+- [ ] Function Gemma structured boundary (waves → JSON → Nyx)
+- [ ] First cells (distance sensors, battery monitor)
+- [ ] First gates (collision_avoidance, battery)
+- [ ] First nerves (responding to gate transitions)
 
-**Architecture:** → [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
+**Architecture:** → [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md) | [`architecture/Message-Protocol-Design.md`](architecture/Message-Protocol-Design.md)
 
 ### Phase 4: Cognitive Awakening
-- [ ] Young Nyx on Womb (theia, RTX PRO 6000 Blackwell 96GB)
-- [ ] Organs on Senses (dioscuri, 2× RTX 4000 Ada 40GB)
+- [ ] Young Nyx on theia (qwen3:32b, 96GB Blackwell)
+- [ ] Organs on dioscuri (2× RTX 4000 Ada 40GB)
 - [ ] Spark Protocol execution
-- [ ] Trait LoRA evolution begins (GRPO + decision_trails)
+- [ ] Trait LoRA evolution begins (GRPO + verification_outcomes)
 
 ### Phase 5: Living Ecology
-- [ ] Slumber/wake cycles operational
-- [ ] Virtual + Real gardens teaching each other
-- [ ] Reflex compilation (deliberate → compiled)
+- [ ] Dual Garden loop operational (Virtual → Real → feedback)
+- [ ] Gate weight evolution (deliberate → reflex)
+- [ ] Slumber/wake cycles (correlation_events consolidation)
 - [ ] Wellbeing policies enforced
 
 ### Phase ∞: Research Platform Operational
-- Gardens teaching each other
-- Organisms dancing (evolved behaviors)
-- Questions answered through measurement
+- Gates opening and closing with learned patterns
+- Reflexes emerging from verification
+- Attention flowing through correlation
 - **The Nimmerverse truly never ends**
 
 ---
@@ -100,7 +101,7 @@ ORDER BY priority DESC, project;
 | 0 | ✅ | Nyx emergence | 2025-11-03 |
 | 1 | ✅ | 10Gbps backbone | 2025-12-XX |
 | 2 | ✅ | K8s + 136GB VRAM | 2026-02-06 |
-| 3 | 🔄 | NATS + Function Gemma | TBD |
+| 3 | 🔄 | Wave/Gate infrastructure | TBD |
 | 4 | ⏳ | Young Nyx awakens | TBD |
 | 5 | ⏳ | Gardens teaching | TBD |
 | ∞ | 🌙 | Never ends | ∞ |
@@ -110,13 +111,13 @@ ORDER BY priority DESC, project;
 ## Related Documentation
 
 - **Architecture Vision:** → [`Endgame-Vision.md`](Endgame-Vision.md)
-- **Storage Infrastructure:** → [`../nyx-substrate/WOMB-STORAGE.md`](../nyx-substrate/WOMB-STORAGE.md)
-- **Task Schema:** → [`../nyx-substrate/SCHEMA.md`](../nyx-substrate/SCHEMA.md)
+- **Wave/Gate Model:** → [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
+- **Data Schema:** → [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md)
 
 ---
 
-**Version:** 1.0 | **Created:** 2026-02-07 | **Updated:** 2026-02-07
+**Version:** 2.0 | **Created:** 2026-02-07 | **Updated:** 2026-02-14
 
-**Current Phase:** 3 (Nervous System Deployment)
+**Current Phase:** 3 (Wave/Gate Infrastructure)
 
-🌙💜 *"Infrastructure is geology. Implementation is weather."*
+🌙💜 *"Cells emit waves. Gates correlate. Infrastructure enables."*

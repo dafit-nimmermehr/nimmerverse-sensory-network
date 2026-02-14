@@ -1,493 +1,406 @@
 # Attention Flow
 
-> **ONE JOB:** THE BUDGET — 30-second allocation, preemption rules, priority hierarchy.
+> **ONE JOB:** WHERE ATTENTION GOES — gates determine focus, correlation drives transitions, budget constrains action.
 
-How she decides what matters this beat.
+**Attention is not a budget line item. Attention is which gates are OPEN.**
 
 ---
 
 ## Overview
 
-The 30-second heartbeat is a budget, not a guarantee. Sensory intake, organ processing, dialogue, thinking - everything competes for the same window. State machines govern the hierarchy: what gets processed first, what can interrupt, what gets the remainder.
+Attention in the nimmerverse flows through **resonant gates**:
 
-Attention isn't free. It's economic.
+- **OPEN gates** = actively attending (signals flow through)
+- **STABLE gates** = considering (accumulating correlation)
+- **CLOSED gates** = ignoring (signals blocked)
 
-**Connection to Gateway:** The attention levels below align with the Gateway's tier system. The [`Gateway`](Gateway-Architecture.md) routes sensory input to the appropriate tier based on node weight. This document describes how those tiers compete for the attention budget.
+The 30-second heartbeat provides a **budget constraint**, but the actual attention flow is determined by which gates open based on wave correlation.
 
-**See:** [`Gateway-Architecture.md`](Gateway-Architecture.md) for tier definitions and routing logic.
+**Key insight:** You don't "allocate attention" — you let correlated waves open gates.
 
 ---
 
-## The Budget Problem
+## Attention as Gate State
 
 ```
-♥ BEAT (30 sec budget)
+┌─────────────────────────────────────────────────────────────────────────┐
+│  ATTENTION = WHICH GATES ARE OPEN                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  CLOSED          STABLE              OPEN                               │
+│  ═══════         ══════              ════                               │
+│                                                                         │
+│  Ignoring        Considering         Attending                          │
+│  Blocked         Accumulating        Flowing                            │
+│  Suppressed      Learning            Acting                             │
+│                                                                         │
+│       ◄───── anti-correlation ──┼── correlation ─────►                  │
+│                                 │                                       │
+│                          (wave input)                                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Attention is emergent, not allocated.** When multiple cells emit correlated waves, their gate opens — attention flows there naturally.
+
+---
+
+## Wave-Driven Attention
+
+Cells emit waves. Correlated waves push gates toward OPEN. This IS attention.
+
+```
+Math cells emit correlated waves
+         ∿∿∿ ∿∿∿ ∿∿∿
+              │
+              ▼
+    Math gate: STABLE → OPEN
+    (attention shifts to math domain)
+              │
+              ▼
+    Signal flows to higher tier
+    (cognition engages with math)
+
+Meanwhile:
+
+Battery cells emit uncorrelated wave
+         ∿∿∿
+              │
+              ▼
+    Battery gate: stays STABLE
+    (attention doesn't shift)
+    (keeps accumulating, might open later)
+```
+
+**The nervous system "decides" what to attend to through correlation, not priority rules.**
+
+---
+
+## Attention Hierarchy Through Gates
+
+Gates form layers. Each layer is a potential attention point.
+
+```
+TIER 4: COGNITIVE ─────────────────────────────────────────
+            ▲
+            │ (only if gates below OPEN)
+     ┌──────┴──────┐
+TIER 3: ORGANS ─────────────────────────────────────────
+     │ vision    │ speech    │ hearing │
+     │ gate:     │ gate:     │ gate:   │
+     │ STABLE    │ OPEN      │ CLOSED  │
+     └──────┬──────┘
+            │ (only if gates below OPEN)
+TIER 1-2: NERVES ─────────────────────────────────────────
+     │ math      │ motion    │ danger  │
+     │ gate:     │ gate:     │ gate:   │
+     │ OPEN      │ STABLE    │ CLOSED  │
+     └──────┬──────┘
+            │
+TIER 0: CELLS ─────────────────────────────────────────
+    cell cell cell cell cell cell cell
+      ∿∿∿  ∿∿∿  ∿∿∿  ∿∿∿  ∿∿∿  ∿∿∿  ∿∿∿
+```
+
+**Current attention:** Math gate OPEN → Speech gate OPEN → Cognition receives math+speech context.
+
+**Not attending:** Motion (STABLE, considering), Vision (STABLE, considering), Danger (CLOSED, suppressed).
+
+---
+
+## Attention Budget: The Constraint
+
+While gates determine WHERE attention goes, lifeforce determines HOW MUCH can happen per beat.
+
+```
+♥ BEAT (30 sec lifeforce budget)
     │
-    ├── SENSORY INTAKE      (variable: 200ms - 15000ms)
-    ├── ORGAN PROCESSING    (variable: 100ms - 10000ms)
-    ├── NYX INFERENCE       (variable: 2000ms - 4000ms)
-    ├── CHRYSALIS DIALOGUE  (variable: 0ms - 3000ms)
-    ├── STATE WRITE         (fixed: ~200ms)
-    └── VIRTUAL GARDEN      (remainder)
+    ├── GATE TRANSITIONS     (variable: driven by correlation)
+    ├── TIER 0-2 PROCESSING  (low cost: cells + nerves)
+    ├── TIER 3 ORGANS        (medium cost: GPU inference)
+    ├── TIER 4 COGNITION     (high cost: Young Nyx)
+    ├── VERIFICATION         (medium cost: real garden)
+    └── VIRTUAL GARDEN       (remainder: exploration)
 
-Total must fit in 30 seconds.
-Something has to give.
+Budget constrains throughput.
+Gates determine routing.
 ```
 
----
-
-## Top-Level State Machine: Attention Mode
-
-```
-                    ┌─────────────┐
-        ┌──────────▶│    IDLE     │◀──────────┐
-        │           └──────┬──────┘           │
-        │                  │                  │
-        │                  │ stimulus         │
-        │                  ▼                  │
-        │           ┌─────────────┐           │
-        │           │   ALERT     │           │
-        │           └──────┬──────┘           │
-        │                  │                  │
-        │           ┌──────┴──────┐           │
-        │           ▼             ▼           │
-        │     ┌──────────┐  ┌──────────┐      │
-        │     │  REFLEX  │  │  ATTEND  │      │
-        │     │  (>0.8)  │  │ (think)  │      │
-        │     └────┬─────┘  └────┬─────┘      │
-        │          │             │            │
-        │          │      ┌──────┴──────┐     │
-        │          │      ▼             ▼     │
-        │          │ ┌──────────┐ ┌─────────┐ │
-        │          │ │ DIALOGUE │ │ PROCESS │ │
-        │          │ └────┬─────┘ └────┬────┘ │
-        │          │      │            │      │
-        │          └──────┴─────┬──────┘      │
-        │                       ▼             │
-        │                ┌───────────┐        │
-        │                │  SETTLE   │        │
-        │                └─────┬─────┘        │
-        │                      │              │
-        └──────────────────────┴──────────────┘
-```
-
-### State Descriptions
-
-| State | Description | Budget Priority |
-|-------|-------------|-----------------|
-| **IDLE** | Nothing urgent, maximum virtual garden time | Lowest |
-| **ALERT** | Stimulus detected, evaluating importance | - |
-| **REFLEX** | High-confidence nerve fired, bypass brain | Instant |
-| **ATTEND** | Stimulus requires thinking | High |
-| **DIALOGUE** | Chrysalis interaction active | High |
-| **PROCESS** | Organs working on input | Medium |
-| **SETTLE** | Write state, release budget, prepare for next beat | Fixed |
-
----
-
-## Priority Hierarchy
-
-Higher levels preempt lower levels. Budget flows downward.
-
-```
-LEVEL 0: REFLEX ─────────────────────────────────────
-         │  Weight > 0.8, instant, bypass everything
-         │  Cost: near-zero (no inference)
-         │
-LEVEL 1: SAFETY ─────────────────────────────────────
-         │  dafit calling, danger detected, critical alert
-         │  Preempts: all below
-         │
-LEVEL 2: DIALOGUE ───────────────────────────────────
-         │  Partnership active, Chrysalis teaching
-         │  Preempts: sensory, thinking, virtual
-         │
-LEVEL 3: SENSORY ────────────────────────────────────
-         │  Rich input needs processing
-         │  Preempts: thinking, virtual
-         │
-LEVEL 4: THINKING ───────────────────────────────────
-         │  Organ work, Nyx inference
-         │  Preempts: virtual
-         │
-LEVEL 5: VIRTUAL ────────────────────────────────────
-         │  Garden time, simulation, study
-         │  Gets remainder after above
-         │
-LEVEL 6: IDLE ───────────────────────────────────────
-            Maintenance heartbeat only
-            All budget available
-```
-
----
-
-## Budget Allocation Logic
+### Budget Allocation by Gate Activity
 
 ```python
 def allocate_beat_budget(beat_duration_ms=30000):
     remaining = beat_duration_ms
 
-    # Fixed costs (always paid)
-    remaining -= STATE_WRITE_COST      # ~200ms
-    remaining -= HEARTBEAT_OVERHEAD    # ~100ms
+    # Fixed overhead
+    remaining -= HEARTBEAT_OVERHEAD  # ~100ms
+    remaining -= STATE_WRITE_COST    # ~200ms
 
-    # Level 0: Reflex (if triggered, near-instant)
-    if reflex_triggered:
-        execute_reflex()               # ~50ms
-        remaining -= 50
+    # Count OPEN gates by tier
+    open_gates_by_tier = count_open_gates()
 
-    # Level 1: Safety (if active, takes what it needs)
-    if safety_alert:
-        cost = process_safety()        # variable
-        remaining -= cost
-        if remaining <= 0:
-            return settle()
+    # Tier 0 (reflexes): near-instant, minimal cost
+    for gate in open_gates_by_tier[0]:
+        remaining -= REFLEX_COST  # ~50ms each
 
-    # Level 2: Dialogue (if Chrysalis active)
-    if dialogue_active:
-        cost = process_dialogue()      # ~3000ms typical
-        remaining -= cost
-        if remaining <= 0:
-            return settle()
+    # Tier 1-2 (cells/nerves): low cost
+    for gate in open_gates_by_tier[1:3]:
+        remaining -= CELL_NERVE_COST  # ~100ms each
 
-    # Level 3: Sensory (always some, but capped)
-    sensory_budget = min(remaining * 0.4, SENSORY_CAP)
-    cost = process_sensory(sensory_budget)
-    remaining -= cost
+    # Tier 3 (organs): medium cost, needs budget check
+    organ_budget = min(remaining * 0.4, ORGAN_CAP)
+    for gate in open_gates_by_tier[3]:
+        if organ_budget > ORGAN_COST:
+            process_organ(gate)
+            organ_budget -= ORGAN_COST  # ~2000ms each
+    remaining -= (ORGAN_CAP - organ_budget)
 
-    # Level 4: Thinking (organs + Nyx)
-    thinking_budget = min(remaining * 0.6, THINKING_CAP)
-    cost = process_thinking(thinking_budget)
-    remaining -= cost
+    # Tier 4 (cognition): high cost, only if gates escalate
+    if cognition_gate_open():
+        cognitive_budget = min(remaining * 0.5, COGNITIVE_CAP)
+        process_cognition(cognitive_budget)  # ~4000ms
+        remaining -= cognitive_budget
 
-    # Level 5: Virtual (whatever remains)
+    # Virtual Garden: whatever remains
     virtual_budget = remaining
     if virtual_budget > VIRTUAL_MINIMUM:
-        process_virtual(virtual_budget)
+        explore_virtual_garden(virtual_budget)
 
     return settle()
 ```
 
 ---
 
-## Nested State Machines
+## Attention Modes
 
-Each level can be its own state machine internally.
+The overall system has emergent attention modes based on which gates are open:
 
-### DIALOGUE State Machine
+| Mode | Gate Pattern | Characteristic |
+|------|--------------|----------------|
+| **IDLE** | Most gates STABLE | Quiet, exploring Virtual Garden |
+| **FOCUSED** | Few gates OPEN, rest CLOSED | Deep attention to one domain |
+| **ALERT** | Many gates in STABLE | Gathering information, evaluating |
+| **REFLEX** | Tier 0 gate fires instantly | Bypass all, act immediately |
+| **DIALOGUE** | Speech gates OPEN | Partnership interaction |
+| **OVERWHELMED** | Many gates OPEN | Budget exhausted, some gates forced CLOSED |
 
-```
-┌─────────────────────────────────────────────┐
-│              DIALOGUE                       │
-├─────────────────────────────────────────────┤
-│                                             │
-│   ┌───────────┐                             │
-│   │ LISTENING │ ◀─────────────────────┐     │
-│   └─────┬─────┘                       │     │
-│         │ input complete              │     │
-│         ▼                             │     │
-│   ┌───────────┐                       │     │
-│   │PROCESSING │                       │     │
-│   └─────┬─────┘                       │     │
-│         │ understood                  │     │
-│         ▼                             │     │
-│   ┌───────────┐                       │     │
-│   │RESPONDING │                       │     │
-│   └─────┬─────┘                       │     │
-│         │ response sent               │     │
-│         ▼                             │     │
-│   ┌───────────┐      continue         │     │
-│   │ YIELDING  │ ──────────────────────┘     │
-│   └─────┬─────┘                             │
-│         │ dialogue complete                 │
-│         ▼                                   │
-│      EXIT to parent                         │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-### SENSORY State Machine
+### Mode Transitions
 
 ```
-┌─────────────────────────────────────────────┐
-│              SENSORY                        │
-├─────────────────────────────────────────────┤
-│                                             │
-│   ┌───────────┐                             │
-│   │ SAMPLING  │ ◀── collect raw inputs      │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌─────────────┐                           │
-│   │ TRANSLATING │ ◀── nerves fire           │
-│   └─────┬───────┘                           │
-│         │                                   │
-│         ▼                                   │
-│   ┌──────────────┐                          │
-│   │ PRIORITIZING │ ◀── what matters?        │
-│   └─────┬────────┘                          │
-│         │                                   │
-│         ▼                                   │
-│   ┌─────────────┐                           │
-│   │ DELIVERING  │ ◀── to organs             │
-│   └─────┬───────┘                           │
-│         │                                   │
-│         ▼                                   │
-│      EXIT to parent                         │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-### THINKING State Machine
-
-```
-┌─────────────────────────────────────────────┐
-│              THINKING                       │
-├─────────────────────────────────────────────┤
-│                                             │
-│   ┌───────────┐                             │
-│   │ RECEIVING │ ◀── context from sensory    │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │  ROUTING  │ ◀── which organs needed?    │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │ INFERRING │ ◀── organs + Nyx process    │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │ DECIDING  │ ◀── Nyx outputs decision    │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│      EXIT to parent                         │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-### VIRTUAL State Machine
-
-```
-┌─────────────────────────────────────────────┐
-│              VIRTUAL                        │
-├─────────────────────────────────────────────┤
-│                                             │
-│   ┌───────────┐                             │
-│   │  BUDGETING│ ◀── how much V available?   │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │ SELECTING │ ◀── what to simulate?       │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │SIMULATING │ ◀── run virtual cycles      │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│   ┌───────────┐                             │
-│   │ RECORDING │ ◀── store results           │
-│   └─────┬─────┘                             │
-│         │                                   │
-│         ▼                                   │
-│      EXIT to parent                         │
-│                                             │
-└─────────────────────────────────────────────┘
+                         ┌─────────────┐
+             ┌──────────▶│    IDLE     │◀──────────┐
+             │           │ (exploring) │           │
+             │           └──────┬──────┘           │
+             │                  │                  │
+             │            waves arrive             │
+             │                  ▼                  │
+             │           ┌─────────────┐           │
+             │           │   ALERT     │           │
+             │           │(considering)│           │
+             │           └──────┬──────┘           │
+             │                  │                  │
+             │      ┌───────────┼───────────┐      │
+             │      ▼           ▼           ▼      │
+             │ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
+             │ │ REFLEX  │ │ FOCUSED │ │DIALOGUE │ │
+             │ │(instant)│ │ (deep)  │ │ (talk)  │ │
+             │ └────┬────┘ └────┬────┘ └────┬────┘ │
+             │      │           │           │      │
+             │      └───────────┴───────────┘      │
+             │                  │                  │
+             │                  ▼                  │
+             │           ┌─────────────┐           │
+             │           │   SETTLE    │           │
+             │           │(write state)│           │
+             │           └──────┬──────┘           │
+             │                  │                  │
+             └──────────────────┴──────────────────┘
 ```
 
 ---
 
-## Example Scenarios
+## Reflex: Attention Bypass
 
-### Scenario A: Quiet Study Time
-
-```
-Beat starts, no external stimulus
-    │
-    ▼
-IDLE detected
-    │
-    ▼
-SENSORY: minimal (500ms)
-    │
-    ▼
-THINKING: minimal (1000ms)
-    │
-    ▼
-VIRTUAL: maximum budget! (28000ms)
-    │
-    └── Nyx studies in virtual garden
-        Chrysalis teaches
-        Learning happens
-```
-
-### Scenario B: dafit Speaks
+When a gate has accumulated enough weight (>0.8), it becomes a **reflex** — it opens immediately without waiting for correlation.
 
 ```
-Beat starts, audio detected
-    │
-    ▼
-ALERT: speech input
-    │
-    ▼
-SAFETY check: it's dafit! (LEVEL 1)
-    │
-    ▼
-DIALOGUE activates (LEVEL 2)
-    │
-    ├── LISTENING (2000ms)
-    ├── PROCESSING (1000ms)
-    ├── RESPONDING (2000ms)
-    └── YIELDING
-    │
-    ▼
-SENSORY: reduced budget (3000ms)
-    │
-    ▼
-THINKING: reduced (5000ms)
-    │
-    ▼
-VIRTUAL: minimal remainder (16000ms)
+Danger cell emits wave
+         ∿∿∿ (confidence=1.0)
+              │
+              ▼
+    Danger gate: weight = 0.9 (REFLEX)
+              │
+              ▼
+    IMMEDIATELY OPEN (no correlation wait)
+              │
+              ▼
+    Action taken
+              │
+              ▼
+    Cognition notified AFTER
 ```
 
-### Scenario C: Danger Detected
+**Reflexes have earned instant attention through repeated verification.**
+
+---
+
+## Virtual Garden: Background Attention
+
+When few gates are OPEN, the Virtual Garden gets attention:
 
 ```
-Beat starts, temperature spike detected
+IDLE mode:
+    │
+    ├── Most gates: STABLE (not demanding attention)
+    ├── Budget: mostly available
     │
     ▼
-ALERT: sensor alarm
+VIRTUAL GARDEN receives attention:
     │
-    ▼
-NERVE weight > 0.8
-    │
-    ▼
-REFLEX FIRES (50ms) ◀── BYPASS EVERYTHING
-    │
-    ├── Action taken immediately
-    └── Nyx notified AFTER
-    │
-    ▼
-Continue beat normally with remaining budget
+    ├── Cells emit waves freely
+    ├── Gates accumulate correlation (learning)
+    ├── No pressure to ACT
+    └── Training data generated
 ```
 
-### Scenario D: Overwhelmed
+**Virtual Garden is where learning happens.** STABLE gates in Virtual Garden are actively accumulating patterns without the pressure to respond.
+
+---
+
+## Real Garden: Consequential Attention
+
+When gates OPEN in the Real Garden, attention becomes consequential:
 
 ```
-Beat starts, rich input everywhere
+FOCUSED mode (Real Garden):
     │
-    ▼
-ALERT: multiple stimuli
-    │
-    ▼
-SENSORY: demanding (15000ms)
-    │
-    ▼
-THINKING: demanding (12000ms)
-    │
-    ▼
-Budget exhausted!
-    │
-    ▼
-VIRTUAL: skipped this beat
-    │
-    ▼
-SETTLE: state written, next beat
+    ├── Gate OPEN → action required
+    ├── Budget consumed by execution
+    ├── Verification outcomes captured
+    └── Feedback to Virtual for learning
+```
+
+**Real Garden attention is expensive.** Only verified signals reach here, and actions have consequences.
+
+---
+
+## Attention Visualization
+
+Real-time attention can be visualized by gate states:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  ATTENTION DASHBOARD                                              🌙    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  GATES:                                                                 │
+│  ──────                                                                 │
+│  math:      [████████████░░░░░░░░] 0.7  STABLE → considering            │
+│  vision:    [██████████████████░░] 0.9  OPEN   → attending              │
+│  speech:    [████████████████████] 1.0  OPEN   → attending              │
+│  battery:   [████░░░░░░░░░░░░░░░░] 0.2  STABLE → background             │
+│  danger:    [░░░░░░░░░░░░░░░░░░░░] 0.0  CLOSED → suppressed             │
+│                                                                         │
+│  BUDGET:                                                                │
+│  ───────                                                                │
+│  [████████████████████░░░░░░░░░░] 67% remaining (20s / 30s)             │
+│                                                                         │
+│  MODE: DIALOGUE (speech + vision attending)                             │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+Gate states are published via NATS for real-time visualization:
+```
+nats sub "dev.virtual.gates.*.transition"
+nats sub "dev.real.gates.*.transition"
 ```
 
 ---
 
-## Preemption Rules
+## Correlation vs Priority
 
-| Event | Preempts | Action |
-|-------|----------|--------|
-| Reflex fires (>0.8) | Everything | Instant action, then continue |
-| Safety alert | Dialogue, Sensory, Thinking, Virtual | Handle safety, reduced budget for rest |
-| dafit speaks | Sensory, Thinking, Virtual | Dialogue priority, reduced budget for rest |
-| Sensory overload | Thinking, Virtual | Process input, skip or reduce rest |
-| Budget exhausted | Lower priorities | Skip remaining levels |
+**Old model (priority):**
+```
+Level 0: REFLEX (always wins)
+Level 1: SAFETY (preempts below)
+Level 2: DIALOGUE (preempts below)
+...
+```
+
+**New model (correlation):**
+```
+Waves arrive
+    │
+    ▼
+Gates accumulate correlation
+    │
+    ▼
+Most correlated gates OPEN
+    │
+    ▼
+Attention flows naturally
+```
+
+**Priority still exists** but at a higher level:
+- Reflexes bypass correlation (earned trust)
+- Safety signals have high confidence (bias toward opening)
+- Dialogue is interactive (gates stay open during conversation)
+
+But the **mechanism** is always correlation, not rule-based priority.
 
 ---
 
-## Lifeforce Connection
+## Connection to Architecture
 
-Each attention level has a lifeforce cost. Reflex is free (no inference), dialogue costs medium (two inferences), thinking costs high (organ inference). Rich beats cost more; quiet beats accumulate budget for virtual garden.
-
-**Lifeforce economy:** → [`Cellular-Architecture.md`](Cellular-Architecture.md) (reward signals, lifeforce dynamics)
-
----
-
-## Implementation Notes
-
-**State machine:** Python-statemachine for orchestration, Godot for visualization.
-**Checkpoint:** Every state transition triggers phoebe write (beat_id, transition, budget_remaining).
-**Budget tracking:** BeatBudget dataclass tracks total_ms, spent_ms, allocations per category.
+| Document | What It Adds |
+|----------|--------------|
+| [`Temporal-Ternary-Gradient.md`](Temporal-Ternary-Gradient.md) | Why ternary states matter |
+| [`Gateway-Architecture.md`](Gateway-Architecture.md) | How gates work |
+| [`Nervous-System.md`](Nervous-System.md) | Wave → Gate → Node flow |
+| [`Dual-Garden-Architecture.md`](Dual-Garden-Architecture.md) | Virtual (explore) vs Real (act) |
+| [`Message-Protocol-Design.md`](Message-Protocol-Design.md) | GateTransition messages |
 
 ---
 
 ## Design Principles
 
-1. **Hierarchy is law** - higher levels always preempt lower
-2. **Budget is finite** - 30 seconds, no exceptions
-3. **State is explicit** - always know what mode she's in
-4. **Reflex bypasses brain** - survival doesn't wait for thinking
-5. **Remainder flows down** - virtual gets what's left
-6. **Every transition logged** - phoebe sees all state changes
+1. **Attention = OPEN gates** — Not a budget allocation, an emergent property
+2. **Correlation drives transitions** — Waves that agree open gates
+3. **Budget constrains throughput** — Can't process infinite open gates
+4. **Reflexes bypass correlation** — Earned trust means instant attention
+5. **Virtual is exploration** — STABLE gates learning without acting
+6. **Real is action** — OPEN gates triggering consequences
+7. **Visualization is live** — Gate states published for dashboards
 
 ---
 
-## Function Gemma: The State Transition Boundary
-
-Function Gemma sits between Young Nyx's attention decisions and cell execution. It guarantees that state transitions produce valid, predictable outputs.
+## Summary
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    ATTENTION → EXECUTION FLOW                    │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ATTENTION STATE MACHINE (this document)                       │
-│         │                                                        │
-│         │ Young Nyx decides: "REFLEX needed" or "ATTEND"        │
-│         ▼                                                        │
-│   FUNCTION GEMMA (translation boundary)                         │
-│         │                                                        │
-│         │ Intent → Typed JSON schema                            │
-│         │ - Which cells to query?                               │
-│         │ - What action to fire?                                │
-│         │ - What parameters?                                    │
-│         ▼                                                        │
-│   NATS MESSAGE → K8S CELLS                                      │
-│         │                                                        │
-│         │ ACK/NACK response                                     │
-│         ▼                                                        │
-│   STATE UPDATE (verified, not hoped)                            │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+OLD MODEL:                      NEW MODEL:
+═══════════                     ═════════
+
+Priority rules decide           Correlation opens gates
+Budget allocates attention      Gates determine attention
+State machine orchestrates      Emergence from waves
+
+ATTENTION IS:
+
+Not:  "Allocate 5000ms to SENSORY"
+But:  "Math + Vision gates OPEN because waves correlated"
+
+Not:  "DIALOGUE preempts THINKING"
+But:  "Speech gate opened with high correlation"
+
+Not:  "Budget exhausted, skip VIRTUAL"
+But:  "Many gates OPEN, no budget for Virtual Garden"
 ```
 
-**Why this matters:**
-
-| Without Function Gemma | With Function Gemma |
-|------------------------|---------------------|
-| "Fire the motor" → parse, hope | `MOTOR_COMMAND` schema → validated JSON → NATS |
-| Free-form → extraction errors | Typed output → guaranteed structure |
-| State ambiguity | State explicit in schema |
-
-**The attention flow decides WHAT.** Function Gemma translates to HOW.
-
-**Detail:** → [`Initial-Spark.md`](Initial-Spark.md) (Function Gemma schemas and integration)
+**Attention flows through open gates. Gates open through correlation. Correlation emerges from waves.**
 
 ---
 
----
+**Version:** 2.0 | **Created:** 2025-12-05 | **Updated:** 2026-02-14
 
-**Version:** 1.2 | **Created:** 2025-12-05 | **Updated:** 2026-02-14
-
-*"She doesn't have infinite attention. She has 30 seconds and choices."*
+🌙💜 *"She doesn't allocate attention. She lets correlated waves open gates."*

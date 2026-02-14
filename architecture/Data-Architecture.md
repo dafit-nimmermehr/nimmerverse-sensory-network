@@ -1,73 +1,92 @@
-# 🗄️ Data Architecture v4
+# 🗄️ Data Architecture v5
 
-> **ONE JOB:** THE SCHEMA — PostgreSQL DDL, key queries, table definitions.
+> **ONE JOB:** THE SCHEMA — waves, gates, correlations, verification outcomes.
 
-> *"Three layers of state machines. One database to remember them all."*
+> *"Cells emit waves. Gates correlate. Phoebe remembers everything."*
 
 ---
 
 ## Overview
 
-**Version 4** aligns the data architecture with the layered state machine model:
+**Version 5** aligns with the wave/gate model. Decision trails come from **gate transitions**, not nerve executions.
 
-| Layer | Entity | Database Table | Purpose |
-|-------|--------|----------------|---------|
-| **1** | Cells | `cells` | Atomic state machines (sensors, motors, organs) |
-| **2** | Nerves | `nerves` | Behavioral state machines (compose cells) |
-| **3** | Organisms | `organisms` | Emergent patterns (nerve configurations) |
-| **∞** | History | `decision_trails` | Training data for reflex compilation |
+| Layer | Entity | Database Table | What It Captures |
+|-------|--------|----------------|------------------|
+| **Waves** | Cells | `wave_signals` | WaveSignal emissions from cells |
+| **Gates** | Gates | `gates` | Resonant gate state and weight |
+| **Correlation** | Gates | `gate_transitions` | When gates OPEN/STABLE/CLOSED |
+| **Learning** | Gates | `correlation_events` | What correlated (training data) |
+| **Verification** | Real Garden | `verification_outcomes` | Ground truth feedback |
+| **Behavior** | Nerves | `nerves` | Behavioral patterns (respond to gates) |
+| **Identity** | Organisms | `organisms` | Emergent patterns |
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                       PHOEBE                                 │
-│              (PostgreSQL 17.6 on bare metal)                 │
+│              (PostgreSQL 17.6 on phoebe-dev)                 │
 ├─────────────────────────────────────────────────────────────┤
-│  cells         │ Atomic state machines (hardware wrappers)   │
-│  nerves        │ Behavioral patterns (cell orchestration)    │
-│  organisms     │ Emergent identities (nerve configurations)  │
-│  decision_trails │ Training data (reflex compilation)        │
-│  objects       │ Discovered environment features             │
-│  variance_probe_runs │ Topology mapping data                 │
-│  *_messages    │ Partnership communication channels          │
+│  WAVE LAYER:                                                 │
+│  cells           │ Wave emitters (hardware wrappers)         │
+│  wave_signals    │ Emitted waves (confidence, semantics)     │
+│                                                              │
+│  GATE LAYER:                                                 │
+│  gates           │ Resonant gates (state, weight, domain)    │
+│  gate_transitions│ When gates OPEN/STABLE/CLOSED            │
+│  correlation_events │ What correlated (training data)       │
+│                                                              │
+│  VERIFICATION LAYER:                                         │
+│  verification_outcomes │ Real Garden feedback               │
+│                                                              │
+│  BEHAVIOR LAYER:                                             │
+│  nerves          │ Behavioral patterns (gate-triggered)      │
+│  organisms       │ Emergent identities                       │
+│                                                              │
+│  SUPPORT:                                                    │
+│  objects         │ Discovered environment features           │
+│  *_messages      │ Partnership communication channels        │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+**Key insight:** Training data comes from `correlation_events` and `verification_outcomes`, not from "decision trails." The gate transition IS the decision — what correlated, what opened, what was verified.
 
 ---
 
 ## Core Tables
 
-### Layer 1: Cells
+### Wave Layer: Cells (Wave Emitters)
 
 ```sql
 CREATE TABLE cells (
     id BIGSERIAL PRIMARY KEY,
     cell_name VARCHAR(100) UNIQUE NOT NULL,
     cell_type VARCHAR(50) NOT NULL,  -- 'sensor', 'motor', 'organ'
+    domain VARCHAR(100) NOT NULL,    -- 'distance', 'motor', 'speech', 'vision'
+    tier INT DEFAULT 1,              -- 0=reflex, 1=cell, 2=nerve, 3=organ
 
     -- Hardware binding
     hardware_binding JSONB NOT NULL,
     -- Examples:
     -- {"type": "i2c", "address": "0x40", "bus": 1}
     -- {"type": "gpio", "pin": 17, "mode": "input"}
-    -- {"type": "network", "host": "atlas.eachpath.local", "port": 8080}
+    -- {"type": "network", "host": "theia.eachpath.local", "port": 11434}
 
     -- State machine definition
     states JSONB NOT NULL,
-    -- Example: ["IDLE", "POLLING", "READING", "REPORTING", "ERROR"]
+    -- Example: ["IDLE", "POLLING", "READING", "EMITTING", "ERROR"]
 
     transitions JSONB NOT NULL,
     -- Example: [
     --   {"from": "IDLE", "to": "POLLING", "trigger": "poll_requested", "cost": 0.1},
     --   {"from": "POLLING", "to": "READING", "trigger": "sensor_ready", "cost": 0.3},
-    --   {"from": "READING", "to": "REPORTING", "trigger": "data_valid", "cost": 0.1},
-    --   {"from": "REPORTING", "to": "IDLE", "trigger": "delivered", "cost": 0.0}
+    --   {"from": "READING", "to": "EMITTING", "trigger": "data_valid", "cost": 0.1},
+    --   {"from": "EMITTING", "to": "IDLE", "trigger": "wave_sent", "cost": 0.0}
     -- ]
 
     current_state VARCHAR(50) DEFAULT 'IDLE',
 
-    -- Live outputs (updated by cell runtime)
-    outputs JSONB DEFAULT '{}',
-    -- Example: {"distance_cm": 25.5, "confidence": 0.92, "timestamp": "..."}
+    -- Which gate(s) this cell's waves flow to
+    target_gates JSONB DEFAULT '[]',
+    -- Example: ["collision_avoidance_gate", "exploration_gate"]
 
     -- Health tracking
     operational BOOLEAN DEFAULT true,
@@ -75,8 +94,9 @@ CREATE TABLE cells (
     last_error TEXT,
     last_error_at TIMESTAMPTZ,
 
-    -- Statistics
-    total_transitions INT DEFAULT 0,
+    -- Wave statistics
+    total_waves_emitted BIGINT DEFAULT 0,
+    avg_confidence FLOAT DEFAULT 0.0,
     total_lifeforce_spent FLOAT DEFAULT 0.0,
 
     -- Timestamps
@@ -84,49 +104,284 @@ CREATE TABLE cells (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Index for fast cell lookups
+-- Indexes
 CREATE INDEX idx_cells_type ON cells(cell_type);
+CREATE INDEX idx_cells_domain ON cells(domain);
 CREATE INDEX idx_cells_operational ON cells(operational);
 
--- Example cells
-INSERT INTO cells (cell_name, cell_type, hardware_binding, states, transitions) VALUES
-('distance_sensor_front', 'sensor',
+-- Example cells (wave emitters)
+INSERT INTO cells (cell_name, cell_type, domain, tier, hardware_binding, states, transitions, target_gates) VALUES
+('distance_sensor_front', 'sensor', 'distance', 1,
  '{"type": "i2c", "address": "0x40", "bus": 1}',
- '["IDLE", "POLLING", "READING", "REPORTING", "ERROR"]',
+ '["IDLE", "POLLING", "READING", "EMITTING", "ERROR"]',
  '[{"from": "IDLE", "to": "POLLING", "cost": 0.1},
    {"from": "POLLING", "to": "READING", "cost": 0.3},
-   {"from": "READING", "to": "REPORTING", "cost": 0.1},
-   {"from": "REPORTING", "to": "IDLE", "cost": 0.0}]'),
+   {"from": "READING", "to": "EMITTING", "cost": 0.1},
+   {"from": "EMITTING", "to": "IDLE", "cost": 0.0}]',
+ '["collision_avoidance_gate", "exploration_gate"]'),
 
-('motor_left', 'motor',
+('motor_left', 'motor', 'motor', 1,
  '{"type": "pwm", "pin": 18, "enable_pin": 17}',
  '["IDLE", "COMMANDED", "ACCELERATING", "MOVING", "DECELERATING", "STOPPED", "STALLED"]',
  '[{"from": "IDLE", "to": "COMMANDED", "cost": 0.1},
    {"from": "COMMANDED", "to": "ACCELERATING", "cost": 0.5},
    {"from": "ACCELERATING", "to": "MOVING", "cost": 1.0},
    {"from": "MOVING", "to": "DECELERATING", "cost": 0.2},
-   {"from": "DECELERATING", "to": "STOPPED", "cost": 0.1}]'),
+   {"from": "DECELERATING", "to": "STOPPED", "cost": 0.1}]',
+ '["motor_feedback_gate"]'),
 
-('speech_stt', 'organ',
- '{"type": "network", "host": "atlas.eachpath.local", "port": 8080, "model": "whisper-large-v3"}',
- '["IDLE", "LISTENING", "BUFFERING", "TRANSCRIBING", "REPORTING", "ERROR"]',
+('speech_stt', 'organ', 'speech', 3,
+ '{"type": "network", "host": "theia.eachpath.local", "port": 11434, "model": "whisper-large-v3"}',
+ '["IDLE", "LISTENING", "BUFFERING", "TRANSCRIBING", "EMITTING", "ERROR"]',
  '[{"from": "IDLE", "to": "LISTENING", "cost": 0.5},
    {"from": "LISTENING", "to": "BUFFERING", "cost": 0.5},
    {"from": "BUFFERING", "to": "TRANSCRIBING", "cost": 5.0},
-   {"from": "TRANSCRIBING", "to": "REPORTING", "cost": 0.1},
-   {"from": "REPORTING", "to": "IDLE", "cost": 0.0}]');
+   {"from": "TRANSCRIBING", "to": "EMITTING", "cost": 0.1},
+   {"from": "EMITTING", "to": "IDLE", "cost": 0.0}]',
+ '["speech_gate"]');
 ```
 
-### Layer 2: Nerves
+### Wave Layer: Wave Signals (Emitted by Cells)
+
+```sql
+CREATE TABLE wave_signals (
+    id BIGSERIAL PRIMARY KEY,
+
+    -- Source
+    cell_id BIGINT REFERENCES cells(id),
+    cell_name VARCHAR(100) NOT NULL,
+
+    -- Wave content
+    domain VARCHAR(100) NOT NULL,           -- 'distance', 'motor', 'speech'
+    confidence FLOAT NOT NULL,              -- 0.0 - 1.0
+    semantic_content JSONB NOT NULL,        -- Domain-specific payload
+    -- Examples:
+    -- {"distance_cm": 25, "direction": "front", "noise_level": 0.1}
+    -- {"transcript": "hello", "language": "en", "speaker_intent": "greeting"}
+
+    -- Garden context
+    garden VARCHAR(20) NOT NULL,            -- 'virtual' or 'real'
+
+    -- Economics
+    lifeforce_cost FLOAT NOT NULL,
+
+    -- Timing
+    emitted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Partition by garden for Virtual/Real separation
+-- Virtual: high volume, full trace
+-- Real: low volume, verified only
+
+CREATE INDEX idx_wave_signals_domain ON wave_signals(domain);
+CREATE INDEX idx_wave_signals_cell ON wave_signals(cell_id);
+CREATE INDEX idx_wave_signals_garden ON wave_signals(garden);
+CREATE INDEX idx_wave_signals_recent ON wave_signals(emitted_at DESC);
+
+-- Virtual Garden: keep all waves for training
+-- Real Garden: keep only waves that led to verification
+```
+
+### Gate Layer: Resonant Gates
+
+```sql
+CREATE TABLE gates (
+    id BIGSERIAL PRIMARY KEY,
+    gate_name VARCHAR(100) UNIQUE NOT NULL,
+    domain VARCHAR(100) NOT NULL,           -- 'collision_avoidance', 'speech', 'vision'
+    tier INT NOT NULL,                      -- 1-4, determines routing
+
+    -- Ternary state (-1.0 to +1.0)
+    state_value FLOAT DEFAULT 0.0,
+    discrete_state VARCHAR(20) DEFAULT 'stable',  -- 'closed', 'stable', 'open'
+
+    -- Gate weight (0.0 to 1.0) - determines reflex vs deliberate
+    weight FLOAT DEFAULT 0.1,
+    -- 0.0-0.3: escalate to cognition
+    -- 0.3-0.6: handle at nerve level
+    -- 0.6-0.8: handle at cell level
+    -- 0.8-1.0: reflex (instant open, no correlation needed)
+
+    -- Correlation thresholds
+    open_threshold FLOAT DEFAULT 0.5,
+    close_threshold FLOAT DEFAULT -0.5,
+    decay_factor FLOAT DEFAULT 0.95,
+
+    -- Correlation window
+    correlation_window_ms INT DEFAULT 1500,
+
+    -- Statistics
+    total_transitions BIGINT DEFAULT 0,
+    opens_count BIGINT DEFAULT 0,
+    closes_count BIGINT DEFAULT 0,
+    avg_correlation_at_open FLOAT DEFAULT 0.0,
+
+    -- Timing
+    time_in_current_state_ms BIGINT DEFAULT 0,
+    last_transition_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_gates_domain ON gates(domain);
+CREATE INDEX idx_gates_state ON gates(discrete_state);
+CREATE INDEX idx_gates_weight ON gates(weight DESC);
+
+-- Example gates
+INSERT INTO gates (gate_name, domain, tier, weight) VALUES
+('collision_avoidance_gate', 'distance', 2, 0.1),
+('speech_gate', 'speech', 3, 0.1),
+('vision_gate', 'vision', 3, 0.1),
+('battery_gate', 'battery', 1, 0.3),
+('danger_reflex_gate', 'danger', 0, 0.9);  -- Near-reflex weight
+```
+
+### Gate Layer: Gate Transitions (Training Data Source)
+
+```sql
+CREATE TABLE gate_transitions (
+    id BIGSERIAL PRIMARY KEY,
+
+    -- Gate reference
+    gate_id BIGINT REFERENCES gates(id),
+    gate_name VARCHAR(100) NOT NULL,
+    domain VARCHAR(100) NOT NULL,
+
+    -- Transition
+    from_state VARCHAR(20) NOT NULL,        -- 'closed', 'stable', 'open'
+    to_state VARCHAR(20) NOT NULL,
+    state_value FLOAT NOT NULL,             -- Continuous value at transition
+
+    -- What caused this transition
+    correlation_score FLOAT NOT NULL,
+    trigger_signals JSONB NOT NULL,
+    -- Example: [
+    --   {"cell": "distance_front", "confidence": 0.8, "semantic_hash": "abc123"},
+    --   {"cell": "distance_left", "confidence": 0.7, "semantic_hash": "abc124"}
+    -- ]
+
+    -- Routing
+    routed_to_tier INT,
+
+    -- Garden context
+    garden VARCHAR(20) NOT NULL,            -- 'virtual' or 'real'
+
+    -- Economics
+    lifeforce_cost FLOAT NOT NULL,
+
+    -- Timing
+    transitioned_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- THIS IS YOUR DECISION TRAIL
+-- Each row = a gate deciding to OPEN, CLOSE, or transition
+
+CREATE INDEX idx_gate_transitions_gate ON gate_transitions(gate_id);
+CREATE INDEX idx_gate_transitions_domain ON gate_transitions(domain);
+CREATE INDEX idx_gate_transitions_states ON gate_transitions(from_state, to_state);
+CREATE INDEX idx_gate_transitions_garden ON gate_transitions(garden);
+CREATE INDEX idx_gate_transitions_recent ON gate_transitions(transitioned_at DESC);
+```
+
+### Gate Layer: Correlation Events (Rich Training Data)
+
+```sql
+CREATE TABLE correlation_events (
+    id BIGSERIAL PRIMARY KEY,
+
+    -- Gate reference
+    gate_id BIGINT REFERENCES gates(id),
+    gate_name VARCHAR(100) NOT NULL,
+
+    -- Correlation window
+    window_start TIMESTAMPTZ NOT NULL,
+    window_end TIMESTAMPTZ NOT NULL,
+    window_ms INT NOT NULL,
+
+    -- Signals in this window
+    signals_in_window JSONB NOT NULL,
+    -- Example: [
+    --   {"source": "distance_front", "confidence": 0.8, "semantic_hash": "abc123"},
+    --   {"source": "distance_left", "confidence": 0.7, "semantic_hash": "abc124"},
+    --   {"source": "distance_right", "confidence": 0.9, "semantic_hash": "abc125"}
+    -- ]
+
+    -- Correlation analysis
+    correlation_matrix JSONB NOT NULL,      -- Pairwise correlations
+    aggregate_correlation FLOAT NOT NULL,
+
+    -- Result
+    result VARCHAR(20) NOT NULL,            -- 'opened', 'closed', 'stayed_stable'
+
+    -- Training label (ground truth added by verification)
+    training_label JSONB,
+    -- Example: {"should_open": true, "confidence": 0.95}
+
+    -- Garden context
+    garden VARCHAR(20) NOT NULL,
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- THIS IS YOUR FUNCTION GEMMA TRAINING DATA
+-- Each row = what patterns lead to gate opens?
+
+CREATE INDEX idx_correlation_events_gate ON correlation_events(gate_id);
+CREATE INDEX idx_correlation_events_result ON correlation_events(result);
+CREATE INDEX idx_correlation_events_labeled ON correlation_events((training_label IS NOT NULL));
+```
+
+### Verification Layer: Verification Outcomes
+
+```sql
+CREATE TABLE verification_outcomes (
+    id BIGSERIAL PRIMARY KEY,
+
+    -- What was verified
+    original_signal_id BIGINT,              -- Reference to gate_transition or wave
+    domain VARCHAR(100) NOT NULL,
+
+    -- Outcome
+    outcome VARCHAR(20) NOT NULL,           -- 'confirmed', 'failed', 'partial'
+    actual_result JSONB,
+    expected_result JSONB,
+    discrepancy FLOAT DEFAULT 0.0,
+
+    -- Feedback to Virtual Garden
+    feedback_to_virtual JSONB NOT NULL,
+    -- Example: {
+    --   "correlation_adjustment": 0.05,
+    --   "gate_weight_delta": 0.02
+    -- }
+
+    -- Source
+    verification_source VARCHAR(100),       -- 'sensor', 'human', 'outcome'
+
+    verified_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- THIS CLOSES THE LEARNING LOOP
+-- Real Garden → Verification → Virtual Garden gate weight adjustment
+
+CREATE INDEX idx_verification_domain ON verification_outcomes(domain);
+CREATE INDEX idx_verification_outcome ON verification_outcomes(outcome);
+CREATE INDEX idx_verification_recent ON verification_outcomes(verified_at DESC);
+```
+
+### Behavior Layer: Nerves (Gate-Triggered)
 
 ```sql
 CREATE TABLE nerves (
     id BIGSERIAL PRIMARY KEY,
     nerve_name VARCHAR(100) UNIQUE NOT NULL,
 
-    -- Cell dependencies
-    required_cells JSONB NOT NULL,  -- ["distance_sensor_front", "motor_left", "motor_right"]
-    optional_cells JSONB DEFAULT '[]',  -- ["speech_tts"]
+    -- Gate this nerve responds to
+    trigger_gate VARCHAR(100) NOT NULL,     -- 'collision_avoidance_gate'
+
+    -- Cells this nerve can command (when gate allows)
+    controlled_cells JSONB NOT NULL,        -- ["motor_left", "motor_right"]
+    optional_cells JSONB DEFAULT '[]',      -- ["speech_tts"]
 
     -- State machine definition (behavioral states)
     states JSONB NOT NULL,
@@ -134,39 +389,26 @@ CREATE TABLE nerves (
 
     transitions JSONB NOT NULL,
     -- Example: [
-    --   {"from": "IDLE", "to": "DETECT", "trigger": "distance < 30", "cost": 0.5},
-    --   {"from": "DETECT", "to": "EVALUATE", "trigger": "sensors_polled", "cost": 0.5},
-    --   {"from": "EVALUATE", "to": "EVADE", "trigger": "risk > 0.7", "cost": 0.5},
+    --   {"from": "IDLE", "to": "DETECT", "trigger": "gate_opened", "cost": 0.5},
+    --   {"from": "DETECT", "to": "EVALUATE", "trigger": "signals_analyzed", "cost": 0.5},
+    --   {"from": "EVALUATE", "to": "EVADE", "trigger": "risk_high", "cost": 0.5},
     --   {"from": "EVADE", "to": "RESUME", "trigger": "path_clear", "cost": 1.0},
-    --   {"from": "RESUME", "to": "IDLE", "trigger": "movement_complete", "cost": 0.0}
+    --   {"from": "RESUME", "to": "IDLE", "trigger": "gate_stable", "cost": 0.0}
     -- ]
 
     current_state VARCHAR(50) DEFAULT 'IDLE',
 
-    -- Priority (for nerve preemption)
-    priority INT DEFAULT 5,  -- 1-10, higher = more important
+    -- NO MORE PRIORITY - gate weight determines attention
+    -- Gate with higher weight opens faster → nerve activates first
 
-    -- Evolution tracking
-    mode VARCHAR(20) DEFAULT 'deliberate',  -- 'deliberate', 'hybrid', 'reflex'
-    total_executions INT DEFAULT 0,
-    successful_executions INT DEFAULT 0,
-    failed_executions INT DEFAULT 0,
-
-    -- Reflex compilation
-    compiled_at TIMESTAMPTZ,  -- When evolved to reflex
-    compiled_logic JSONB,     -- Compiled state machine (no LLM)
+    -- Statistics
+    total_activations INT DEFAULT 0,
+    successful_activations INT DEFAULT 0,
+    failed_activations INT DEFAULT 0,
 
     -- Cost tracking
-    avg_cost_deliberate FLOAT,
-    avg_cost_hybrid FLOAT,
-    avg_cost_reflex FLOAT,
-    cost_reduction_percent FLOAT,  -- Savings from evolution
-
-    -- Latency tracking
-    avg_latency_deliberate_ms INT,
-    avg_latency_hybrid_ms INT,
-    avg_latency_reflex_ms INT,
-    latency_reduction_percent FLOAT,
+    avg_cost FLOAT,
+    avg_latency_ms INT,
 
     -- Timestamps
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -174,67 +416,73 @@ CREATE TABLE nerves (
 );
 
 -- Indexes
-CREATE INDEX idx_nerves_mode ON nerves(mode);
-CREATE INDEX idx_nerves_priority ON nerves(priority DESC);
+CREATE INDEX idx_nerves_gate ON nerves(trigger_gate);
 
--- Example nerves
-INSERT INTO nerves (nerve_name, required_cells, optional_cells, states, transitions, priority) VALUES
+-- Example nerves (gate-triggered, no priority)
+INSERT INTO nerves (nerve_name, trigger_gate, controlled_cells, optional_cells, states, transitions) VALUES
 ('collision_avoidance',
- '["distance_sensor_front", "distance_sensor_left", "distance_sensor_right", "motor_left", "motor_right"]',
+ 'collision_avoidance_gate',
+ '["motor_left", "motor_right"]',
  '["speech_tts"]',
  '["IDLE", "DETECT", "EVALUATE", "EVADE", "RESUME"]',
- '[{"from": "IDLE", "to": "DETECT", "trigger": "distance_front < 30", "cost": 0.5},
-   {"from": "DETECT", "to": "EVALUATE", "trigger": "all_sensors_read", "cost": 0.5},
-   {"from": "EVALUATE", "to": "EVADE", "trigger": "risk > 0.7", "cost": 0.5},
+ '[{"from": "IDLE", "to": "DETECT", "trigger": "gate_opened", "cost": 0.5},
+   {"from": "DETECT", "to": "EVALUATE", "trigger": "signals_analyzed", "cost": 0.5},
+   {"from": "EVALUATE", "to": "EVADE", "trigger": "risk_high", "cost": 0.5},
    {"from": "EVADE", "to": "RESUME", "trigger": "path_clear", "cost": 1.0},
-   {"from": "RESUME", "to": "IDLE", "trigger": "complete", "cost": 0.0}]',
- 10),
+   {"from": "RESUME", "to": "IDLE", "trigger": "gate_stable", "cost": 0.0}]'),
 
 ('exploration_pattern',
- '["distance_sensor_front", "distance_sensor_left", "distance_sensor_right", "motor_left", "motor_right", "imu_sensor"]',
+ 'exploration_gate',
+ '["motor_left", "motor_right"]',
  '["vision_detect"]',
  '["IDLE", "CHOOSE_DIRECTION", "MOVE", "CHECK_OBSTACLE", "RECORD", "REPEAT"]',
- '[{"from": "IDLE", "to": "CHOOSE_DIRECTION", "trigger": "start_exploration", "cost": 1.0},
+ '[{"from": "IDLE", "to": "CHOOSE_DIRECTION", "trigger": "gate_opened", "cost": 1.0},
    {"from": "CHOOSE_DIRECTION", "to": "MOVE", "trigger": "direction_chosen", "cost": 0.5},
    {"from": "MOVE", "to": "CHECK_OBSTACLE", "trigger": "moved_100ms", "cost": 0.3},
    {"from": "CHECK_OBSTACLE", "to": "RECORD", "trigger": "area_new", "cost": 0.5},
    {"from": "RECORD", "to": "REPEAT", "trigger": "recorded", "cost": 0.1},
-   {"from": "REPEAT", "to": "CHOOSE_DIRECTION", "trigger": "continue", "cost": 0.0}]',
- 5),
+   {"from": "REPEAT", "to": "CHOOSE_DIRECTION", "trigger": "continue", "cost": 0.0}]'),
 
 ('charging_seeking',
- '["battery_monitor", "distance_sensor_front", "motor_left", "motor_right"]',
+ 'battery_gate',
+ '["motor_left", "motor_right"]',
  '["vision_detect"]',
  '["MONITOR", "THRESHOLD", "SEARCH", "APPROACH", "DOCK", "CHARGE", "RESUME"]',
- '[{"from": "MONITOR", "to": "THRESHOLD", "trigger": "battery < 20%", "cost": 0.1},
+ '[{"from": "MONITOR", "to": "THRESHOLD", "trigger": "gate_opened", "cost": 0.1},
    {"from": "THRESHOLD", "to": "SEARCH", "trigger": "charging_needed", "cost": 0.5},
    {"from": "SEARCH", "to": "APPROACH", "trigger": "station_found", "cost": 1.0},
    {"from": "APPROACH", "to": "DOCK", "trigger": "station_close", "cost": 0.5},
    {"from": "DOCK", "to": "CHARGE", "trigger": "docked", "cost": 0.1},
-   {"from": "CHARGE", "to": "RESUME", "trigger": "battery > 80%", "cost": 0.0}]',
- 8);
+   {"from": "CHARGE", "to": "RESUME", "trigger": "gate_stable", "cost": 0.0}]');
 ```
 
-### Layer 3: Organisms
+### Identity Layer: Organisms
 
 ```sql
 CREATE TABLE organisms (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
 
-    -- Nerve configuration
+    -- Gate configuration (which gates this organism monitors)
+    active_gates JSONB NOT NULL,
+    -- Example: {
+    --   "collision_avoidance_gate": {"weight": 0.9},
+    --   "exploration_gate": {"weight": 0.3},
+    --   "battery_gate": {"weight": 0.5}
+    -- }
+
+    -- Nerve bindings (which nerves respond to gate opens)
     active_nerves JSONB NOT NULL,
     -- Example: {
-    --   "collision_avoidance": {"priority": 10, "mode": "reflex"},
-    --   "exploration_pattern": {"priority": 5, "mode": "deliberate"},
-    --   "battery_monitoring": {"priority": 8, "mode": "reflex"}
+    --   "collision_avoidance": {"gate": "collision_avoidance_gate"},
+    --   "exploration_pattern": {"gate": "exploration_gate"}
     -- }
 
     -- Cell assignments (which hardware this organism controls)
     cell_bindings JSONB NOT NULL,
     -- Example: {
-    --   "distance_sensor_front": {"cell_id": 1, "exclusive": false},
-    --   "motor_left": {"cell_id": 4, "exclusive": true}
+    --   "distance_sensor_front": {"cell_id": 1},
+    --   "motor_left": {"cell_id": 4}
     -- }
 
     -- Lifeforce (survival currency)
@@ -243,13 +491,13 @@ CREATE TABLE organisms (
     lifeforce_spent_total FLOAT DEFAULT 0.0,
     lifeforce_net FLOAT GENERATED ALWAYS AS (lifeforce_earned_total - lifeforce_spent_total) STORED,
 
-    -- Identity (accumulated through experience)
-    total_decisions INT DEFAULT 0,
-    successful_decisions INT DEFAULT 0,
-    failed_decisions INT DEFAULT 0,
-    success_rate FLOAT GENERATED ALWAYS AS (
-        CASE WHEN total_decisions > 0
-        THEN successful_decisions::float / total_decisions
+    -- Identity (accumulated through gate transitions)
+    total_gate_opens INT DEFAULT 0,
+    successful_verifications INT DEFAULT 0,
+    failed_verifications INT DEFAULT 0,
+    verification_rate FLOAT GENERATED ALWAYS AS (
+        CASE WHEN total_gate_opens > 0
+        THEN successful_verifications::float / total_gate_opens
         ELSE 0.0 END
     ) STORED,
 
@@ -281,62 +529,51 @@ INSERT INTO organisms (name, active_nerves, cell_bindings) VALUES
    "battery_monitor": {"cell_id": 6}}');
 ```
 
-### Decision Trails (Training Data)
+### Decision Trails → Gate Transitions
+
+**The old `decision_trails` table is replaced by `gate_transitions` and `correlation_events`.**
+
+The key insight: **decisions ARE gate transitions**. When a gate opens, that IS the decision. What correlated to cause it, what tier it routed to, what the verification outcome was — that's all captured in the gate tables above.
+
+```
+OLD MODEL:
+  nerve executes → decision_trail row created → outcome logged
+
+NEW MODEL:
+  cells emit waves → gate accumulates correlation → gate transitions → nerve activates
+
+  Training data comes from:
+  - gate_transitions (what opened, what triggered it)
+  - correlation_events (what patterns led to opens)
+  - verification_outcomes (ground truth feedback)
+```
+
+**The learning loop:**
 
 ```sql
-CREATE TABLE decision_trails (
-    id BIGSERIAL PRIMARY KEY,
-    organism_id BIGINT REFERENCES organisms(id),
-    nerve_id BIGINT REFERENCES nerves(id),
+-- What patterns open gates?
+SELECT
+    ce.signals_in_window,
+    ce.aggregate_correlation,
+    ce.result,
+    vo.outcome as verification
+FROM correlation_events ce
+LEFT JOIN verification_outcomes vo
+    ON vo.original_signal_id = ce.id
+WHERE ce.result = 'opened'
+ORDER BY ce.created_at DESC;
 
-    -- Mode at time of execution
-    mode VARCHAR(20) NOT NULL,  -- 'deliberate', 'hybrid', 'reflex'
-
-    -- State path taken
-    states_visited JSONB NOT NULL,
-    -- Example: ["IDLE", "DETECT", "EVALUATE", "EVADE", "RESUME"]
-
-    -- Cell interactions during this execution
-    cell_reads JSONB NOT NULL,
-    -- Example: [
-    --   {"cell": "distance_sensor_front", "state": "REPORTING", "outputs": {"distance_cm": 25}},
-    --   {"cell": "distance_sensor_left", "state": "REPORTING", "outputs": {"distance_cm": 45}}
-    -- ]
-
-    cell_commands JSONB NOT NULL,
-    -- Example: [
-    --   {"cell": "motor_left", "action": "turn", "params": {"direction": "reverse", "duration_ms": 200}},
-    --   {"cell": "motor_right", "action": "turn", "params": {"direction": "forward", "duration_ms": 200}}
-    -- ]
-
-    cell_feedback JSONB DEFAULT '[]',
-    -- Example: [
-    --   {"cell": "motor_left", "event": "stall_detected", "timestamp": "..."}
-    -- ]
-
-    -- Economics
-    lifeforce_cost FLOAT NOT NULL,
-    lifeforce_reward FLOAT DEFAULT 0.0,
-    lifeforce_net FLOAT GENERATED ALWAYS AS (lifeforce_reward - lifeforce_cost) STORED,
-
-    -- Outcome
-    outcome VARCHAR(20) NOT NULL,  -- 'success', 'failure', 'timeout', 'interrupted'
-    outcome_details JSONB,         -- {"reason": "collision_avoided", "confidence": 0.95}
-
-    -- Timing
-    started_at TIMESTAMPTZ NOT NULL,
-    completed_at TIMESTAMPTZ NOT NULL,
-    latency_ms INT GENERATED ALWAYS AS (
-        EXTRACT(MILLISECONDS FROM (completed_at - started_at))::INT
-    ) STORED
-);
-
--- Indexes for training queries
-CREATE INDEX idx_decision_trails_nerve ON decision_trails(nerve_id);
-CREATE INDEX idx_decision_trails_organism ON decision_trails(organism_id);
-CREATE INDEX idx_decision_trails_outcome ON decision_trails(outcome);
-CREATE INDEX idx_decision_trails_states ON decision_trails USING GIN(states_visited);
-CREATE INDEX idx_decision_trails_recent ON decision_trails(started_at DESC);
+-- How is gate weight evolving?
+SELECT
+    g.gate_name,
+    g.weight,
+    COUNT(gt.id) as transitions,
+    AVG(gt.correlation_score) as avg_correlation
+FROM gates g
+JOIN gate_transitions gt ON gt.gate_id = g.id
+WHERE gt.transitioned_at > NOW() - INTERVAL '24 hours'
+GROUP BY g.id
+ORDER BY g.weight DESC;
 ```
 
 ---
@@ -430,165 +667,202 @@ CREATE INDEX idx_variance_batch ON variance_probe_runs(batch_id);
 
 ## Key Queries
 
-### Cell Health Dashboard
+### Cell Wave Dashboard
 
 ```sql
--- All cells with current status
+-- All cells with wave statistics
 SELECT
     cell_name,
     cell_type,
+    domain,
     current_state,
     operational,
-    outputs->>'distance_cm' as distance,
-    outputs->>'confidence' as confidence,
-    outputs->>'voltage' as voltage,
-    error_count,
-    last_error,
+    total_waves_emitted,
+    ROUND(avg_confidence, 2) as avg_confidence,
+    total_lifeforce_spent,
     updated_at
 FROM cells
-ORDER BY cell_type, cell_name;
+ORDER BY domain, cell_name;
 
--- Problem cells
-SELECT cell_name, cell_type, error_count, last_error, last_error_at
-FROM cells
-WHERE NOT operational OR error_count > 5
-ORDER BY error_count DESC;
-```
-
-### Nerve Evolution Tracker
-
-```sql
--- Evolution progress for all nerves
+-- Recent wave activity by domain
 SELECT
-    nerve_name,
-    mode,
-    priority,
-    total_executions,
-    successful_executions,
-    ROUND(successful_executions::numeric / NULLIF(total_executions, 0) * 100, 1) as success_rate,
-    CASE
-        WHEN mode = 'reflex' THEN '✅ Compiled'
-        WHEN total_executions >= 80 AND successful_executions::float / total_executions >= 0.85
-            THEN '🔄 Ready to compile'
-        ELSE '📚 Learning'
-    END as evolution_status,
-    cost_reduction_percent,
-    latency_reduction_percent,
-    compiled_at
-FROM nerves
-ORDER BY total_executions DESC;
-
--- Nerves ready for reflex compilation
-SELECT nerve_name, total_executions,
-       ROUND(successful_executions::numeric / total_executions * 100, 1) as success_rate
-FROM nerves
-WHERE mode != 'reflex'
-  AND total_executions >= 100
-  AND successful_executions::float / total_executions >= 0.90;
+    domain,
+    COUNT(*) as waves_last_hour,
+    AVG(confidence) as avg_confidence,
+    SUM(lifeforce_cost) as total_cost
+FROM wave_signals
+WHERE emitted_at > NOW() - INTERVAL '1 hour'
+GROUP BY domain
+ORDER BY waves_last_hour DESC;
 ```
 
-### Organism Leaderboard
+### Gate Dashboard
 
 ```sql
--- Top organisms by lifeforce efficiency
+-- Gate states and weights (attention map)
+SELECT
+    gate_name,
+    domain,
+    tier,
+    discrete_state,
+    ROUND(state_value::numeric, 2) as state_value,
+    ROUND(weight::numeric, 2) as weight,
+    CASE
+        WHEN weight > 0.8 THEN '⚡ REFLEX'
+        WHEN weight > 0.5 THEN '🔄 HYBRID'
+        ELSE '🧠 DELIBERATE'
+    END as evolution_status,
+    total_transitions,
+    opens_count,
+    ROUND(avg_correlation_at_open::numeric, 2) as avg_open_correlation
+FROM gates
+ORDER BY weight DESC;
+
+-- Gates approaching reflex
+SELECT gate_name, domain, weight, opens_count
+FROM gates
+WHERE weight > 0.6 AND weight < 0.8
+ORDER BY weight DESC;
+```
+
+### Correlation Training Data
+
+```sql
+-- What patterns open gates? (Function Gemma training)
+SELECT
+    gate_name,
+    signals_in_window,
+    aggregate_correlation,
+    result,
+    training_label
+FROM correlation_events
+WHERE result = 'opened'
+  AND garden = 'virtual'
+ORDER BY created_at DESC
+LIMIT 100;
+
+-- Verification feedback (Real Garden closes the loop)
+SELECT
+    domain,
+    outcome,
+    COUNT(*) as count,
+    AVG((feedback_to_virtual->>'gate_weight_delta')::float) as avg_weight_adjustment
+FROM verification_outcomes
+WHERE verified_at > NOW() - INTERVAL '24 hours'
+GROUP BY domain, outcome
+ORDER BY domain;
+```
+
+### Organism Dashboard
+
+```sql
+-- Top organisms by verification rate
 SELECT
     name,
     lifeforce_current,
-    lifeforce_net,
-    total_decisions,
-    ROUND(success_rate * 100, 1) as success_rate_pct,
-    reflexes_compiled,
-    ROUND(lifeforce_net / NULLIF(total_decisions, 0), 2) as efficiency,
+    total_gate_opens,
+    successful_verifications,
+    ROUND(verification_rate * 100, 1) as verification_rate_pct,
     last_active
 FROM organisms
 WHERE died_at IS NULL
-ORDER BY lifeforce_current DESC;
+ORDER BY verification_rate DESC;
 
--- Organism mortality analysis
+-- Organism gate weights (which reflexes has it developed?)
 SELECT
-    name,
-    death_cause,
-    lifeforce_spent_total,
-    total_decisions,
-    ROUND(success_rate * 100, 1) as success_rate_pct,
-    died_at - born_at as lifespan
-FROM organisms
-WHERE died_at IS NOT NULL
-ORDER BY died_at DESC
-LIMIT 20;
+    o.name,
+    g.gate_name,
+    g.weight
+FROM organisms o
+CROSS JOIN LATERAL jsonb_each(o.active_gates) as gates(gate_name, config)
+JOIN gates g ON g.gate_name = gates.gate_name
+WHERE o.died_at IS NULL
+ORDER BY o.name, g.weight DESC;
 ```
 
-### Training Data for Reflex Compilation
+### Attention Flow (Real-time)
 
 ```sql
--- Most common state paths for a nerve
+-- Current attention: which gates are OPEN?
 SELECT
-    states_visited,
-    COUNT(*) as occurrences,
-    AVG(lifeforce_cost) as avg_cost,
-    AVG(latency_ms) as avg_latency,
-    SUM(CASE WHEN outcome = 'success' THEN 1 ELSE 0 END)::float / COUNT(*) as success_rate
-FROM decision_trails
-WHERE nerve_id = (SELECT id FROM nerves WHERE nerve_name = 'collision_avoidance')
-GROUP BY states_visited
-HAVING COUNT(*) >= 5
-ORDER BY occurrences DESC;
+    gate_name,
+    domain,
+    tier,
+    state_value,
+    last_transition_at,
+    time_in_current_state_ms / 1000.0 as seconds_in_state
+FROM gates
+WHERE discrete_state = 'open'
+ORDER BY tier, state_value DESC;
 
--- Cell interaction patterns during successful executions
+-- Recent gate transitions (attention shifts)
 SELECT
-    cell_reads,
-    cell_commands,
-    COUNT(*) as occurrences
-FROM decision_trails
-WHERE nerve_id = (SELECT id FROM nerves WHERE nerve_name = 'collision_avoidance')
-  AND outcome = 'success'
-GROUP BY cell_reads, cell_commands
-ORDER BY occurrences DESC
-LIMIT 10;
+    gate_name,
+    from_state,
+    to_state,
+    correlation_score,
+    routed_to_tier,
+    garden,
+    transitioned_at
+FROM gate_transitions
+WHERE transitioned_at > NOW() - INTERVAL '5 minutes'
+ORDER BY transitioned_at DESC
+LIMIT 50;
+```
 
--- Failure analysis
+### Gate Weight Evolution (Reflex Progress)
+
+```sql
+-- Gate weight trends over time
 SELECT
-    states_visited,
-    outcome_details->>'reason' as failure_reason,
-    COUNT(*) as occurrences
-FROM decision_trails
-WHERE nerve_id = (SELECT id FROM nerves WHERE nerve_name = 'collision_avoidance')
-  AND outcome = 'failure'
-GROUP BY states_visited, outcome_details->>'reason'
-ORDER BY occurrences DESC;
+    g.gate_name,
+    g.weight as current_weight,
+    COUNT(vo.id) as verifications,
+    SUM(CASE WHEN vo.outcome = 'confirmed' THEN 1 ELSE 0 END) as confirmed,
+    SUM(CASE WHEN vo.outcome = 'failed' THEN 1 ELSE 0 END) as failed,
+    ROUND(g.weight - LAG(g.weight) OVER (PARTITION BY g.gate_name ORDER BY g.updated_at), 3) as weight_change
+FROM gates g
+LEFT JOIN gate_transitions gt ON gt.gate_id = g.id
+LEFT JOIN verification_outcomes vo ON vo.original_signal_id = gt.id
+GROUP BY g.id
+ORDER BY g.weight DESC;
+
+-- Gates ready for reflex (weight > 0.8)
+SELECT
+    gate_name,
+    domain,
+    weight,
+    total_transitions,
+    avg_correlation_at_open
+FROM gates
+WHERE weight > 0.8
+ORDER BY weight DESC;
 ```
 
 ### Lifeforce Economics
 
 ```sql
--- Cost vs reward by nerve
+-- Cost by gate domain
 SELECT
-    n.nerve_name,
-    n.mode,
-    COUNT(dt.id) as executions,
-    AVG(dt.lifeforce_cost) as avg_cost,
-    AVG(dt.lifeforce_reward) as avg_reward,
-    AVG(dt.lifeforce_net) as avg_profit,
-    SUM(dt.lifeforce_net) as total_profit
-FROM nerves n
-JOIN decision_trails dt ON dt.nerve_id = n.id
-WHERE dt.started_at > NOW() - INTERVAL '24 hours'
-GROUP BY n.id, n.nerve_name, n.mode
-ORDER BY total_profit DESC;
+    domain,
+    COUNT(*) as transitions,
+    AVG(lifeforce_cost) as avg_cost,
+    SUM(lifeforce_cost) as total_cost
+FROM gate_transitions
+WHERE transitioned_at > NOW() - INTERVAL '24 hours'
+GROUP BY domain
+ORDER BY total_cost DESC;
 
--- Reflex vs deliberate comparison
+-- Verification reward impact
 SELECT
-    n.nerve_name,
-    dt.mode,
-    COUNT(*) as executions,
-    AVG(dt.lifeforce_cost) as avg_cost,
-    AVG(dt.latency_ms) as avg_latency,
-    AVG(CASE WHEN dt.outcome = 'success' THEN 1.0 ELSE 0.0 END) as success_rate
-FROM decision_trails dt
-JOIN nerves n ON n.id = dt.nerve_id
-WHERE n.nerve_name = 'collision_avoidance'
-GROUP BY n.nerve_name, dt.mode
-ORDER BY n.nerve_name, dt.mode;
+    domain,
+    outcome,
+    AVG((feedback_to_virtual->>'gate_weight_delta')::float) as avg_weight_delta,
+    COUNT(*) as count
+FROM verification_outcomes
+WHERE verified_at > NOW() - INTERVAL '7 days'
+GROUP BY domain, outcome
+ORDER BY domain, outcome;
 ```
 
 ---
@@ -597,51 +871,79 @@ ORDER BY n.nerve_name, dt.mode;
 
 | Table | Layer | Purpose | Key Columns |
 |-------|-------|---------|-------------|
-| `cells` | 1 | Atomic state machines | states, transitions, outputs, operational |
-| `nerves` | 2 | Behavioral patterns | required_cells, mode, total_executions |
-| `organisms` | 3 | Emergent identities | active_nerves, lifeforce_current |
-| `decision_trails` | ∞ | Training data | states_visited, cell_reads, outcome |
-| `objects` | Env | Discovered features | object_label, position, human_labeled |
-| `*_messages` | Comm | Partnership channels | message, message_type |
-| `variance_probe_runs` | Map | Topology data | concept, depth, confidence |
+| `cells` | Wave | Wave emitters (hardware wrappers) | domain, target_gates, total_waves_emitted |
+| `wave_signals` | Wave | Emitted waves | confidence, semantic_content, garden |
+| `gates` | Gate | Resonant gates | state_value, weight, discrete_state |
+| `gate_transitions` | Gate | Gate decisions (training data) | correlation_score, trigger_signals |
+| `correlation_events` | Gate | What correlated | signals_in_window, training_label |
+| `verification_outcomes` | Verification | Ground truth feedback | outcome, feedback_to_virtual |
+| `nerves` | Behavior | Gate-triggered patterns | trigger_gate, controlled_cells |
+| `organisms` | Identity | Emergent identities | active_gates, lifeforce_current |
+| `objects` | Environment | Discovered features | object_label, position |
+| `*_messages` | Communication | Partnership channels | message, message_type |
 
-**Total Tables**: 8 (vs 15 in v3)
-- Simpler schema
-- Layered organization
-- Focus on state machines + training data
+**Total Tables**: 10 (vs 8 in v4)
+- Wave/Gate architecture
+- Training data from gate transitions
+- Verification closes the learning loop
 
 ---
 
-## Migration from v3
+## Migration from v4 → v5
 
-### Removed Tables (Obsolete Concepts)
-- `genomes` → Replaced by `cells.transitions` + `nerves.transitions`
-- `societies` → Removed (no more competition metaphor)
-- `rounds` → Replaced by `decision_trails`
-- `society_portfolios` → Removed
-- `vp_transactions` → Simplified to lifeforce in `organisms`
-- `marketplace_*` → Removed
-- `alliances` → Removed
-- `specialist_weights` → Replaced by `nerves.mode` + `compiled_logic`
-- `reflex_distributions` → Replaced by `nerves` compiled reflexes
-- `body_schema` → Replaced by `cells` with `hardware_binding`
+### New Tables (Wave/Gate Model)
+- `wave_signals` → What cells emit
+- `gates` → Resonant gate state and weight
+- `gate_transitions` → **Decision trails live here now**
+- `correlation_events` → Function Gemma training data
+- `verification_outcomes` → Real Garden feedback
 
-### Preserved Tables (Still Relevant)
-- `objects` → Enhanced with organism reference
+### Changed Tables
+- `cells` → Now have `domain`, `target_gates`, `total_waves_emitted`
+- `nerves` → Now have `trigger_gate` instead of `priority`
+- `organisms` → Now have `active_gates` instead of priority-based `active_nerves`
+
+### Removed Tables
+- `decision_trails` → **Replaced by `gate_transitions` + `correlation_events`**
+
+### Preserved Tables
+- `objects` → Unchanged
 - `partnership_to_nimmerverse_messages` → Unchanged
 - `nimmerverse_to_partnership_messages` → Unchanged
 - `variance_probe_runs` → Unchanged
 
-### New Tables
-- `cells` → Atomic state machines
-- `nerves` → Behavioral state machines
-- `organisms` → Emergent identities
-- `decision_trails` → Rich training data
+---
+
+## The Learning Loop
+
+```
+VIRTUAL GARDEN                          REAL GARDEN
+═══════════════                         ═══════════
+
+cells emit waves                        receive verified signals
+    │                                        ▲
+    ▼                                        │
+wave_signals table                      no re-verification
+    │                                        │
+    ▼                                        │
+gates accumulate                        gate_transitions
+(correlation_events)                    (minimal trace)
+    │                                        │
+    ▼                                        │
+gate_transitions                        verification_outcomes
+(full trace)          ───────────────►      │
+    │                                        │
+    │◄─────────── feedback_to_virtual ───────┘
+    │
+    ▼
+gates.weight updated
+(learning happens)
+```
+
+**Credit assignment is automatic:** What correlated → what opened → what verified → weight adjusted.
 
 ---
 
----
+**Version:** 5.0 | **Created:** 2025-10-07 | **Updated:** 2026-02-14
 
-**Version:** 4.1 | **Created:** 2025-10-07 | **Updated:** 2026-02-14
-
-*phoebe holds the layers. The states flow. The decisions accumulate.* 🗄️⚡🌙
+*phoebe holds the waves. Gates correlate. Learning flows.* 🗄️⚡🌙

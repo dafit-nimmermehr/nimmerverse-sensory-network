@@ -1,285 +1,544 @@
-# Message Protocol Design: Router-Centric Architecture
+# Message Protocol Design: NATS Wire Protocol
 
-> **ONE JOB:** THE WIRE — NATS topics, JSON schemas, bootstrap sequence.
+> **ONE JOB:** THE WIRE — NATS subjects, message schemas, wave and gate protocols.
+
+---
 
 ## Overview
 
-This document outlines the design for the Nimmerverse message protocol. The core principle: **the router is dumb infrastructure, not smart cognition.** All intelligence lives at the edges - in clients that connect to the router.
+The nimmerverse nervous system runs on NATS. This document defines:
 
-This follows the Unix philosophy: each component does one thing well. The router routes. Clients subscribe, publish, and think.
+1. **Subject hierarchy** — How topics are structured
+2. **Message schemas** — What flows through the wire
+3. **Gate protocols** — How ternary state transitions are communicated
+4. **Trace streams** — How learning data is captured
 
-**Connection to Gateway:** The Escalation Service described in this document IS the Gateway (thalamus pattern). It implements the weight-based tier routing defined in [`Gateway-Architecture.md`](Gateway-Architecture.md).
-
----
-
-## Core Principle: Dumb Core, Smart Edges
-
-The router (NATS) is **dumb infrastructure** — it routes based on topic patterns and knows nothing about meaning. All intelligence lives at the edges: cells publish, the Escalation Service (Gateway) watches and routes, Nyx subscribes and thinks.
-
-**Routing logic:** → [`Gateway-Architecture.md`](Gateway-Architecture.md) (tier routing, escalation patterns)
+**Core principle:** NATS is dumb infrastructure. Gates are smart edges. Cells emit waves. Correlation drives transitions.
 
 ---
 
-## Guiding Principles
-
-1. **Dumb Core, Smart Edges**: The router has zero intelligence. All logic lives in clients.
-2. **Clients are Equal**: Nyx is just another subscriber. So is the Command Center. So is the Escalation Service.
-3. **Decoupling**: Publishers don't know who subscribes. Subscribers don't know who publishes.
-4. **Hierarchy**: Topics follow a hierarchical structure for flexible pattern subscriptions.
-5. **Lifeforce at the Edges**: The router doesn't track Lifeforce. Clients manage their own budgets.
-6. **Fail Simple**: If the router dies, everything stops cleanly. No half-smart failures.
-
----
-
-## Two Channels of Attention
-
-Messages split into `nimmerverse.low.*` (background heartbeats) and `nimmerverse.high.*` (cognitive events). The Escalation Service promotes from low → high based on rules.
-
-**Attention philosophy:** → [`Attention-Flow.md`](Attention-Flow.md) (budget allocation, preemption rules)
-
----
-
-## Topic Hierarchy
+## Subject Hierarchy
 
 ```
-nimmerverse.
-├── low.                          # Low-attention channel
-│   └── heartbeat.
-│       └── <garden>.             # real | virtual
-│           └── <entity_type>.    # cell | nerve | organ
-│               └── <entity_id>   # e.g., distance_sensor_front
-│
-├── high.                         # High-attention channel
-│   └── event.
-│       └── <garden>.
-│           └── <entity_type>.
-│               └── <entity_id>
-│
-├── command.                      # Commands TO entities
-│   └── <target>.
-│       └── <command_type>
-│
-└── meta.                         # System-level messages
-    ├── attention.focus           # Nyx's attention configuration
-    ├── escalation.rules          # Escalation Service configuration
-    └── health.                   # Client health/registration
+{environment}.{garden}.{layer}.{domain}.{signal_type}
+
+Examples:
+────────────────────────────────────────────────────────────────
+dev.virtual.cells.math.wave              # Math cell emits wave
+dev.virtual.cells.battery.wave           # Battery cell emits wave
+dev.virtual.gates.math.transition        # Math gate state change
+dev.virtual.traces.correlations          # Correlation data stream
+dev.virtual.traces.raw                   # Full message trace
+
+dev.real.gates.verified.signal           # Verified signal from Virtual
+dev.real.gates.math.transition           # Real gate transition
+dev.real.outcomes.feedback               # Verification outcomes
+
+prod.cognitive.nyx.request               # Request to Young Nyx
+prod.cognitive.nyx.response              # Response from Young Nyx
+prod.cognitive.gemma.transform           # Function Gemma boundary
+────────────────────────────────────────────────────────────────
 ```
+
+### Environment Prefixes
+
+| Environment | Purpose | Monitoring |
+|-------------|---------|------------|
+| `dev` | Development/testing | Full traces |
+| `staging` | Pre-production validation | Selective traces |
+| `prod` | Production | Minimal (gates only) |
+
+### Garden Prefixes
+
+| Garden | Purpose | Trace Level |
+|--------|---------|-------------|
+| `virtual` | Exploration, learning | FULL (all messages) |
+| `real` | Verification, action | MINIMAL (gate signals only) |
+
+### Layer Prefixes
+
+| Layer | Tier | Purpose |
+|-------|------|---------|
+| `cells` | 0-1 | Raw signal emitters |
+| `nerves` | 2 | Behavior patterns |
+| `organs` | 3 | GPU inference (vision, speech) |
+| `gates` | - | Resonant gate transitions |
+| `cognitive` | 4 | Young Nyx |
+| `traces` | - | Learning data streams |
+| `outcomes` | - | Verification feedback |
 
 ---
 
 ## Message Schemas
 
-### 1. `HeartbeatSignal` (Low-Attention)
-
-Published by: Cells, Nerves, Organs
-Subscribed by: Escalation Service, Command Center
-
-**Topic:** `nimmerverse.low.heartbeat.<garden>.<entity_type>.<entity_id>`
+All messages share a common header:
 
 ```json
 {
   "header": {
-    "message_id": "uuid",
-    "message_type": "HeartbeatSignal",
-    "version": "1.0",
-    "timestamp_real": "ISO8601",
-    "timestamp_virtual": 123456
+    "message_id": "uuid-v4",
+    "message_type": "WaveSignal | GateTransition | ...",
+    "version": "2.0",
+    "timestamp": "ISO8601",
+    "source": {
+      "entity_id": "math_cell_1",
+      "entity_type": "cell",
+      "garden": "virtual",
+      "tier": 1
+    }
+  },
+  "body": { ... }
+}
+```
+
+---
+
+### 1. `WaveSignal` — Cells Emit Waves
+
+**Published by:** Cells
+**Subscribed by:** Gates (for correlation)
+**Subject:** `{env}.{garden}.cells.{domain}.wave`
+
+Cells don't send "heartbeats" — they emit **waves** that carry confidence and semantic content.
+
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440000",
+    "message_type": "WaveSignal",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:00.123Z",
+    "source": {
+      "entity_id": "math_cell_1",
+      "entity_type": "cell",
+      "garden": "virtual",
+      "tier": 1
+    }
   },
   "body": {
-    "entity_id": "distance_sensor_front",
-    "status": "NOMINAL",
-    "value": 25.5,
-    "unit": "cm",
-    "context": {
-      "battery_pct": 85,
-      "temperature_c": 22
+    "domain": "math",
+    "confidence": 0.7,
+    "semantic_content": {
+      "operation": "addition",
+      "operands": [15, 27],
+      "context": "user_request"
+    },
+    "lifeforce_cost": 0.1
+  }
+}
+```
+
+**Key fields:**
+- `confidence`: 0.0 - 1.0, how certain this cell is
+- `semantic_content`: Domain-specific payload
+- `lifeforce_cost`: Energy expended to emit this wave
+
+---
+
+### 2. `GateTransition` — Gate State Changes
+
+**Published by:** Gates
+**Subscribed by:** Higher-tier gates, traces, dashboards
+**Subject:** `{env}.{garden}.gates.{domain}.transition`
+
+Gates publish their state transitions. This is the primary message for attention flow visualization.
+
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440001",
+    "message_type": "GateTransition",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:00.456Z",
+    "source": {
+      "entity_id": "math_gate_1",
+      "entity_type": "gate",
+      "garden": "virtual",
+      "tier": 2
+    }
+  },
+  "body": {
+    "gate_id": "math_gate_1",
+    "domain": "math",
+
+    "from_state": "stable",
+    "to_state": "open",
+    "state_value": 1.02,
+
+    "correlation_score": 0.87,
+    "trigger_signals": [
+      {"source": "math_cell_1", "confidence": 0.7, "timestamp": "..."},
+      {"source": "math_cell_2", "confidence": 0.6, "timestamp": "..."},
+      {"source": "math_cell_3", "confidence": 0.5, "timestamp": "..."}
+    ],
+
+    "routed_to_tier": 3,
+    "lifeforce_cost": 0.3
+  }
+}
+```
+
+**State values:**
+- `"closed"` — Actively blocking (state_value < -0.5)
+- `"stable"` — Resting, accumulating (-0.5 ≤ state_value ≤ 0.5)
+- `"open"` — Actively forwarding (state_value > 0.5)
+
+**Key fields:**
+- `from_state`, `to_state`: The ternary transition
+- `state_value`: Continuous value (-1.0 to +1.0)
+- `correlation_score`: How correlated the trigger signals were
+- `trigger_signals`: Which waves caused this transition
+
+---
+
+### 3. `CorrelationEvent` — What Correlated
+
+**Published by:** Gates (in Virtual Garden)
+**Subscribed by:** Trace streams, training pipelines
+**Subject:** `{env}.virtual.traces.correlations`
+
+Detailed correlation data for learning. Only published in Virtual Garden.
+
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440002",
+    "message_type": "CorrelationEvent",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:00.789Z",
+    "source": {
+      "entity_id": "math_gate_1",
+      "entity_type": "gate",
+      "garden": "virtual",
+      "tier": 2
+    }
+  },
+  "body": {
+    "gate_id": "math_gate_1",
+    "window_start": "2026-02-14T18:29:59.000Z",
+    "window_end": "2026-02-14T18:30:00.500Z",
+    "window_ms": 1500,
+
+    "signals_in_window": [
+      {"source": "math_cell_1", "confidence": 0.7, "semantic_hash": "abc123"},
+      {"source": "math_cell_2", "confidence": 0.6, "semantic_hash": "abc124"},
+      {"source": "math_cell_3", "confidence": 0.5, "semantic_hash": "abc125"}
+    ],
+
+    "correlation_matrix": [
+      [1.0, 0.9, 0.85],
+      [0.9, 1.0, 0.88],
+      [0.85, 0.88, 1.0]
+    ],
+
+    "aggregate_correlation": 0.87,
+    "result": "opened",
+
+    "training_label": {
+      "should_open": true,
+      "confidence": 0.95
     }
   }
 }
 ```
 
-**Status values:** `NOMINAL`, `WARNING`, `CRITICAL`, `OFFLINE`, `ERROR`
+**Key fields:**
+- `window_ms`: Time window for correlation measurement
+- `correlation_matrix`: Pairwise correlation between signals
+- `training_label`: Ground truth for Function Gemma training
 
 ---
 
-### 2. `StateChangeDetail` (High-Attention)
+### 4. `VerifiedSignal` — Virtual → Real Handoff
 
-Published by: Cells/Nerves (when requested), Escalation Service (when escalating)
-Subscribed by: Young Nyx, Command Center
+**Published by:** Virtual Garden gates (when threshold met)
+**Subscribed by:** Real Garden gates
+**Subject:** `{env}.real.gates.verified.signal`
 
-**Topic:** `nimmerverse.high.event.<garden>.<entity_type>.<entity_id>`
+When a Virtual Garden gate opens with high confidence, it publishes to Real.
 
 ```json
 {
   "header": {
-    "message_id": "uuid",
-    "message_type": "StateChangeDetail",
-    "version": "1.0",
-    "timestamp_real": "ISO8601",
-    "timestamp_virtual": 123456,
-    "source_entity": {
-      "id": "distance_sensor_front",
-      "type": "cell",
-      "layer": "1"
-    },
-    "correlation_id": "uuid",
-    "escalated_by": "escalation_service"
-  },
-  "body": {
-    "previous_state": "POLLING",
-    "current_state": "REPORTING",
-    "lifeforce_cost": 0.3,
-    "outputs": {
-      "distance_cm": 25.5,
-      "confidence": 0.92,
-      "raw_value": 456,
-      "visual_state": [255, 0, 0, "Solid"]
-    },
-    "possible_actions": [
-      {
-        "action_id": "read_distance_history",
-        "description": "Query historical distance data."
-      },
-      {
-        "action_id": "trigger_nerve:collision_avoidance",
-        "description": "Activate collision avoidance."
-      }
-    ],
-    "trigger_reason": "distance < 30cm threshold"
-  }
-}
-```
-
----
-
-### 3. `AttentionFocus` (Nyx's Configuration)
-
-Published by: Young Nyx
-Subscribed by: Escalation Service
-
-**This is how Nyx tells the Escalation Service what she cares about.** The router doesn't interpret this - it just delivers it to subscribers.
-
-**Topic:** `nimmerverse.meta.attention.focus`
-
-```json
-{
-  "header": {
-    "message_id": "uuid",
-    "message_type": "AttentionFocus",
-    "version": "1.0",
-    "timestamp_real": "ISO8601",
-    "source_entity": {
-      "id": "nyx_core",
-      "type": "cognitive_core"
+    "message_id": "550e8400-e29b-41d4-a716-446655440003",
+    "message_type": "VerifiedSignal",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:01.000Z",
+    "source": {
+      "entity_id": "math_gate_1",
+      "entity_type": "gate",
+      "garden": "virtual",
+      "tier": 2
     }
   },
   "body": {
-    "focus_mode": "EXPLORATION",
-    "escalation_rules": [
-      {
-        "rule_id": "distance_alert_front",
-        "source_pattern": "nimmerverse.low.heartbeat.real.cell.distance_sensor_*",
-        "condition": "body.value < 30 AND body.status == 'NOMINAL'",
-        "action": "escalate",
-        "priority": 8
-      },
-      {
-        "rule_id": "battery_critical",
-        "source_pattern": "nimmerverse.low.heartbeat.real.cell.battery_*",
-        "condition": "body.status == 'CRITICAL'",
-        "action": "escalate_and_trigger",
-        "trigger_nerve": "charging_seeking",
-        "priority": 10
-      }
+    "domain": "math",
+    "verification_confidence": 0.92,
+    "semantic_summary": {
+      "operation": "addition",
+      "result_expected": 42
+    },
+    "source_gate_transition_id": "550e8400-e29b-41d4-a716-446655440001",
+    "virtual_correlation_score": 0.87
+  }
+}
+```
+
+**Real Garden does NOT re-verify.** It trusts the Virtual Garden's correlation.
+
+---
+
+### 5. `VerificationOutcome` — Real → Virtual Feedback
+
+**Published by:** Real Garden (after action/verification)
+**Subscribed by:** Virtual Garden gates, training pipelines
+**Subject:** `{env}.real.outcomes.feedback`
+
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440004",
+    "message_type": "VerificationOutcome",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:05.000Z",
+    "source": {
+      "entity_id": "real_verification_service",
+      "entity_type": "service",
+      "garden": "real",
+      "tier": 4
+    }
+  },
+  "body": {
+    "original_signal_id": "550e8400-e29b-41d4-a716-446655440003",
+    "domain": "math",
+
+    "outcome": "confirmed",
+    "actual_result": 42,
+    "expected_result": 42,
+    "discrepancy": 0.0,
+
+    "feedback_to_virtual": {
+      "correlation_adjustment": 0.05,
+      "gate_weight_delta": 0.02
+    }
+  }
+}
+```
+
+**Outcome values:**
+- `"confirmed"` — Reality matched prediction
+- `"failed"` — Reality differed from prediction
+- `"partial"` — Some aspects matched
+
+---
+
+### 6. `CognitiveRequest` — To Young Nyx
+
+**Published by:** Function Gemma (after gate boundary)
+**Subscribed by:** Young Nyx
+**Subject:** `{env}.cognitive.nyx.request`
+
+Clean, structured JSON that Young Nyx receives. No raw sensor data.
+
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440005",
+    "message_type": "CognitiveRequest",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:01.500Z",
+    "source": {
+      "entity_id": "function_gemma",
+      "entity_type": "boundary",
+      "garden": "real",
+      "tier": 4
+    }
+  },
+  "body": {
+    "event_type": "math_request",
+    "domain": "math",
+    "confidence": 0.92,
+
+    "structured_input": {
+      "operation": "addition",
+      "operands": [15, 27],
+      "context": "user asked for calculation"
+    },
+
+    "suggested_actions": [
+      {"action": "calculate", "confidence": 0.95},
+      {"action": "clarify", "confidence": 0.05}
     ],
-    "direct_subscriptions": [
-      "nimmerverse.high.event.real.cell.speech_stt"
-    ],
-    "default_action": "log_only"
+
+    "processing_budget_lf": 5.0,
+    "response_timeout_ms": 4000
   }
 }
 ```
 
 ---
 
-## Clients
+### 7. `CognitiveResponse` — From Young Nyx
 
-**Publishers:** Cells, Nerves, Organs (publish heartbeats and state changes)
-**Router:** NATS (dumb pipe, topic-based routing)
-**Gateway/Escalation Service:** Watches low-attention, escalates to high-attention, routes to tiers
+**Published by:** Young Nyx
+**Subscribed by:** Function Gemma, downstream gates
+**Subject:** `{env}.cognitive.nyx.response`
 
-**Client architecture:** → [`Gateway-Architecture.md`](Gateway-Architecture.md) (routing tiers, Function Gemma boundary)
+```json
+{
+  "header": {
+    "message_id": "550e8400-e29b-41d4-a716-446655440006",
+    "message_type": "CognitiveResponse",
+    "version": "2.0",
+    "timestamp": "2026-02-14T18:30:02.000Z",
+    "source": {
+      "entity_id": "young_nyx",
+      "entity_type": "cognitive",
+      "garden": "real",
+      "tier": 4
+    }
+  },
+  "body": {
+    "request_id": "550e8400-e29b-41d4-a716-446655440005",
+    "decision": "calculate",
+
+    "result": {
+      "answer": 42,
+      "confidence": 0.99,
+      "reasoning_mode": "no_think"
+    },
+
+    "downstream_commands": [
+      {
+        "target": "speech_organ",
+        "command": "speak",
+        "payload": {"text": "The answer is 42"}
+      }
+    ],
+
+    "lifeforce_spent": 2.3,
+    "processing_time_ms": 450
+  }
+}
+```
 
 ---
 
-## Workflow: Message Flow
+## Trace Streams (Virtual Garden Only)
 
+The Virtual Garden captures everything for learning:
+
+| Subject | Content | Purpose |
+|---------|---------|---------|
+| `{env}.virtual.traces.raw` | All messages | Complete replay capability |
+| `{env}.virtual.traces.correlations` | CorrelationEvent | Training data for gates |
+| `{env}.virtual.traces.transitions` | GateTransition | Attention flow visualization |
+| `{env}.virtual.traces.training` | Labeled examples | Function Gemma LoRA training |
+
+**Real Garden does NOT publish to trace streams.** It only publishes:
+- Gate transitions (minimal)
+- Verification outcomes (feedback)
+
+---
+
+## Monitoring Patterns
+
+### Virtual Garden (Full Observability)
+
+```bash
+# Watch all waves
+nats sub "dev.virtual.cells.*.wave"
+
+# Watch all gate transitions
+nats sub "dev.virtual.gates.*.transition"
+
+# Watch correlation events
+nats sub "dev.virtual.traces.correlations"
+
+# Full firehose (careful!)
+nats sub "dev.virtual.>"
 ```
-1. Cell publishes HeartbeatSignal
-   └─→ Router delivers to: Escalation Service, Command Center
 
-2. Escalation Service evaluates rules
-   └─→ If condition matches: publishes StateChangeDetail to high-attention
-   └─→ Router delivers to: Young Nyx, Command Center
+### Real Garden (Minimal Observability)
 
-3. Young Nyx processes StateChangeDetail
-   └─→ Makes decision
-   └─→ Publishes command to nimmerverse.command.<target>
+```bash
+# Watch verified signals arriving
+nats sub "dev.real.gates.verified.signal"
 
-4. Target nerve/cell receives command
-   └─→ Executes action
-   └─→ Publishes new HeartbeatSignal reflecting new state
+# Watch verification outcomes
+nats sub "dev.real.outcomes.feedback"
 
-5. Nyx adjusts attention (optional)
-   └─→ Publishes new AttentionFocus
-   └─→ Escalation Service updates its rules
+# Gate transitions only
+nats sub "dev.real.gates.*.transition"
 ```
 
 ---
 
-## Advantages of Router-Centric Architecture
+## JetStream Persistence
 
-1. **Dumb core can't fail smart:** The router either works or crashes. No subtle bugs from misunderstood logic.
+Key streams that need persistence:
 
-2. **Clients are replaceable:** Swap out the Escalation Service. Replace the Command Center. Nyx doesn't care.
-
-3. **Testable in isolation:** Each client can be tested independently against a mock NATS.
-
-4. **Observable:** Command Center sees everything by subscribing to `nimmerverse.>`.
-
-5. **Scalable:** Add more cells, more nerves - just more publishers. Router handles it.
-
-6. **Bootstrap-friendly:** Router exists before any intelligence. Escalation Service can start with hardcoded rules. Nyx connects later.
+| Stream | Subjects | Retention | Purpose |
+|--------|----------|-----------|---------|
+| `VIRTUAL_TRACES` | `*.virtual.traces.>` | 7 days | Learning data |
+| `GATE_TRANSITIONS` | `*.*.gates.*.transition` | 24 hours | Attention history |
+| `VERIFICATION` | `*.real.outcomes.feedback` | 30 days | Ground truth |
+| `TRAINING_DATA` | `*.virtual.traces.training` | Permanent | LoRA training corpus |
 
 ---
 
 ## Bootstrap Sequence
 
-1. **Start Router (NATS)** - Infrastructure first
-2. **Start Escalation Service** - With minimal hardcoded rules
-3. **Start Cells/Nerves** - Begin publishing heartbeats
-4. **Start Command Center** - Observe the system
-5. **Start Young Nyx** - Connect, subscribe, begin cognition
-6. **Nyx publishes AttentionFocus** - Takes control of her attention
+1. **Start NATS** — Infrastructure first
+2. **Start gates** — In STABLE state, waiting for waves
+3. **Start cells** — Begin emitting waves
+4. **Start trace consumers** — Capture learning data
+5. **Start Function Gemma** — Ready to transform
+6. **Start Young Nyx** — Connect to cognitive subjects
 
-The system can run at any step. Earlier steps are "reflexive" only. Nyx adds deliberation.
-
----
-
-## Implementation Notes
-
-**Router:** Use NATS (https://nats.io). Lightweight, fast, designed for this.
-- Consider NATS JetStream for message persistence if needed
-- Topic wildcards: `>` matches all, `*` matches one level
-
-**Message Format:** JSON for human readability during development. Consider MessagePack or Protobuf for production if performance requires.
-
-**Escalation Service:** Python asyncio daemon using `nats-py` and `simpleeval` for rule evaluation. Stateless except for current rules. Can be restarted without losing system state. (Go considered for future optimization if scale demands.)
-
-**Command Center:** Godot application connecting to NATS via GDScript or native plugin.
+The system can run at any step. Earlier steps are "reflexive" only.
 
 ---
 
-**Version:** 1.1 | **Created:** 2025-12-13 | **Updated:** 2026-02-14
+## Connection to Architecture
 
-*"Dumb core, smart edges. The router routes. Clients think."*
+| Document | What It Defines |
+|----------|-----------------|
+| [`Temporal-Ternary-Gradient.md`](Temporal-Ternary-Gradient.md) | Why ternary states, why correlation |
+| [`Dual-Garden-Architecture.md`](Dual-Garden-Architecture.md) | Virtual/Real monitoring asymmetry |
+| [`Gateway-Architecture.md`](Gateway-Architecture.md) | Gate behavior, tier routing |
+| [`Deployment-Architecture.md`](Deployment-Architecture.md) | Where NATS runs |
+
+---
+
+## Summary
+
+```
+WAVES:
+  Cells → WaveSignal → Gates
+
+GATES:
+  GateTransition (CLOSED/STABLE/OPEN)
+  CorrelationEvent (what correlated)
+
+GARDENS:
+  Virtual: full traces, exploration
+  Real: gate signals only, verification
+
+BOUNDARY:
+  Function Gemma transforms correlated signals → JSON
+  Young Nyx receives CognitiveRequest
+  Young Nyx returns CognitiveResponse
+
+FEEDBACK:
+  Real → VerificationOutcome → Virtual
+  Learning loop closes
+```
+
+**The wire carries waves. Gates accumulate correlation. Traces enable learning.**
+
+---
+
+**Version:** 2.0 | **Created:** 2025-12-13 | **Updated:** 2026-02-14
+
+*"Dumb core, smart edges. NATS routes. Gates resonate. Correlation drives."*

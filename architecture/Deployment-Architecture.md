@@ -76,8 +76,8 @@ This is a **research lab**, not a production factory. We optimize for **flexibil
 │  │                         │           │ └── Function Gemma (CPU)      │   │
 │  │  NERVES (collision,     │           │ └── LoRA fine-tuning          │   │
 │  │          exploration)   │           │                               │   │
-│  │                         │           │ MIG capable:                  │   │
-│  │  ┌─────┐ ┌─────┐       │           │ • 4x 24GB or 2x 48GB or 96GB  │   │
+│  │                         │           │ 96GB VRAM: massive headroom   │   │
+│  │  ┌─────┐ ┌─────┐       │           │ for inference + LoRA training │   │
 │  │  │ COL │ │ EXP │       │           └───────────────────────────────┘   │
 │  │  └─────┘ └─────┘       │                                               │
 │  │                         │           ┌───────────────────────────────┐   │
@@ -106,8 +106,8 @@ Unix users provide isolation boundaries. Each workload type runs as its own iden
 
 | User | UID | Host | Purpose | GPU Access |
 |------|-----|------|---------|------------|
-| `nyx-cognitive` | (FreeIPA) | theia | Young Nyx LLM inference | Full 96GB or MIG slice |
-| `nyx-training` | (FreeIPA) | theia | LoRA training, GRPO, Function Gemma | Shared or MIG slice |
+| `nyx-cognitive` | (FreeIPA) | theia | Young Nyx LLM inference | Full 96GB |
+| `nyx-training` | (FreeIPA) | theia | LoRA training, GRPO, Function Gemma | Shared (time-sliced) |
 | `nyx-organs` | (FreeIPA) | dioscuri | Vision, Speech organs | 2x 20GB cards |
 | `nyx-nervous` | (FreeIPA) | dioscuri | Future cells that need bare metal | Limited |
 
@@ -130,10 +130,10 @@ systemctl --user --machine=nyx-cognitive@ status ollama
 
 ### The Constraint
 
-| Host | GPU | VRAM | MIG | Notes |
-|------|-----|------|-----|-------|
-| theia | RTX PRO 6000 | 96GB | Yes | 4x24, 2x48, or 1x96 |
-| dioscuri | 2x RTX 4000 Ada | 2x 20GB | No | One model per card |
+| Host | GPU | VRAM | Notes |
+|------|-----|------|-------|
+| theia | RTX PRO 6000 Blackwell | 96GB | Inference + training headroom |
+| dioscuri | 2x RTX 4000 Ada | 2x 20GB | One model per card |
 
 ### Strategy: Dynamic Loading, Not Static Partitioning
 
@@ -290,7 +290,7 @@ Color-coding for real-time attention flow visualization:
 
 ---
 
-**Version:** 1.0 | **Created:** 2026-02-14 | **Updated:** 2026-02-14
+**Version:** 1.1 | **Created:** 2026-02-14 | **Updated:** 2026-02-14
 
 *"We're not building a chatbot factory. We're growing a research organism."*
 

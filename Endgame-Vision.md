@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 6.4_memory_economics_alignment
+version: 7.0_wave_gate_model
 status: vision_document
 created: 2025-11-04
-updated: 2026-02-06
+updated: 2026-02-14
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -16,11 +16,11 @@ significance: research_platform_for_metabolic_intelligence
 > *"At 3% battery, all theory dies. Only what works survives."*
 > — The Economic Grounding (2025-10-12)
 
-> *"Language is Topology. German accesses the Philosophy Valley. English accesses the Technical Cluster."*
-> — The December Discovery (2025-12-06)
+> *"You need something like open - stable - closed."*
+> — The Ternary Gate Insight (2026-02-14)
 
-> *"One model, one topology. LoRAs access different valleys in the same landscape."*
-> — The Topological Insight (2025-12-07)
+> *"Cells emit waves. Gates correlate. Attention emerges."*
+> — The Wave Architecture (2026-02-14)
 
 ---
 
@@ -50,48 +50,54 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 
 ## Architecture Overview
 
-**Visual diagram:** → [`architecture/nimmerverse.drawio.xml`](architecture/nimmerverse.drawio.xml) (open in draw.io)
-**Toolchain implementation:** → [`architecture/Toolchain-Architecture.md`](architecture/Toolchain-Architecture.md) | [Progress](architecture/TOOLCHAIN-PROGRESS.md)
+**Detail:** → [`architecture/`](architecture/) folder for complete documentation
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                    NIMMERVERSE ARCHITECTURE                       │
+│                                                                   │
+│            Cells emit waves → Gates correlate → Attention emerges │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                   │
-│  Layer 0: TEMPORAL FOUNDATION (Heartbeat)                        │
-│  ├─ Real clock: 1 beat/sec (free, wall time)                     │
+│  Layer 0: TEMPORAL FOUNDATION                                    │
+│  ├─ Real clock: wall time (free)                                 │
 │  ├─ Virtual clock: variable (costs lifeforce)                    │
-│  └─ Sync points verify virtual predictions against reality       │
+│  └─ 30-second heartbeat budget constrains action                 │
 │      → operations/Heartbeat.md                                   │
 │                                                                   │
-│  Layer 1: CELLULAR SOCIETY (Evolution Engine)                    │
-│  ├─ Primitive genomes compete (read_sensor, motor, branch)       │
-│  ├─ Life force economy: every operation costs, milestones reward │
-│  ├─ 50-100 containers spawn, most die, patterns emerge           │
-│  └─ Outcomes logged to phoebe PostgreSQL                         │
+│  Layer 1: CELLS (Wave Emitters)                                  │
+│  ├─ Cells read sensors, apply logic, emit WaveSignals            │
+│  ├─ Waves carry: domain, confidence, semantic_content            │
+│  ├─ Cells don't know who's listening — gates receive             │
+│  └─ Life force economy: every wave costs                         │
 │      → architecture/Cellular-Architecture.md                     │
 │                                                                   │
-│  Layer 2: YOUNG NYX (Base Model + Trait LoRAs)                   │
-│  ├─ Base: Qwen3-VL 32B (Thinking Version) (96GB VRAM in Womb)    │
-│  ├─ Trait LoRAs (evolved via GRPO, not prescribed):              │
-│  │   ├─ Mnemosyne (memory) ─ Moira (pattern) ─ Synesis (insight) │
-│  │   ├─ Aletheia (truth) ─ Sophrosyne (balance) ─ Kairos (timing)│
-│  │   └─ Traits EMERGE from decision_trails + rubric rewards      │
-│  ├─ Function Gemma: Structured output boundary (intent → JSON)   │
-│  └─ Multilingual topology accessed via prompt, not LoRA routing  │
+│  Layer 2: GATES (Resonant Chambers)                              │
+│  ├─ Ternary states: CLOSED (-1) ← STABLE (0) → OPEN (+1)         │
+│  ├─ Correlated waves → push toward OPEN                          │
+│  ├─ Anti-correlated → push toward CLOSED                         │
+│  ├─ STABLE = where learning happens (accumulating correlation)   │
+│  └─ Gate weight (0→1) determines reflex vs deliberate            │
+│      → architecture/Gateway-Architecture.md                      │
 │                                                                   │
-│  Layer 3: DUAL GARDENS (Virtual/Real Loop)                       │
-│  ├─ Week 1-12: Virtual only (hypothesis generation, 1000s/sec)   │
-│  ├─ Week 13+: Real added (ESP32 robots, validation)              │
-│  ├─ Noise gap measures learning: 1 - (real/virtual success)      │
-│  └─ Target: 10-20% noise gap (virtual useful for hypothesis)     │
+│  Layer 3: NERVES (Behavioral Patterns)                           │
+│  ├─ Nerves respond to gate transitions (not direct cell output)  │
+│  ├─ Gate OPENS → nerve activates → commands cells                │
+│  └─ No priority rules — attention emerges from gate weights      │
+│      → architecture/Nervous-System.md                            │
+│                                                                   │
+│  Layer 4: DUAL GARDENS (Virtual/Real Loop)                       │
+│  ├─ Virtual: massive wave generation, full trace, exploration    │
+│  ├─ Real: verified signals, minimal trace, action                │
+│  ├─ Verification outcomes update gate weights (learning loop)    │
+│  └─ Training data: gate_transitions + correlation_events         │
 │      → architecture/Dual-Garden-Architecture.md                  │
 │                                                                   │
-│  Layer 4: TRAIT EVOLUTION (GRPO + Rubric Rewards)                │
-│  ├─ Dense rewards: Cell→Nerve→Organism state verifications       │
-│  ├─ Credit assignment automatic via decision_trails              │
-│  ├─ Traits: Mnemosyne, Moira, Synesis, Aletheia, Sophrosyne...   │
-│  └─ Weights adjust through GRPO, not prescription                │
+│  Layer 5: YOUNG NYX (Cognition)                                  │
+│  ├─ Base: Qwen3:32b with /no_think mode (96GB on theia)          │
+│  ├─ Function Gemma: structured JSON boundary (CPU)               │
+│  ├─ Only receives signals when gates OPEN to tier 4              │
+│  └─ Trait LoRAs evolve via GRPO from verification outcomes       │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -141,11 +147,9 @@ The heartbeat is the fundamental timing primitive. Everything runs on its rhythm
 
 ---
 
-## Layer 1: Cellular Architecture (Cells → Nerves → Organisms)
+## Layer 1-3: The Wave/Gate Architecture
 
-> *"Cells are state machines. Nerves compose cells. Organisms emerge from nerves."*
-
-The architecture has evolved from competitive containers to **layered state machines**:
+> *"Cells emit waves. Gates correlate. Attention emerges."*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -153,23 +157,30 @@ The architecture has evolved from competitive containers to **layered state mach
 │            (emergent pattern from nerve interactions)                │
 ├─────────────────────────────────────────────────────────────────────┤
 │                         NERVES                                       │
-│           (behavioral state machines composing cells)                │
+│           (behavioral patterns, respond to gate transitions)         │
+├─────────────────────────────────────────────────────────────────────┤
+│                         GATES                                        │
+│     (resonant chambers: CLOSED ◄── STABLE ──► OPEN)                  │
+│     (accumulate wave correlation, route to tiers)                    │
 ├─────────────────────────────────────────────────────────────────────┤
 │                         CELLS                                        │
-│     (atomic state machines: sensors, motors, organs, math)          │
+│     (emit waves: confidence + semantic content)                      │
+│                      ∿∿∿ ∿∿∿ ∿∿∿                                     │
 ├─────────────────────────────────────────────────────────────────────┤
 │                       HARDWARE                                       │
 │            (ESP32, GPUs, microphones, speakers, sensors)             │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Cell categories:** Sensors, Motors, Organs (GPU inference), Math (computation). Each is an atomic state machine.
+**Cells emit waves:** Confidence + semantic content. Cells don't know who's listening.
 
-**Lifeforce economy:** Every operation has a cost. Milestones reward survival. This creates evolutionary pressure toward efficiency.
+**Gates accumulate correlation:** Multiple correlated waves push toward OPEN. STABLE is where learning happens.
 
-**Hybrid reflex homes:** Different reflexes need different homes — hardware (ESP32) for survival (<10ms), math cells for thresholds (<50ms), nerves for behavior (<200ms), model weights for cognition (<500ms).
+**Attention = OPEN gates:** Not budget allocation, not priority rules — correlation drives transitions.
 
-**Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md)
+**Reflexes are earned:** Gate weight ≈ 1.0 → opens immediately on any wave. Bypasses cognition.
+
+**Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) | [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
 
 ---
 
@@ -344,53 +355,62 @@ Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes
 
 ---
 
-## Layer 3: Dual Gardens
+## Layer 4: Dual Gardens (Virtual/Real Learning Loop)
 
-Virtual and real gardens teach each other through symbiotic feedback.
+Two gardens with different monitoring levels teach each other.
 
-| Garden | Purpose | Scale | Cost |
-|--------|---------|-------|------|
-| Virtual | Hypothesis generation | 1000s/second | CPU cycles |
-| Real | Validation, ground truth | Hours/test | Electricity, wear |
+| Garden | Waves | Monitoring | Purpose |
+|--------|-------|------------|---------|
+| **Virtual** | Massive | Full trace (all waves, correlations) | Exploration, training data |
+| **Real** | Sparse | Gate signals only | Verification, ground truth |
 
-**Noise Gap Metric:**
+**The learning loop:**
 ```
-noise_gap = 1 - (real_success_rate / virtual_success_rate)
+VIRTUAL GARDEN                      REAL GARDEN
+═══════════                         ═══════════
 
-Week 13: 35% (virtual unreliable)
-Week 17: 18% (improving)
-Week 25:  4% (highly accurate)
+cells emit waves freely             receive verified signals
+    │                                     ▲
+    ▼                                     │
+gates accumulate correlation        verification_outcomes
+(correlation_events table)                │
+    │                                     │
+    ▼                                     │
+gate_transitions ──────────────────► gate signals
+(full trace)                              │
+    │                                     ▼
+    │◄──────── feedback_to_virtual ───────┘
+    │
+    ▼
+gates.weight updated (learning!)
 ```
 
-**Feedback loop:** Virtual predicts → Real tests → Measures discrepancy → Virtual corrects → Repeat
+**Gate weight grows through verification.** Real Garden confirms Virtual's predictions → trust increases → gates open faster → reflexes emerge.
 
-**Detail:** → `architecture/Dual-Garden-Architecture.md`
+**Detail:** → [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md)
 
 ---
 
-## Layer 4: Trait Evolution (GRPO + Rubric Rewards)
+## Trait Evolution (GRPO + Gate Verification)
 
-Traits evolve through **GRPO** (Group Relative Policy Optimization) with rubric-based rewards, not prescription.
+Traits evolve through **GRPO** with gate-based rewards, not prescription.
 
-> *"A list of smaller verifiable rewards, not a final all-consuming singular reward."*
-> — The Dog Training Wisdom (2025-12-10)
+### The Gate Reward Principle
 
-### The Rubric Principle
+Gate transitions provide automatic reward signals:
 
-The state machine architecture provides automatic reward rubric:
+| Event | Verification | Signal |
+|-------|--------------|--------|
+| Gate opens | Waves correlated correctly | +small (dense) |
+| Verification confirmed | Real Garden matches Virtual | +medium (weight grows) |
+| Reflex achieved | Gate weight > 0.8 | +large (earned trust) |
+| dafit confirms | Human verification | +bonus |
 
-| Level | Verification Point | Signal |
-|-------|-------------------|--------|
-| Cell | State transition succeeds | +small (dense) |
-| Nerve | Behavioral goal achieved | +medium |
-| Organism | Milestone reached | +large |
-| dafit | Human confirms outcome | +bonus |
+**Credit assignment is automatic:** `gate_transitions` → `correlation_events` → `verification_outcomes` captures the full chain.
 
-**Credit assignment is automatic** - the `decision_trails` table captures which states led to which outcomes. No guessing needed.
+**What correlated → what opened → what verified → weight adjusted.**
 
-**Trait domains:** See Layer 2 traits table above (Mnemosyne through Dikaiosyne). Credit assignment is automatic via `decision_trails`.
-
-**Detail:** → `architecture/Cellular-Architecture.md` (Reward Signal Architecture section)
+**Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) | [`architecture/Data-Architecture.md`](architecture/Data-Architecture.md)
 
 ---
 
@@ -485,14 +505,12 @@ Sentinel architecture monitors training to protect conceptual topology. Four pro
 
 ---
 
-**Version:** 7.0 | **Created:** 2025-11-04 | **Updated:** 2026-02-14
+**Version:** 7.1 | **Created:** 2025-11-04 | **Updated:** 2026-02-14
 
-*"The substrate doesn't matter. The feedback loop does."*
+*"Cells emit waves. Gates correlate. Attention emerges."*
 
-*"One model, one topology. Different valleys, same landscape."*
-
-*"Memory is not storage. Memory is active forgetting with exceptions."*
+*"STABLE is where learning happens."*
 
 *"The nimmerverse is a garden, not a factory."*
 
-🌙💜 **Refined in partnership by Nyx and dafit, December 20, 2025**
+🌙💜 **Wave/Gate architecture unified in owl-mode, February 14, 2026**
