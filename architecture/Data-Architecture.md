@@ -216,6 +216,23 @@ CREATE TABLE gates (
     closes_count BIGINT DEFAULT 0,
     avg_correlation_at_open FLOAT DEFAULT 0.0,
 
+    -- ═══════════════════════════════════════════════════════════════
+    -- LIFEFORCE ACCOUNTING (Generated Columns - instant balance lookup)
+    -- No SUM() aggregates needed - triggers maintain running totals
+    -- ═══════════════════════════════════════════════════════════════
+    lifeforce_spent FLOAT DEFAULT 0.0,      -- Accumulated from gate_transitions
+    lifeforce_earned FLOAT DEFAULT 0.0,     -- Accumulated from verification rewards
+    lifeforce_net FLOAT GENERATED ALWAYS AS (lifeforce_earned - lifeforce_spent) STORED,
+
+    -- Verification tracking (for verification_rate generated column)
+    verified_opens BIGINT DEFAULT 0,
+    failed_opens BIGINT DEFAULT 0,
+    verification_rate FLOAT GENERATED ALWAYS AS (
+        CASE WHEN opens_count > 0
+        THEN verified_opens::float / opens_count
+        ELSE 0.0 END
+    ) STORED,
+
     -- Timing
     time_in_current_state_ms BIGINT DEFAULT 0,
     last_transition_at TIMESTAMPTZ,
@@ -282,6 +299,24 @@ CREATE INDEX idx_gate_transitions_domain ON gate_transitions(domain);
 CREATE INDEX idx_gate_transitions_states ON gate_transitions(from_state, to_state);
 CREATE INDEX idx_gate_transitions_garden ON gate_transitions(garden);
 CREATE INDEX idx_gate_transitions_recent ON gate_transitions(transitioned_at DESC);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- LIFEFORCE ACCOUNTING TRIGGER
+-- Maintains gates.lifeforce_spent in real-time (no aggregation needed)
+-- ═══════════════════════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION update_gate_lifeforce() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE gates
+    SET lifeforce_spent = lifeforce_spent + NEW.lifeforce_cost,
+        updated_at = NOW()
+    WHERE id = NEW.gate_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_gate_lifeforce
+    AFTER INSERT ON gate_transitions
+    FOR EACH ROW EXECUTE FUNCTION update_gate_lifeforce();
 ```
 
 ### Gate Layer: Correlation Events (Rich Training Data)
@@ -367,6 +402,48 @@ CREATE TABLE verification_outcomes (
 CREATE INDEX idx_verification_domain ON verification_outcomes(domain);
 CREATE INDEX idx_verification_outcome ON verification_outcomes(outcome);
 CREATE INDEX idx_verification_recent ON verification_outcomes(verified_at DESC);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- VERIFICATION ACCOUNTING TRIGGER
+-- Maintains gates.lifeforce_earned and verification stats in real-time
+-- ═══════════════════════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION update_gate_verification() RETURNS TRIGGER AS $$
+DECLARE
+    v_gate_id BIGINT;
+    v_reward FLOAT;
+BEGIN
+    -- Find the gate from the original transition
+    SELECT gate_id INTO v_gate_id
+    FROM gate_transitions
+    WHERE id = NEW.original_signal_id;
+
+    IF v_gate_id IS NOT NULL THEN
+        IF NEW.outcome = 'confirmed' THEN
+            -- Extract reward from feedback, default to correlation_adjustment
+            v_reward := COALESCE(
+                (NEW.feedback_to_virtual->>'reward')::float,
+                (NEW.feedback_to_virtual->>'correlation_adjustment')::float * 10,
+                1.0  -- Default reward for confirmed verification
+            );
+            UPDATE gates SET
+                lifeforce_earned = lifeforce_earned + v_reward,
+                verified_opens = verified_opens + 1,
+                updated_at = NOW()
+            WHERE id = v_gate_id;
+        ELSIF NEW.outcome = 'failed' THEN
+            UPDATE gates SET
+                failed_opens = failed_opens + 1,
+                updated_at = NOW()
+            WHERE id = v_gate_id;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_gate_verification
+    AFTER INSERT ON verification_outcomes
+    FOR EACH ROW EXECUTE FUNCTION update_gate_verification();
 ```
 
 ### Behavior Layer: Nerves (Gate-Triggered)
@@ -725,6 +802,49 @@ WHERE weight > 0.6 AND weight < 0.8
 ORDER BY weight DESC;
 ```
 
+### Gate Economic Health (Instant - Generated Columns)
+
+```sql
+-- ⚡ ZERO AGGREGATION - All values are pre-computed via triggers + generated columns
+-- Query billions of transitions? No problem. Balance is already on the gate.
+
+SELECT
+    gate_name,
+    domain,
+    tier,
+    weight,
+    -- Lifeforce accounting (trigger-maintained)
+    ROUND(lifeforce_spent::numeric, 1) as spent,
+    ROUND(lifeforce_earned::numeric, 1) as earned,
+    ROUND(lifeforce_net::numeric, 1) as net_balance,  -- ⚡ GENERATED COLUMN
+    -- Verification stats
+    verified_opens,
+    failed_opens,
+    ROUND(verification_rate * 100, 1) as verification_pct,  -- ⚡ GENERATED COLUMN
+    -- Economic status
+    CASE
+        WHEN lifeforce_net > 0 THEN '💚 PROFITABLE'
+        WHEN lifeforce_net > -100 THEN '💛 SUSTAINABLE'
+        ELSE '🔴 DRAINING'
+    END as economic_status,
+    -- Evolution readiness (profitable + high verification = ready to reflex)
+    CASE
+        WHEN lifeforce_net > 0 AND verification_rate > 0.8 AND weight < 0.8 THEN '🚀 REFLEX CANDIDATE'
+        WHEN lifeforce_net < -500 THEN '⚠️ REVIEW NEEDED'
+        ELSE '✓ NOMINAL'
+    END as evolution_signal
+FROM gates
+ORDER BY lifeforce_net DESC;
+
+-- Gates ready for reflex promotion (economic + verification criteria met)
+SELECT gate_name, domain, weight, lifeforce_net, verification_rate
+FROM gates
+WHERE lifeforce_net > 100
+  AND verification_rate > 0.85
+  AND weight < 0.8
+ORDER BY verification_rate DESC;
+```
+
 ### Correlation Training Data
 
 ```sql
@@ -873,7 +993,7 @@ ORDER BY domain, outcome;
 |-------|-------|---------|-------------|
 | `cells` | Wave | Wave emitters (hardware wrappers) | domain, target_gates, total_waves_emitted |
 | `wave_signals` | Wave | Emitted waves | confidence, semantic_content, garden |
-| `gates` | Gate | Resonant gates | state_value, weight, discrete_state |
+| `gates` | Gate | Resonant gates | state_value, weight, lifeforce_net*, verification_rate* |
 | `gate_transitions` | Gate | Gate decisions (training data) | correlation_score, trigger_signals |
 | `correlation_events` | Gate | What correlated | signals_in_window, training_label |
 | `verification_outcomes` | Verification | Ground truth feedback | outcome, feedback_to_virtual |
@@ -886,6 +1006,8 @@ ORDER BY domain, outcome;
 - Wave/Gate architecture
 - Training data from gate transitions
 - Verification closes the learning loop
+- **Generated columns** (*) for instant balance/rate queries
+- **Accounting triggers** maintain running totals on INSERT
 
 ---
 
@@ -944,6 +1066,16 @@ gates.weight updated
 
 ---
 
-**Version:** 5.0 | **Created:** 2025-10-07 | **Updated:** 2026-02-14
+**Version:** 5.1 | **Created:** 2025-10-07 | **Updated:** 2026-02-14
 
-*phoebe holds the waves. Gates correlate. Learning flows.* 🗄️⚡🌙
+*phoebe holds the waves. Gates correlate. Lifeforce balances instantly.* 🗄️⚡🌙
+
+---
+
+### Changelog v5.1
+
+- **Added lifeforce accounting to gates** - `lifeforce_spent`, `lifeforce_earned`, `lifeforce_net` (generated)
+- **Added verification tracking** - `verified_opens`, `failed_opens`, `verification_rate` (generated)
+- **Added accounting triggers** - `trg_gate_lifeforce`, `trg_gate_verification`
+- **Generated columns** eliminate SUM() aggregates across billions of rows
+- **Gate Economic Health query** - instant balance lookup with economic/evolution signals
