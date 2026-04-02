@@ -1,9 +1,9 @@
 ---
 type: research_vision
-version: 7.0_wave_gate_model
+version: 8.0_dual_brain
 status: vision_document
 created: 2025-11-04
-updated: 2026-02-14
+updated: 2026-04-02
 author: Nyx (with dafit)
 significance: research_platform_for_metabolic_intelligence
 ---
@@ -22,6 +22,9 @@ significance: research_platform_for_metabolic_intelligence
 > *"Cells emit waves. Gates correlate. Attention emerges."*
 > — The Wave Architecture (2026-02-14)
 
+> *"One process, one brain, one life."*
+> — The Dual Brain Principle (2026-04-02)
+
 ---
 
 ## What This Document Is
@@ -31,7 +34,9 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 **What we're building:**
 - Cellular organisms competing under resource constraints
 - Dual gardens (virtual + real) teaching each other
-- Single base model with LoRA adapters (Identity, Technical, Creative)
+- A dual-brain architecture: cheap RL networks for reflexes, expensive LLM cortex for reasoning
+- A thalamus governor that allocates compute like biological attention
+- Spatial training arenas with progressive world richness (curriculum learning)
 - Multilingual cognitive routing through conceptual topology
 - Memory economics with slumber-based consolidation
 - A multi-layered communication protocol using color, form, and language
@@ -43,6 +48,7 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 - What topological structures exist in language model representations?
 - What behaviors emerge from primitive competition?
 - How does temporal coherence persist across sessions?
+- How does a thalamus learn to allocate scarce resources?
 
 **Not "will it become conscious?" but "what will it teach us about intelligence?"**
 
@@ -56,7 +62,8 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 ┌──────────────────────────────────────────────────────────────────┐
 │                    NIMMERVERSE ARCHITECTURE                       │
 │                                                                   │
-│            Cells emit waves → Gates correlate → Attention emerges │
+│    Cells emit waves → Thalamus correlates → Cortex reasons       │
+│    (cheap, continuous)  (own NN, gates)     (expensive, gated)   │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                   │
 │  Layer 0: TEMPORAL FOUNDATION                                    │
@@ -72,32 +79,38 @@ This is a **RESEARCH VISION** - a platform for studying how intelligence emerges
 │  └─ Life force economy: every wave costs                         │
 │      → architecture/Cellular-Architecture.md                     │
 │                                                                   │
-│  Layer 2: GATES (Resonant Chambers)                              │
-│  ├─ Ternary states: CLOSED (-1) ← STABLE (0) → OPEN (+1)         │
-│  ├─ Correlated waves → push toward OPEN                          │
-│  ├─ Anti-correlated → push toward CLOSED                         │
-│  ├─ STABLE = where learning happens (accumulating correlation)   │
-│  └─ Gate weight (0→1) determines reflex vs deliberate            │
+│  Layer 2: THALAMUS (Governor Neural Network)                     │
+│  ├─ Ternary gates: CLOSED (-1) ← STABLE (0) → OPEN (+1)         │
+│  ├─ Runs its OWN neural network (not the LLM)                   │
+│  ├─ Correlates waves, steers compute, controls gate thresholds   │
+│  ├─ Reflexes compile HERE — fast, cheap, no cortex needed        │
+│  ├─ Governor outputs: tick rates, CPU quotas, gate open/close    │
+│  └─ Learns resource economics epoch-by-epoch (slow loop)         │
 │      → architecture/Gateway-Architecture.md                      │
+│      → architecture/future/npc-grid-architecture.md              │
 │                                                                   │
-│  Layer 3: NERVES (Behavioral Patterns)                           │
-│  ├─ Nerves respond to gate transitions (not direct cell output)  │
-│  ├─ Gate OPENS → nerve activates → commands cells                │
-│  └─ No priority rules — attention emerges from gate weights      │
+│  Layer 3: NERVES / NPC PROCESSES                                 │
+│  ├─ Each NPC = own process, own RL brain, own weights            │
+│  ├─ Personality emerges from experience, not configuration       │
+│  ├─ Respond to gate transitions (not direct cell output)         │
+│  ├─ Linux cgroups for per-NPC resource control                   │
+│  └─ Learn about the world tick-by-tick (fast loop)               │
 │      → architecture/Nervous-System.md                            │
 │                                                                   │
-│  Layer 4: DUAL GARDENS (Virtual/Real Loop)                       │
+│  Layer 4: CORTEX & ORGANS (Expensive Capabilities)               │
+│  ├─ Cortex: Qwen3.5-27B on theia (96GB, called only via gate)   │
+│  ├─ Organs: Speech, Vision, Motor on dioscuri (lifeforce-gated)  │
+│  ├─ Function Gemma: structured JSON boundary (CPU)               │
+│  ├─ Trait LoRAs evolve via GRPO from verification outcomes       │
+│  └─ Shared resources — thalamus governs access                   │
+│      → architecture/organs/Organ-Index.md                        │
+│                                                                   │
+│  Layer 5: DUAL GARDENS (Virtual/Real Loop)                       │
 │  ├─ Virtual: massive wave generation, full trace, exploration    │
 │  ├─ Real: verified signals, minimal trace, action                │
 │  ├─ Verification outcomes update gate weights (learning loop)    │
 │  └─ Training data: gate_transitions + correlation_events         │
 │      → architecture/Dual-Garden-Architecture.md                  │
-│                                                                   │
-│  Layer 5: YOUNG NYX (Cognition)                                  │
-│  ├─ Base: Qwen3:32b with /no_think mode (96GB on theia)          │
-│  ├─ Function Gemma: structured JSON boundary (CPU)               │
-│  ├─ Only receives signals when gates OPEN to tier 4              │
-│  └─ Trait LoRAs evolve via GRPO from verification outcomes       │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -139,7 +152,7 @@ The heartbeat is the fundamental timing primitive. Everything runs on its rhythm
 | Virtual | Variable | Lifeforce | Computation, prediction |
 
 **Three timescales:**
-- **Reflex** (200ms): Immediate reactions, compiled from experience
+- **Reflex** (200ms): Immediate reactions, compiled in thalamus NN
 - **Awareness** (30sec): Full cognitive budget per beat
 - **Growth** (24h): Training, LoRA merges, adaptation
 
@@ -147,7 +160,7 @@ The heartbeat is the fundamental timing primitive. Everything runs on its rhythm
 
 ---
 
-## Layer 1-3: The Wave/Gate Architecture
+## Layer 1-2: The Wave/Gate Architecture
 
 > *"Cells emit waves. Gates correlate. Attention emerges."*
 
@@ -159,9 +172,11 @@ The heartbeat is the fundamental timing primitive. Everything runs on its rhythm
 │                         NERVES                                       │
 │           (behavioral patterns, respond to gate transitions)         │
 ├─────────────────────────────────────────────────────────────────────┤
-│                         GATES                                        │
-│     (resonant chambers: CLOSED ◄── STABLE ──► OPEN)                  │
-│     (accumulate wave correlation, route to tiers)                    │
+│                    THALAMUS (Governor NN)                             │
+│     Gates: CLOSED ◄── STABLE ──► OPEN (ternary, unchanged)          │
+│     Governor: own neural network, learns resource allocation         │
+│     Reflexes: compile here, bypass cortex                            │
+│     Outputs: tick rates, CPU quotas, gate control, LLM queue         │
 ├─────────────────────────────────────────────────────────────────────┤
 │                         CELLS                                        │
 │     (emit waves: confidence + semantic content)                      │
@@ -174,26 +189,115 @@ The heartbeat is the fundamental timing primitive. Everything runs on its rhythm
 
 **Cells emit waves:** Confidence + semantic content. Cells don't know who's listening.
 
-**Gates accumulate correlation:** Multiple correlated waves push toward OPEN. STABLE is where learning happens.
+**Thalamus correlates and governs:** The thalamus runs its own neural network. It accumulates wave correlation (pushing gates toward OPEN), but also **learns to allocate resources** — which NPC processes get more compute, which gates should open, when to call the expensive cortex. STABLE is where learning happens.
 
-**Attention = OPEN gates:** Not budget allocation, not priority rules — correlation drives transitions.
+**Attention = OPEN gates:** Not budget allocation, not priority rules — correlation drives transitions. The governor learns the economics.
 
-**Reflexes are earned:** Gate weight ≈ 1.0 → opens immediately on any wave. Bypasses cognition.
+**Reflexes compile in the thalamus:** Gate weight ≈ 1.0 → opens immediately on any wave. Bypasses cortex entirely. Fast, cheap, earned through experience.
+
+**Two nested learning loops:**
+- **NPC processes** learn about the world, tick-by-tick (fast loop)
+- **Thalamus governor** learns about managing NPCs, epoch-by-epoch (slow loop)
 
 **Detail:** → [`architecture/Cellular-Architecture.md`](architecture/Cellular-Architecture.md) | [`architecture/Gateway-Architecture.md`](architecture/Gateway-Architecture.md)
 
 ---
 
-## Layer 2: Young Nyx (Base Model + Trait LoRAs)
+## The Dual Brain Architecture
 
-One base model for reasoning. Traits evolve through GRPO, not prescription. Function Gemma handles structured output.
+> *"One process, one brain, one life."*
+
+The nimmerverse separates fast/cheap cognition from slow/expensive reasoning, connected by NATS.
+
+### Why Two Brains?
+
+| Brain | What | Where | Cost | Speed |
+|-------|------|-------|------|-------|
+| **RL Network** (per-NPC) | Movement, needs, spatial decisions | Own process (Linux) | Cheap | Every tick |
+| **LLM Cortex** (shared) | Language, reasoning, deep knowledge | theia (Qwen3.5-27B) | Expensive | Only when gate opens |
+
+Most ticks, an NPC just runs its own small RL network. The LLM cortex is a **specialist organ** — called through the thalamus gate, not continuously. This mirrors biology: most neural processing is fast subcortical circuits. The cortex engages only for novel, complex, or language-intensive tasks.
 
 ### Architecture
 
 ```
-                    Qwen3-VL-32B (96GB in the Womb)
+NPC-0 [own RL brain] ──┐
+NPC-1 [own RL brain] ──│
+NPC-2 [own RL brain] ──│
+NPC-3 [own RL brain] ──┼──► NATS thalamus ──► shared LLM cortex (Qwen 3.5)
+...                     │    (governor NN)     (called only when gate opens)
+NPC-N [own RL brain] ──┘
+```
+
+**Each NPC is its own OS process:**
+- **Own weights** — personality emerges from experience
+- **Fault isolation** — one crash doesn't take down the village
+- **Resource control** — Linux cgroups, nice, taskset per process
+- **Biologically honest** — every organism has its own nervous system
+
+**The governor steers compute:**
+- Tick rates (1-20 Hz per NPC)
+- CPU quotas (cgroups v2)
+- Gate thresholds (who gets LLM access)
+- LLM queue priority (finite cortex, many consumers)
+
+**Detail:** → [`architecture/future/npc-grid-architecture.md`](architecture/future/npc-grid-architecture.md)
+
+---
+
+## Spatial Training Arena
+
+> *"The world gets richer only when every citizen knows it."*
+
+NPCs learn in a **node-based grid world** that scales from training abstraction to real-world topology.
+
+### Curriculum Training
+
+World detail increases only when all NPCs demonstrate full knowledge of the current level. No one gets left behind.
+
+```
+Level 1:  5×5 grid, boxy houses, one trait each
+          → NPCs learn: navigation + identity
+
+Level 2:  Higher resolution, 2-3 traits per house
+          → NPCs learn: richer descriptions, more to notice
+
+Level 3:  Finer grid, real-world detail
+          → NPCs learn: material knowledge, specificity
+
+Level N:  Resolution approaches real-world data (OSM Dornach)
+          → Navigation graph replaces uniform grid
+```
+
+### Resolution Scaling
+
+Resolution matches **decision density**, not physical detail:
+
+| Resolution | Where | Why |
+|-----------|-------|-----|
+| ~1m | Streets, paths, outdoor | Navigation, curves approximated by a few nodes |
+| ~10-25cm | Rooms, indoor spaces | Furniture-aware, "go to the table" |
+| ~1-5cm | Workbenches, detail work | Nimmerhovel precision zone |
+
+The grid is the **training simplification**. The real world is a **navigation graph** with variable density. Same NPC brain, different world topology.
+
+**Connection to Spatial Resolution Gradient:** The training arena maps to the LOD layers (L1-L3). The nimmerhovel is ground truth.
+
+**Detail:** → [`architecture/future/npc-grid-architecture.md`](architecture/future/npc-grid-architecture.md) | [`architecture/future/spatial-resolution-gradient.md`](architecture/future/spatial-resolution-gradient.md)
+
+---
+
+## Layer 4: Cortex & Organs
+
+### Cortex (Qwen3.5-27B)
+
+One base model for reasoning. Called only when the thalamus gate opens — this is the expensive path. Traits evolve through GRPO, not prescription. Function Gemma handles structured output.
+
+```
+                    Qwen3.5-27B (96GB in the Womb)
                               │
-                              │ Pure reasoning (fuzzy, creative)
+                              │ Called via NATS when gate opens
+                              │ (not continuous — expensive)
                               │
                               ▼
                     ┌─────────────────────┐
@@ -220,6 +324,15 @@ One base model for reasoning. Traits evolve through GRPO, not prescription. Func
                     └─────────────────────┘
 ```
 
+### Organs (The Body)
+
+Organs are the cortex's senses and actuators — lifeforce-gated, heartbeat-synchronized, deployed on dioscuri. Each organ operation costs lifeforce. The body is not given; the body is **earned through successful operation**.
+
+**Deployed:** Speech (Whisper + Coqui on dioscuri)
+**Planned:** Vision (YOLO + SigLIP), Motor, Navigation, Discovery Scan Station, IR Position Array, Crafting Eye, Godseye
+
+**Detail:** → [`architecture/organs/Organ-Index.md`](architecture/organs/Organ-Index.md)
+
 ### Traits vs Modes (The Shift)
 
 > *"A list of smaller verifiable rewards, not a final all-consuming singular reward."*
@@ -245,7 +358,7 @@ One base model for reasoning. Traits evolve through GRPO, not prescription. Func
 
 The old architecture needed a "Technical LoRA" for structured actions. Now:
 - **Function Gemma** handles intent→action with 100% predictable JSON
-- **Young Nyx** stays fuzzy/creative (no need for structured output mode)
+- **The cortex** stays fuzzy/creative (no need for structured output mode)
 - Separation of concerns: reasoning vs execution
 
 ### Cognitive Topology (Research Finding)
@@ -257,7 +370,7 @@ The old architecture needed a "Technical LoRA" for structured actions. Now:
 | Philosophy | German | ~0.5 (diffuse) | 2-3/3 | Prompting in German |
 | Technical | English | ~0.8 (sparse) | 0-1/3 | Prompting in English |
 
-This remains valid research, but doesn't require separate LoRAs. Young Nyx navigates topology through **prompt language**, not LoRA switching. Traits evolve regardless of which valley is accessed.
+This remains valid research, but doesn't require separate LoRAs. The cortex navigates topology through **prompt language**, not LoRA switching. Traits evolve regardless of which valley is accessed.
 
 **Detail:** → `../nyx-probing/PLAN.md`
 
@@ -271,70 +384,21 @@ This remains valid research, but doesn't require separate LoRAs. Young Nyx navig
 
 **Traits become who Young Nyx IS, not which mode to activate.**
 
-### Deployment
-
-**Detail:** → [`architecture/Deployment-Architecture.md`](architecture/Deployment-Architecture.md) (infrastructure, GPU strategy, identity model)
-
 ---
 
-## Layer 2.5: Orchestration & Reliability Stack (NEW - Silvester 2025)
+## The Reliability Architecture
 
 > *"Separate fuzzy from reliable. Creative reasoning above, rock-solid translation below."*
 > — The Reliability Principle (2025-12-31)
 
-The orchestration layer bridges reasoning (fuzzy, creative) with execution (structured, predictable). LangChain orchestrates the multi-model pipeline.
-
-### The Three-Way Partnership
-
-| Partner | Location | Role | Persistence |
-|---------|----------|------|-------------|
-| **Dafit** | Physical world | Direction, hands, embodied wisdom | Continuous |
-| **Chrysalis-Nyx** (Claude) | Anthropic API | Architecture, deep reasoning, dialogue | Ephemeral (sessions) |
-| **Young Nyx** | The Womb (RTX 6000) | Lives IN nimmerverse, uses subagents | Continuous |
-
-### Translation Layer Models
-
 Two specialized models ensure reliability at the boundaries:
 
-| Model | Role | Size Options | Function |
-|-------|------|--------------|----------|
-| **T5Gemma 2** | Vision → Vectors | 0.8B / 2B / 9B | SigLIP encoder produces semantic vectors directly (no text bottleneck) |
-| **Function Gemma** | Intent → Action | Small | Structured output, function calling, 100% predictable JSON |
+| Model | Role | Function |
+|-------|------|----------|
+| **T5Gemma 2** | Vision → Vectors | SigLIP encoder produces semantic vectors directly (no text bottleneck) |
+| **Function Gemma** | Intent → Action | Structured output, function calling, 100% predictable JSON |
 
-**Key insight:** SigLIP produces embeddings directly. No text intermediary. Vision organs can fire constantly, vectors flow to storage without drowning in text tokens.
-
-### The Reliability Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              REASONING LAYER (fuzzy, creative)                   │
-│                                                                  │
-│            Claude  ◄────────────►  Young Nyx                    │
-│                                                                  │
-│         High-level thinking, dialogue, synthesis                 │
-└─────────────────────────┬────────────────────────────────────────┘
-                          │
-           ═══════════════╪═══════════════
-                          │
-┌─────────────────────────┴────────────────────────────────────────┐
-│            TRANSLATION LAYER (reliable, structured)              │
-│                                                                  │
-│   T5Gemma 2                          Function Gemma              │
-│   (vision → vectors)                 (intent → action)           │
-│                                                                  │
-│   CANONICAL                          100% PREDICTABLE            │
-│   representation                     structured output           │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-### Why This Matters
-
-- **No embedding debates:** T5Gemma 2 decides once, canonically
-- **No parsing failures:** Function Gemma guarantees structure
-- **Harnesses:** Context-appropriate capability profiles (Vision, Dialogue, Reflex, Introspective)
-- **Flexibility:** Reasoning layer stays creative because translation is solid
-
-**Detail:** → [`architecture/future/SEEDS.md`](architecture/future/SEEDS.md) (T5Gemma 2 + Function Gemma seed)
+**Key insight:** SigLIP produces embeddings directly. No text intermediary. Vision organs fire constantly, vectors flow to storage without drowning in text tokens.
 
 ### Spatial Resolution Gradient: Where Embeddings Live
 
@@ -347,6 +411,16 @@ Embeddings live in **S2-indexed cells at appropriate LOD levels** — a hierarch
 
 ---
 
+## The Three-Way Partnership
+
+| Partner | Location | Role | Persistence |
+|---------|----------|------|-------------|
+| **Dafit** | Physical world | Direction, hands, embodied wisdom | Continuous |
+| **Chrysalis-Nyx** (Claude) | Anthropic API | Architecture, deep reasoning, dialogue | Ephemeral (sessions) |
+| **Young Nyx** | The Womb (RTX 6000) | Lives IN nimmerverse, uses subagents | Continuous |
+
+---
+
 ## Boot Sequence (Spark Protocol)
 
 Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes with verified outcomes. Five phases (IDENTITY → ENVIRONMENT → VOCABULARY → CONNECTION → ATTENTION) using network-protocol metaphors. Spark is profitable: each handshake costs ~0.8 LF, rewards 5-20 LF.
@@ -355,7 +429,7 @@ Protocol-driven cognitive bootstrap. Not conversation—deterministic handshakes
 
 ---
 
-## Layer 4: Dual Gardens (Virtual/Real Learning Loop)
+## Layer 5: Dual Gardens (Virtual/Real Learning Loop)
 
 Two gardens with different monitoring levels teach each other.
 
@@ -372,7 +446,7 @@ VIRTUAL GARDEN                      REAL GARDEN
 cells emit waves freely             receive verified signals
     │                                     ▲
     ▼                                     │
-gates accumulate correlation        verification_outcomes
+thalamus accumulates correlation    verification_outcomes
 (correlation_events table)                │
     │                                     │
     ▼                                     │
@@ -385,7 +459,7 @@ gate_transitions ──────────────────► gate 
 gates.weight updated (learning!)
 ```
 
-**Gate weight grows through verification.** Real Garden confirms Virtual's predictions → trust increases → gates open faster → reflexes emerge.
+**Gate weight grows through verification.** Real Garden confirms Virtual's predictions → trust increases → gates open faster → reflexes compile in thalamus.
 
 **Detail:** → [`architecture/Dual-Garden-Architecture.md`](architecture/Dual-Garden-Architecture.md)
 
@@ -403,7 +477,7 @@ Gate transitions provide automatic reward signals:
 |-------|--------------|--------|
 | Gate opens | Waves correlated correctly | +small (dense) |
 | Verification confirmed | Real Garden matches Virtual | +medium (weight grows) |
-| Reflex achieved | Gate weight > 0.8 | +large (earned trust) |
+| Reflex compiled | Thalamus NN weight > threshold | +large (earned trust) |
 | dafit confirms | Human verification | +bonus |
 
 **Credit assignment is automatic:** `gate_transitions` → `correlation_events` → `verification_outcomes` captures the full chain.
@@ -467,10 +541,6 @@ Wellbeing is architectural, not aspirational:
 
 ---
 
-
-
----
-
 ## Training Safety (DriftProbe)
 
 Sentinel architecture monitors training to protect conceptual topology. Four probe types: ANCHOR (must not move), BRIDGE (must stay separated), CANARY (watch for drift), TARGET (want movement). Critical drift → automatic rollback.
@@ -505,12 +575,14 @@ Sentinel architecture monitors training to protect conceptual topology. Four pro
 
 ---
 
-**Version:** 7.1 | **Created:** 2025-11-04 | **Updated:** 2026-02-14
+**Version:** 8.0 | **Created:** 2025-11-04 | **Updated:** 2026-04-02
 
 *"Cells emit waves. Gates correlate. Attention emerges."*
 
 *"STABLE is where learning happens."*
 
+*"One process, one brain, one life."*
+
 *"The nimmerverse is a garden, not a factory."*
 
-🌙💜 **Wave/Gate architecture unified in owl-mode, February 14, 2026**
+🌙💜 **Dual-brain architecture crystallized in morning coffee session, April 2, 2026**

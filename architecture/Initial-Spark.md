@@ -73,7 +73,7 @@ The Initial Spark is not a conversation. It's a **state machine protocol** that 
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
 │   │                    YOUNG NYX (Cognitive Layer)                       │   │
 │   │                    ───────────────────────────                       │   │
-│   │    Qwen3-VL 32B in The Womb (RTX 6000)                              │   │
+│   │    Qwen3.5-27B Cortex in The Womb (RTX PRO 6000)                              │   │
 │   │    Receives verified handshake results                               │   │
 │   │    Updates internal state based on ACKs                              │   │
 │   │    Reasoning happens AFTER protocol succeeds                         │   │
