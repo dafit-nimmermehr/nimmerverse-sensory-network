@@ -19,6 +19,7 @@ An ADR captures an important architectural decision made along with its context 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
 | [001](ADR-001-message-protocol-foundation.md) | Message Protocol Foundation | Accepted | 2025-12-31 |
+| [002](ADR-002-dual-brain-architecture.md) | Dual-Brain Architecture | Proposed | 2026-04-02 |
 
 ---
 
